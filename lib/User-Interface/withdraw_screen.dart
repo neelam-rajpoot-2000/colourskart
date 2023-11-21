@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 
 import '../Widgets/customText.dart';
 
 class WithdrawScreen extends StatefulWidget {
-  const WithdrawScreen({super.key});
+  bool? playBackgroundMusic=false;
+   WithdrawScreen({super.key,this.playBackgroundMusic});
 
   @override
   State<WithdrawScreen> createState() => _WithdrawScreenState();
@@ -62,6 +64,9 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             ),
             GestureDetector(
               onTap: () {
+                            widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                 Navigator.pop(context);
               },
               child: Container(
@@ -124,6 +129,9 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             children: [
               GestureDetector(
               onTap: () {
+                            widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                 Navigator.pop(context);
               },
               child: Container(
@@ -464,6 +472,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = true;
                     paytmButton = false;
@@ -488,6 +499,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = false;
                     paytmButton = true;
@@ -512,6 +526,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = false;
                     paytmButton = false;
@@ -546,6 +563,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = true;
                     paytmButton = false;
@@ -571,6 +591,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = false;
                     paytmButton = true;
@@ -597,6 +620,9 @@ Widget selectTypePortrait() {
             children: [
               InkWell(
                 onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   setState(() {
                     bankButton = false;
                     paytmButton = false;

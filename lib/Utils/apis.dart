@@ -22,7 +22,7 @@ class Apis {
 
   //------ another base url----------//
 
-  static const baseUrl2 = "http://23.106.234.25:8192/admin-new-apis/";
+  static const baseUrl2 = "http://52.66.99.34/admin-new-apis/";
 
   static const String loginApi = "${baseUrl2}login/client-login";
 

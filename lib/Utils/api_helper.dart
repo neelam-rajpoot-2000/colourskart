@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 
 class GlobalFunction {
+  bool playBackgroundMusic=false;
   ///post api
   static Future<String> apiPostRequest(url, data) async {
     String result = "";
@@ -47,6 +48,7 @@ class GlobalFunction {
     data,
     context,
     TextEditingController textController,
+
   ) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
@@ -63,8 +65,10 @@ class GlobalFunction {
       result = response.body;
     } else {
       textController.clear();
+   
 
-      DialogUtils.showOneBtn(context, jsonDecode(response.body)['message']);
+      DialogUtils.showOneBtn(
+          context, jsonDecode(response.body)['message']);
     }
     return result;
   }

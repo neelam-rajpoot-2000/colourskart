@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/AmarAkhbarAnthony/Animations/portrait_random_coin_right_side_amar.dart';
 import 'package:virtual_casino/User-Interface/current_user_bet.dart';
 import 'package:virtual_casino/Utils/toast.dart';
@@ -66,6 +66,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   bool playBackgroundMusic = false;
   String userBalance = "";
   String liablity = "";
+  bool confirmButton = false;
   int stack1 = 0;
   int stack2 = 0;
   int stack3 = 0;
@@ -165,12 +166,17 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
 
   late Timer _clockTimer;
   late Timer _musicTimer;
+     int startTimeSmall=0;
 
   var gameSound = "assets/Teen-patti/audio/teen-patti-bgm.mp3";
   var stakeController = TextEditingController();
 
   @override
   void initState() {
+         startTimeSmall=startTimes*100;
+       Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        startTimeSmall =startTimeSmall-1;
+       });
     getMatchIdDetails();
     getUserDetails();
     getDeviceIp();
@@ -713,402 +719,10 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     });
   }
 
-  Widget drawerWidget() {
-    return Container(
-      height: height,
-      width: width * 0.4,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage("assets/User-interface/dashboard.png"),
-        fit: BoxFit.fitHeight,
-      )),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Container(
-              alignment: Alignment.centerRight,
-              height: height * 0.09,
-              width: width,
-              decoration: BoxDecoration(color: Colors.black),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: Image.asset(
-                  "assets/User-interface/Buttons/close-button.png",
-                  scale: 0.8,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteProfile());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Profile",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRoute());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Account Statement",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteCurrentBets());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Current Bets",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Activity Log",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteChangePassword());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Change Password",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          Divider(
-            color: Color.fromARGB(255, 184, 50, 50),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              getlogout();
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Logout",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget drawerWidgetPotrait() {
-    return Container(
-      height: height,
-      width: width * 0.6,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage("assets/User-interface/dashboard.png"),
-        fit: BoxFit.fitHeight,
-      )),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Container(
-              alignment: Alignment.centerRight,
-              height: height * 0.09,
-              width: width,
-              decoration: BoxDecoration(color: Colors.black),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: Image.asset(
-                  "assets/User-interface/Buttons/close-button.png",
-                  scale: 0.8,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteProfile());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Profile",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRoute());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Account Statement",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteCurrentBets());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Current Bets",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Activity Log",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteChangePassword());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Change Password",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          Divider(
-            color: Color.fromARGB(255, 184, 50, 50),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              getlogout();
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Logout",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void getlogout() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String token = "";
-    setState(() {
-      token = preferences.getString('token').toString();
-    });
-
-    if (token == "" && token == "null") {
-    } else {
-      preferences.clear();
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
-          (route) => false);
-      final snackBar = SnackBar(
-        backgroundColor: const Color.fromARGB(255, 62, 9, 6),
-        content: const Text('Logout Sucessfully !'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
-
-  Route _createRoute() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
-  Route _createRouteProfile() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
-  Route _createRouteCurrentBets() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          CurrentUserBet(gameCode: widget.gameCode, matchId: widget.matchId),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
-  Route _createRouteChangePassword() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
-  Widget buildImagePortrait(String cardImage) {
-    return cardImage == "" || cardImage == "null"
-        ? Image.asset(
-            'assets/User-interface/card-back.png',
-            height: 55,
-            width: 35,
-            fit: BoxFit.fill,
-          )
-        : FlipCard(
-            flipOnTouch: false,
-            autoFlipDuration: Duration(seconds: 1),
-            front: Image.asset(
-              'assets/User-interface/card-back.png',
-              height: 55,
-              width: 35,
-              fit: BoxFit.fill,
-            ),
-            back: SizedBox(
-                height: 55,
-                width: 35,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(2.5),
-                  child: Image.network('${Apis.imagbaseLink}$cardImage.png',
-                      fit: BoxFit.cover),
-                )));
-  }
-
   Widget landscapeWidget() {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
+      backgroundColor: Colors.transparent,
       key: _globalKey,
       drawer: drawerWidget(),
       body: SingleChildScrollView(
@@ -1246,13 +860,13 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                           height: 2,
                                           width: width * 0.20,
                                           child: LinearProgressIndicator(
-                                            value: startTimes /
-                                                45, // Calculate the progress
-                                            backgroundColor: Colors.white,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Color(0xaaFFB546)),
-                                          ),
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
                                         ),
                                         Container(
                                           margin: const EdgeInsets.symmetric(
@@ -1325,46 +939,20 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                     Positioned(
                       top: height * 0.37,
                       left: width * 0.17,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
                     ),
                     Positioned(
                       top: height * 0.37,
                       right: width * 0.17,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
                     ),
                     AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
@@ -1394,7 +982,9 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                     child: showCurrentCardLand())
                                 : SizedBox(),
 
-                    autoTime == "3" ? gameStopBetting(autoTime) : SizedBox(),
+                    startTimes <= 3 && autoTime != '0'
+                        ? gameStopBetting(autoTime)
+                        : SizedBox(),
 
                     Positioned(
                       bottom: height * 0.01,
@@ -1665,7 +1255,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                       context,
                                       items.detail.toString(),
                                       items.c1,
-                                      items.mid);
+                                      items.mid,
+                                      playBackgroundMusic);
                                 },
                                 child: Container(
                                   margin: EdgeInsets.all(2),
@@ -1824,6 +1415,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Widget protraitModeWidget() {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
+      backgroundColor: Colors.transparent,
       key: _globalKey,
       drawer: drawerWidgetPotrait(),
       body: Container(
@@ -2013,7 +1605,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                     context,
                                     items.detail.toString(),
                                     items.c1,
-                                    items.mid);
+                                    items.mid,
+                                    playBackgroundMusic);
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -2314,10 +1907,11 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                 width: width * 0.25,
                                 child: LinearProgressIndicator(
                                   value:
-                                      startTimes / 45, // Calculate the progress
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xaaFFB546)),
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
                                 ),
                               ),
                             ],
@@ -2349,7 +1943,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                   left: width * 0.26,
                                   top: height * 0.05,
                                   child: showCurrentCardPort()),
-                  autoTime == "3"
+                  startTimes <= 3 && autoTime != '0'
                       ? gameStopBettingPortrait(autoTime)
                       : SizedBox(),
                 ],
@@ -2376,6 +1970,402 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
             ]),
           )),
     );
+  }
+
+  Widget drawerWidget() {
+    return Container(
+      height: height,
+      width: width * 0.4,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage("assets/User-interface/dashboard.png"),
+        fit: BoxFit.fitHeight,
+      )),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              alignment: Alignment.centerRight,
+              height: height * 0.09,
+              width: width,
+              decoration: BoxDecoration(color: Colors.black),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: Image.asset(
+                  "assets/User-interface/Buttons/close-button.png",
+                  scale: 0.8,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteProfile());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Profile",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRoute());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Account Statement",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteCurrentBets());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Current Bets",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {},
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Activity Log",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteChangePassword());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Change Password",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Divider(
+            color: Color.fromARGB(255, 184, 50, 50),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          InkWell(
+            onTap: () async {
+              getlogout();
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Logout",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget drawerWidgetPotrait() {
+    return Container(
+      height: height,
+      width: width * 0.6,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage("assets/User-interface/dashboard.png"),
+        fit: BoxFit.fitHeight,
+      )),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              alignment: Alignment.centerRight,
+              height: height * 0.09,
+              width: width,
+              decoration: BoxDecoration(color: Colors.black),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: Image.asset(
+                  "assets/User-interface/Buttons/close-button.png",
+                  scale: 0.8,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteProfile());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Profile",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRoute());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Account Statement",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteCurrentBets());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Current Bets",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {},
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Activity Log",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              Navigator.push(context, _createRouteChangePassword());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Change Password",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Divider(
+            color: Color.fromARGB(255, 184, 50, 50),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          InkWell(
+            onTap: () async {
+              getlogout();
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              child: Text(
+                "Logout",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void getlogout() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String token = "";
+    setState(() {
+      token = preferences.getString('token').toString();
+    });
+
+    if (token == "" && token == "null") {
+    } else {
+      preferences.clear();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+          (route) => false);
+      final snackBar = SnackBar(
+        backgroundColor: const Color.fromARGB(255, 62, 9, 6),
+        content: const Text('Logout Sucessfully !'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Route _createRouteProfile() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Route _createRouteCurrentBets() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
+        gameCode: widget.gameCode,
+        matchId: widget.matchId,
+        playBackgroundMusic: playBackgroundMusic,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Route _createRouteChangePassword() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          ChangePasswordScreen(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  Widget buildImagePortrait(String cardImage) {
+    return cardImage == "" || cardImage == "null"
+        ? Image.asset(
+            'assets/User-interface/card-back.png',
+            height: 55,
+            width: 35,
+            fit: BoxFit.fill,
+          )
+        : FlipCard(
+            flipOnTouch: false,
+            autoFlipDuration: Duration(seconds: 1),
+            front: Image.asset(
+              'assets/User-interface/card-back.png',
+              height: 55,
+              width: 35,
+              fit: BoxFit.fill,
+            ),
+            back: SizedBox(
+                height: 55,
+                width: 35,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(2.5),
+                  child: Image.network('${Apis.imagbaseLink}$cardImage.png',
+                      fit: BoxFit.cover),
+                )));
   }
 
   int cardIndex = 0;
@@ -2417,19 +2407,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                               greenCoinAnimation == true ||
                               lightBlueCoinAnimation == true ||
                               brownCoinAnimation == true) {
-                            showMyDialog(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
+                            showMyDialog(
+                                context,
+                                height * 0.45,
+                                width * 0.33,
+                                height * 0.4,
+                                width * 0.7,
+                                height * 0.64,
+                                width * 0.55,
+                                redCoinAnimation == true
+                                    ? stack1
+                                    : lightGreenCoinAnimation == true
+                                        ? stack2
+                                        : blueCoinAnimation == true
+                                            ? stack3
+                                            : greenCoinAnimation == true
+                                                ? stack4
+                                                : lightBlueCoinAnimation == true
+                                                    ? stack5
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                           }
                         });
                       },
@@ -2472,19 +2470,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                               greenCoinAnimation == true ||
                               lightBlueCoinAnimation == true ||
                               brownCoinAnimation == true) {
-                            showMyDialog(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
+                            showMyDialog(
+                                context,
+                                height * 0.45,
+                                width * 0.33,
+                                height * 0.4,
+                                width * 0.7,
+                                height * 0.64,
+                                width * 0.55,
+                                redCoinAnimation == true
+                                    ? stack1
+                                    : lightGreenCoinAnimation == true
+                                        ? stack2
+                                        : blueCoinAnimation == true
+                                            ? stack3
+                                            : greenCoinAnimation == true
+                                                ? stack4
+                                                : lightBlueCoinAnimation == true
+                                                    ? stack5
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                           }
                         });
                       },
@@ -2548,19 +2554,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                               greenCoinAnimation == true ||
                               lightBlueCoinAnimation == true ||
                               brownCoinAnimation == true) {
-                            showMyDialog(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
+                            showMyDialog(
+                                context,
+                                height * 0.45,
+                                width * 0.33,
+                                height * 0.4,
+                                width * 0.7,
+                                height * 0.64,
+                                width * 0.55,
+                                redCoinAnimation == true
+                                    ? stack1
+                                    : lightGreenCoinAnimation == true
+                                        ? stack2
+                                        : blueCoinAnimation == true
+                                            ? stack3
+                                            : greenCoinAnimation == true
+                                                ? stack4
+                                                : lightBlueCoinAnimation == true
+                                                    ? stack5
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                           }
                         },
                         child: Container(
@@ -2601,19 +2615,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                               greenCoinAnimation == true ||
                               lightBlueCoinAnimation == true ||
                               brownCoinAnimation == true) {
-                            showMyDialog(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
+                            showMyDialog(
+                                context,
+                                height * 0.45,
+                                width * 0.33,
+                                height * 0.4,
+                                width * 0.7,
+                                height * 0.64,
+                                width * 0.55,
+                                redCoinAnimation == true
+                                    ? stack1
+                                    : lightGreenCoinAnimation == true
+                                        ? stack2
+                                        : blueCoinAnimation == true
+                                            ? stack3
+                                            : greenCoinAnimation == true
+                                                ? stack4
+                                                : lightBlueCoinAnimation == true
+                                                    ? stack5
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                           }
                         },
                         child: Container(
@@ -2678,19 +2700,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -2732,19 +2762,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -2812,19 +2850,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -2900,19 +2946,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -3002,19 +3056,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -3088,19 +3150,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -3188,19 +3258,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -3277,19 +3355,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                             greenCoinAnimation == true ||
                             lightBlueCoinAnimation == true ||
                             brownCoinAnimation == true) {
-                          showMyDialog(redCoinAnimation == true
-                              ? stack1
-                              : lightGreenCoinAnimation == true
-                                  ? stack2
-                                  : blueCoinAnimation == true
-                                      ? stack3
-                                      : greenCoinAnimation == true
-                                          ? stack4
-                                          : lightBlueCoinAnimation == true
-                                              ? stack5
-                                              : brownCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialog(
+                              context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : blueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : lightBlueCoinAnimation == true
+                                                  ? stack5
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -3418,7 +3504,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   }
 
   Widget gameStopBettingPortrait(String time) {
-    return int.parse(autoTime) <= 1 && int.parse(autoTime) != 0
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -3443,26 +3529,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   }
 
   Widget gameStopBetting(String time) {
-    return Positioned(
-        top: height * 0.4,
-        child: TweenAnimationBuilder(
-            duration: const Duration(milliseconds: 500),
-            tween: Tween<double>(begin: 0, end: 1),
-            builder: (BuildContext context, double opacity, Widget? child) {
-              return Opacity(
-                  opacity: opacity,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: opacity * 10),
-                    child: child,
-                  ));
-            },
-            child: Image.asset(
-              'assets/Teen-patti/images/stop-betting.png',
-              height: height * 0.2,
-              width: width * 0.5,
-              fit: BoxFit.fill,
-            )));
-    ;
+    return startTimes <= 3 && autoTime != '0'
+        ? Positioned(
+            top: height * 0.4,
+            child: TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 500),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (BuildContext context, double opacity, Widget? child) {
+                  return Opacity(
+                      opacity: opacity,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: opacity * 10),
+                        child: child,
+                      ));
+                },
+                child: Image.asset(
+                  'assets/Teen-patti/images/stop-betting.png',
+                  height: height * 0.2,
+                  width: width * 0.5,
+                  fit: BoxFit.fill,
+                )))
+        : SizedBox();
   }
 
   Widget showCurrentCardPort() {
@@ -3619,19 +3706,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                         greenCoinAnimation == true ||
                         lightBlueCoinAnimation == true ||
                         brownCoinAnimation == true) {
-                      showMyDialogPortrait(redCoinAnimation == true
-                          ? stack1
-                          : lightGreenCoinAnimation == true
-                              ? stack2
-                              : blueCoinAnimation == true
-                                  ? stack3
-                                  : greenCoinAnimation == true
-                                      ? stack4
-                                      : lightBlueCoinAnimation == true
-                                          ? stack5
-                                          : brownCoinAnimation == true
-                                              ? stack6
-                                              : 0);
+                      showMyDialogPortrait(
+                          context,
+                          height * 0.23,
+                          width,
+                          height * 0.4,
+                          width * 0.7,
+                          height * 0.26,
+                          width * 0.98,
+                          redCoinAnimation == true
+                              ? stack1
+                              : lightGreenCoinAnimation == true
+                                  ? stack2
+                                  : blueCoinAnimation == true
+                                      ? stack3
+                                      : greenCoinAnimation == true
+                                          ? stack4
+                                          : lightBlueCoinAnimation == true
+                                              ? stack5
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
                     }
                   });
                 },
@@ -3675,19 +3770,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                         greenCoinAnimation == true ||
                         lightBlueCoinAnimation == true ||
                         brownCoinAnimation == true) {
-                      showMyDialogPortrait(redCoinAnimation == true
-                          ? stack1
-                          : lightGreenCoinAnimation == true
-                              ? stack2
-                              : blueCoinAnimation == true
-                                  ? stack3
-                                  : greenCoinAnimation == true
-                                      ? stack4
-                                      : lightBlueCoinAnimation == true
-                                          ? stack5
-                                          : brownCoinAnimation == true
-                                              ? stack6
-                                              : 0);
+                      showMyDialogPortrait(
+                          context,
+                          height * 0.23,
+                          width,
+                          height * 0.4,
+                          width * 0.7,
+                          height * 0.26,
+                          width * 0.98,
+                          redCoinAnimation == true
+                              ? stack1
+                              : lightGreenCoinAnimation == true
+                                  ? stack2
+                                  : blueCoinAnimation == true
+                                      ? stack3
+                                      : greenCoinAnimation == true
+                                          ? stack4
+                                          : lightBlueCoinAnimation == true
+                                              ? stack5
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
                     }
                   });
                 },
@@ -3750,19 +3853,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -3804,19 +3915,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -3880,19 +3999,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -3935,19 +4062,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -4012,19 +4147,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -4098,19 +4241,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
-                        showMyDialogPortrait(redCoinAnimation == true
-                            ? stack1
-                            : lightGreenCoinAnimation == true
-                                ? stack2
-                                : blueCoinAnimation == true
-                                    ? stack3
-                                    : greenCoinAnimation == true
-                                        ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                        showMyDialogPortrait(
+                            context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,
+                            redCoinAnimation == true
+                                ? stack1
+                                : lightGreenCoinAnimation == true
+                                    ? stack2
+                                    : blueCoinAnimation == true
+                                        ? stack3
+                                        : greenCoinAnimation == true
+                                            ? stack4
+                                            : lightBlueCoinAnimation == true
+                                                ? stack5
+                                                : brownCoinAnimation == true
+                                                    ? stack6
+                                                    : 0);
                       }
                     },
                     child: Container(
@@ -4186,19 +4337,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
-                        showMyDialogPortrait(redCoinAnimation == true
-                            ? stack1
-                            : lightGreenCoinAnimation == true
-                                ? stack2
-                                : blueCoinAnimation == true
-                                    ? stack3
-                                    : greenCoinAnimation == true
-                                        ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                        showMyDialogPortrait(
+                            context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,
+                            redCoinAnimation == true
+                                ? stack1
+                                : lightGreenCoinAnimation == true
+                                    ? stack2
+                                    : blueCoinAnimation == true
+                                        ? stack3
+                                        : greenCoinAnimation == true
+                                            ? stack4
+                                            : lightBlueCoinAnimation == true
+                                                ? stack5
+                                                : brownCoinAnimation == true
+                                                    ? stack6
+                                                    : 0);
                       }
                     },
                     child: Container(
@@ -4287,19 +4446,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       greenCoinAnimation == true ||
                       lightBlueCoinAnimation == true ||
                       brownCoinAnimation == true) {
-                    showMyDialogPortrait(redCoinAnimation == true
-                        ? stack1
-                        : lightGreenCoinAnimation == true
-                            ? stack2
-                            : blueCoinAnimation == true
-                                ? stack3
-                                : greenCoinAnimation == true
-                                    ? stack4
-                                    : lightBlueCoinAnimation == true
-                                        ? stack5
-                                        : brownCoinAnimation == true
-                                            ? stack6
-                                            : 0);
+                    showMyDialogPortrait(
+                        context,
+                        height * 0.23,
+                        width,
+                        height * 0.4,
+                        width * 0.7,
+                        height * 0.26,
+                        width * 0.98,
+                        redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : blueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : lightBlueCoinAnimation == true
+                                            ? stack5
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                   }
                 },
                 child: Container(
@@ -4373,19 +4540,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
-                        showMyDialogPortrait(redCoinAnimation == true
-                            ? stack1
-                            : lightGreenCoinAnimation == true
-                                ? stack2
-                                : blueCoinAnimation == true
-                                    ? stack3
-                                    : greenCoinAnimation == true
-                                        ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                        showMyDialogPortrait(
+                            context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,
+                            redCoinAnimation == true
+                                ? stack1
+                                : lightGreenCoinAnimation == true
+                                    ? stack2
+                                    : blueCoinAnimation == true
+                                        ? stack3
+                                        : greenCoinAnimation == true
+                                            ? stack4
+                                            : lightBlueCoinAnimation == true
+                                                ? stack5
+                                                : brownCoinAnimation == true
+                                                    ? stack6
+                                                    : 0);
                       }
                     },
                     child: Container(
@@ -4461,19 +4636,27 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
-                        showMyDialogPortrait(redCoinAnimation == true
-                            ? stack1
-                            : lightGreenCoinAnimation == true
-                                ? stack2
-                                : blueCoinAnimation == true
-                                    ? stack3
-                                    : greenCoinAnimation == true
-                                        ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                        showMyDialogPortrait(
+                            context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,
+                            redCoinAnimation == true
+                                ? stack1
+                                : lightGreenCoinAnimation == true
+                                    ? stack2
+                                    : blueCoinAnimation == true
+                                        ? stack3
+                                        : greenCoinAnimation == true
+                                            ? stack4
+                                            : lightBlueCoinAnimation == true
+                                                ? stack5
+                                                : brownCoinAnimation == true
+                                                    ? stack6
+                                                    : 0);
                       }
                     },
                     child: Container(
@@ -4609,155 +4792,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     );
   }
 
-  showAlertDialog(BuildContext context, hBg, wBg) {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.center,
-            content: Stack(alignment: Alignment.center, children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                height: height * 0.7,
-                width: width * 0.78,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    colors: const <Color>[
-                      Color.fromARGB(255, 24, 24, 0),
-                      Color.fromARGB(255, 182, 141, 15),
-                    ],
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: CustomText(
-                        text: "MY BET",
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: Color.fromARGB(255, 187, 135, 14),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            color: Color.fromARGB(255, 197, 130, 13),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  CustomText(
-                                    text: "PLAYER NAME",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "ODD",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "AMOUNT",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ]),
-                          ),
-                          SizedBox(
-                            height: height * 0.37,
-                            width: width * 0.7,
-                            child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                itemCount: matchIdList.length,
-                                itemBuilder: (context, index) {
-                                  var items = matchIdList[index];
-                                  return Column(
-                                    children: [
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            CustomText(
-                                              text: items.nation.toString(),
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Text(
-                                              items.rate.toString(),
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                            CustomText(
-                                              text: items.amount.toString(),
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ]),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  HapticFeedback.vibrate();
-                  onPressedMusic();
-                  HapticFeedback.heavyImpact();
-                },
-                child: Container(
-                  alignment: Alignment.topRight,
-                  height: hBg,
-                  width: wBg,
-                  margin: const EdgeInsets.only(left: 100, bottom: 20),
-                  child: Container(
-                      alignment: Alignment.center,
-                      height: height * 0.05,
-                      width: width * 0.05,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/User-interface/Buttons/close-button.png")))),
-                ),
-              ),
-            ]),
-          );
-        });
-  }
-
-  Widget buildImageLand(String cardImage) {
+ Widget buildImageLand(String cardImage) {
     return cardImage == "" || cardImage == "null" || cardImage == null
         ? Image.asset(
             'assets/lucky7/images/cardBg.png',
@@ -4848,6 +4883,10 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     if (result['status'] == true) {
       setState(() {
         autoTime = result['data']['t1'][0]['autotime'].toString();
+         autoTime = result['data']['t1'][0]['autotime'].toString();
+            if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
         marketId = result['data']['t1'][0]['mid'].toString();
 
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
@@ -4899,6 +4938,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
               blackButton = false;
               under7Button = false;
               over7Button = false;
+              confirmButton = false;
               liablity1 = 0;
               liablity2 = 0;
               liablity3 = 0;
@@ -5153,11 +5193,16 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     );
     selectCard = false;
     manualAmount = false;
+     
+       
     var result = jsonDecode(response);
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
       setState(() {
         akbarAButton = false;
         akbarBButton = false;
@@ -5176,8 +5221,15 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
       });
       getuserBalance();
       getVcLiablity();
+       setState(() {
+        _currentCoinIndex++;
+        _startCoinAnimation();
+      });
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
       selectCard = false;
       manualAmount = false;
     }
@@ -5359,7 +5411,10 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
       setState(() {
         akbarAButton = false;
         akbarBButton = false;
@@ -5377,180 +5432,291 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
       });
       getuserBalance();
       getVcLiablity();
+        setState(() {
+        _currentCoinIndexRytPort++;
+        _startCoinAnimationRightPort();
+      });
     } else {
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
       selectCard = false;
     }
     selectCard = false;
   }
 
-  Future<void> showMyDialog(int stake) async {
-    return showDialog<void>(
+  showMyDialog(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (_) {
           return AlertDialog(
             backgroundColor: Colors.transparent,
             content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 22),
-                          height: MediaQuery.of(context).size.height * 0.6,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      "assets/User-interface/amar-show-amount.png"),
-                                  fit: BoxFit.fitHeight)),
-                          child: Column(
-                            children: [
-                              Column(
-                                children: const [
-                                  SizedBox(
-                                    height: 10,
+              child: SizedBox(
+                height: heightImage,
+                width: widthImage,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: heightImage,
+                      width: widthImage,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/User-interface/amar-show-amount.png"),
+                              fit: BoxFit.fitHeight)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            CustomText(
+                              text: "Amount",
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            SizedBox(
+                              height: height * 0.09,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/minus-image.png",
+                                    scale: 3,
                                   ),
-                                  Text(
-                                    "Amount",
-                                    style: TextStyle(
+                                ),
+                                SizedBox(
+                                  height: height * 0.26,
+                                  width: width * 0.22,
+                                  child: Center(
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      controller: stakeController,
+                                      onChanged: (String value) async {
+                                        manualAmount = true;
+                                      },
+                                      maxLength: 5,
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/minus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: SizedBox(
-                                      height: height * 0.18,
-                                      width: width * 0.24,
-                                      child: TextField(
-                                        controller: stakeController,
-                                        onChanged: (String value) async {
-                                          manualAmount = true;
-                                        },
-                                        maxLength: 5,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        counterText: "",
+                                        hintText: '$stake',
+                                        hintStyle: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
                                             fontWeight: FontWeight.w600),
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          hintText: '$stake',
-                                          hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600),
-                                          border: OutlineInputBorder(
+                                        border: OutlineInputBorder(
                                             borderRadius:
-                                                BorderRadius.circular(8),
+                                                BorderRadius.circular(2),
                                             borderSide: BorderSide(
-                                              width: 0,
-                                              style: BorderStyle.none,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          contentPadding: EdgeInsets.all(16),
-                                          fillColor: Colors.white,
-                                        ),
+                                              color: Color(0xff4E4E4E),
+                                              width: 3,
+                                            )),
+                                        filled: true,
+                                        // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                        fillColor: Colors.black,
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/plus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "Are you sure want to continue !!",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.vibrate();
-                                  setState(() {
-                                    _currentCoinIndex++;
-                                    _startCoinAnimation();
-                                  });
-                                  _currentCoinIndex++;
-                                  _startCoinAnimation();
-                                  _currentCoinIndex++;
-                                  _startCoinAnimation();
-
-                                  makeBet();
-                                  Navigator.pop(context);
-                                  onPressedMusicForBet();
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/User-interface/confirm-button.png"),
-                                          fit: BoxFit.fitHeight)),
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          left: width * 0.48,
-                          top: 15,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Image.asset(
-                              "assets/User-interface/close-button.png",
-                              scale: 4,
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/plus-image.png",
+                                    scale: 3,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(
+                              height: height * 0.08,
+                            ),
+                            Text(
+                              "Are you sure you want to continue?",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: height * 0.07,
+                            ),
+                            manualAmount == true &&
+                                    int.parse(stakeController.text) > 99 &&
+                                    int.parse(stakeController.text) < 25000
+                                ? InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        playBackgroundMusic == false
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
+                                      });
+                                      if (amarAButton == true ||
+                                          akbarAButton == true ||
+                                          anthonyAButton == true ||
+                                          oddButton == true ||
+                                          evenButton == true ||
+                                          redButton == true ||
+                                          blackButton == true ||
+                                          over7Button == true ||
+                                          under7Button == true ||
+                                          selectCard == true) {
+                                        makeBet();
+                                        Navigator.pop(context);
+
+                                        amarAButton = false;
+                                        akbarAButton = false;
+                                        oddButton = false;
+                                        anthonyAButton = false;
+                                        evenButton = false;
+                                        redButton = false;
+                                        blackButton = false;
+                                        over7Button = false;
+                                        under7Button = false;
+                                        setState(() {
+                                          confirmButton = true;
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                        height: height * 0.22,
+                                        width: width * 0.23,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png")))),
+                                  )
+                                : manualAmount == false
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+                                          });
+
+                                          if (amarAButton == true ||
+                                              akbarAButton == true ||
+                                              anthonyAButton == true ||
+                                              oddButton == true ||
+                                              evenButton == true ||
+                                              redButton == true ||
+                                              blackButton == true ||
+                                              over7Button == true ||
+                                              under7Button == true ||
+                                              selectCard == true) {
+                                            makeBet();
+                                            Navigator.pop(context);
+
+                                            amarAButton = false;
+                                            akbarAButton = false;
+                                            oddButton = false;
+                                            anthonyAButton = false;
+                                            evenButton = false;
+                                            redButton = false;
+                                            blackButton = false;
+                                            over7Button = false;
+                                            under7Button = false;
+                                            setState(() {
+                                              confirmButton = true;
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                            height: height * 0.22,
+                                            width: width * 0.23,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png")))),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? ''
+                                                : Vibration.vibrate();
+                                            ;
+                                          });
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: height * 0.22,
+                                          width: width * 0.23,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png"),
+                                              )),
+                                        ),
+                                      ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: width * 0.01,
+                      top: 2,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         });
   }
 
-  Future<void> showMyDialogPortrait(int stake) {
-    return showDialog(
+  showMyDialogPortrait(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
         context: context,
         builder: (_) {
           return AlertDialog(
@@ -5561,8 +5727,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                   alignment: Alignment.center,
                   children: [
                     Container(
-                      height: height * 0.3,
-                      width: width * 99,
+                      height: heightImage,
+                      width: widthImage,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         image: DecorationImage(
@@ -5582,7 +5748,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                 fontWeight: FontWeight.w500,
                               ),
                               SizedBox(
-                                height: height * 0.05,
+                                height: height * 0.07,
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -5596,8 +5762,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                     ),
                                   ),
                                   SizedBox(
-                                    height: height * 0.05,
-                                    width: width * 0.29,
+                                    height: height * 0.125,
+                                    width: width * 0.45,
                                     child: Center(
                                       child: TextField(
                                         textAlign: TextAlign.center,
@@ -5609,6 +5775,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 10,
                                         ),
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
@@ -5644,13 +5811,13 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                 ],
                               ),
                               SizedBox(
-                                height: height * 0.02,
+                                height: height * 0.04,
                               ),
                               Text(
                                 "Are you sure you want to continue?",
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 10,
+                                    fontSize: 08,
                                     fontWeight: FontWeight.w500),
                               ),
                               SizedBox(
@@ -5661,28 +5828,47 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                       int.parse(stakeController.text) < 25000
                                   ? GestureDetector(
                                       onTap: () {
-                                        HapticFeedback.vibrate();
                                         setState(() {
-                                          _currentCoinIndex++;
-                                          _startCoinAnimation();
+                                          playBackgroundMusic == false
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
                                         });
-                                        _currentCoinIndex++;
-                                        _startCoinAnimation();
-                                        _currentCoinIndex++;
-                                        _startCoinAnimation();
 
-                                        makeBetPortrait();
-                                        Navigator.pop(context);
-                                        onPressedMusicForBet();
+                                        if (amarAButton == true ||
+                                            akbarAButton == true ||
+                                            anthonyAButton == true ||
+                                            oddButton == true ||
+                                            evenButton == true ||
+                                            redButton == true ||
+                                            blackButton == true ||
+                                            over7Button == true ||
+                                            under7Button == true ||
+                                            selectCard == true) {
+                                          makeBetPortrait();
+                                          Navigator.pop(context);
+
+                                          amarAButton = false;
+                                          akbarAButton = false;
+                                          oddButton = false;
+                                          anthonyAButton = false;
+                                          evenButton = false;
+                                          redButton = false;
+                                          blackButton = false;
+                                          over7Button = false;
+                                          under7Button = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         alignment: Alignment.center,
                                         height:
                                             MediaQuery.of(context).size.height *
-                                                0.03,
+                                                0.04,
                                         width:
                                             MediaQuery.of(context).size.width *
-                                                0.3,
+                                                0.4,
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(10),
@@ -5695,30 +5881,47 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                   : manualAmount == false
                                       ? GestureDetector(
                                           onTap: () {
-                                            HapticFeedback.vibrate();
-                                            setState(() {
-                                              _currentCoinIndex++;
-                                              _startCoinAnimation();
-                                            });
-                                            _currentCoinIndex++;
-                                            _startCoinAnimation();
-                                            _currentCoinIndex++;
-                                            _startCoinAnimation();
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
 
-                                            makeBetPortrait();
-                                            Navigator.pop(context);
-                                            onPressedMusicForBet();
+                                            if (amarAButton == true ||
+                                                akbarAButton == true ||
+                                                anthonyAButton == true ||
+                                                oddButton == true ||
+                                                evenButton == true ||
+                                                redButton == true ||
+                                                blackButton == true ||
+                                                over7Button == true ||
+                                                under7Button == true ||
+                                                selectCard == true) {
+                                              makeBetPortrait();
+                                              Navigator.pop(context);
+
+                                              amarAButton = false;
+                                              akbarAButton = false;
+                                              oddButton = false;
+                                              anthonyAButton = false;
+                                              evenButton = false;
+                                              redButton = false;
+                                              blackButton = false;
+                                              over7Button = false;
+                                              under7Button = false;
+                                              setState(() {
+                                                confirmButton = true;
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.03,
+                                                0.04,
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.3,
+                                                0.4,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -5733,22 +5936,24 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                             Navigator.pop(context);
                                             setState(() {
                                               playBackgroundMusic == false
-                                                  ? ''
-                                                  : HapticFeedback.vibrate();
+                                                  ? ""
+                                                  : Vibration.vibrate();
                                             });
-                                            DialogUtils.showOneBtn(context,
-                                                "Please Select Existing amount");
+                                            DialogUtils.showOneBtn(
+                                              context,
+                                              "Please Select Existing amount",
+                                            );
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.03,
+                                                0.04,
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.3,
+                                                0.4,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -5766,6 +5971,9 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                       top: 2,
                       child: InkWell(
                         onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
                           Navigator.pop(context);
                         },
                         child: Image.asset(
@@ -5779,174 +5987,6 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
               ));
         });
   }
-
-  // Future<void> showMyDialogPortrait(int stake) async {
-  //   return showDialog<void>(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           backgroundColor: Colors.transparent,
-  //           content: SingleChildScrollView(
-  //             child: Column(
-  //               children: [
-  //                 SizedBox(
-  //                   height: MediaQuery.of(context).size.height * 0.4,
-  //                   width: MediaQuery.of(context).size.width,
-  //                   child: Stack(
-  //                     children: [
-  //                       Container(
-  //                         margin: const EdgeInsets.symmetric(vertical: 22),
-  //                         height: MediaQuery.of(context).size.height * 0.35,
-  //                         width: MediaQuery.of(context).size.width * 0.9,
-  //                         decoration: BoxDecoration(
-  //                             borderRadius: BorderRadius.circular(10),
-  //                             image: DecorationImage(
-  //                                 image: AssetImage(
-  //                                     "assets/User-interface/amar-show-amount.png"),
-  //                                 fit: BoxFit.fitHeight)),
-  //                         child: Column(
-  //                           children: [
-  //                             Column(
-  //                               children: const [
-  //                                 SizedBox(
-  //                                   height: 10,
-  //                                 ),
-  //                                 Text(
-  //                                   "Amount",
-  //                                   style: TextStyle(
-  //                                       color: Colors.white,
-  //                                       fontWeight: FontWeight.bold),
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                             SizedBox(
-  //                               height: 20,
-  //                             ),
-  //                             Row(
-  //                               mainAxisAlignment:
-  //                                   MainAxisAlignment.spaceBetween,
-  //                               children: [
-  //                                 Container(
-  //                                   margin: const EdgeInsets.symmetric(
-  //                                       horizontal: 10),
-  //                                   // alignment: Alignment.center,
-  //                                   child: Image.asset(
-  //                                     "assets/User-interface/minus-image.png",
-  //                                     scale: 2,
-  //                                   ),
-  //                                 ),
-  //                                 Padding(
-  //                                   padding: const EdgeInsets.only(top: 20.0),
-  //                                   child: SizedBox(
-  //                                     height: height * 0.08,
-  //                                     width: width * 0.36,
-  //                                     child: TextField(
-  //                                       controller: stakeController,
-  //                                       onChanged: (String value) async {
-  //                                         manualAmount = true;
-  //                                       },
-  //                                       maxLength: 5,
-  //                                       textAlign: TextAlign.center,
-  //                                       style: TextStyle(
-  //                                           color: Colors.black,
-  //                                           fontWeight: FontWeight.w600),
-  //                                       keyboardType: TextInputType.number,
-  //                                       decoration: InputDecoration(
-  //                                         hintText: '$stake',
-  //                                         hintStyle: TextStyle(
-  //                                             fontSize: 16,
-  //                                             color: Colors.black,
-  //                                             fontWeight: FontWeight.w600),
-  //                                         border: OutlineInputBorder(
-  //                                           borderRadius:
-  //                                               BorderRadius.circular(8),
-  //                                           borderSide: BorderSide(
-  //                                             width: 0,
-  //                                             style: BorderStyle.none,
-  //                                           ),
-  //                                         ),
-  //                                         filled: true,
-  //                                         contentPadding: EdgeInsets.all(16),
-  //                                         fillColor: Colors.white,
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ),
-  //                                 Container(
-  //                                   margin: const EdgeInsets.symmetric(
-  //                                       horizontal: 10),
-  //                                   // alignment: Alignment.center,
-  //                                   child: Image.asset(
-  //                                     "assets/User-interface/plus-image.png",
-  //                                     scale: 2,
-  //                                   ),
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                             Text(
-  //                               "Are you sure want to continue !!",
-  //                               style: TextStyle(
-  //                                   color: Colors.white,
-  //                                   fontWeight: FontWeight.w600),
-  //                             ),
-  //                             SizedBox(
-  //                               height: 20,
-  //                             ),
-  //                             GestureDetector(
-  //                               onTap: () {
-  //                                 HapticFeedback.vibrate();
-  //                                 setState(() {
-  //                                   _currentCoinIndex++;
-  //                                   _startCoinAnimation();
-  //                                 });
-  //                                 _currentCoinIndex++;
-  //                                 _startCoinAnimation();
-  //                                 _currentCoinIndex++;
-  //                                 _startCoinAnimation();
-
-  //                                 makeBetPortrait();
-  //                                 Navigator.pop(context);
-  //                                 onPressedMusicForBet();
-  //                               },
-  //                               child: Container(
-  //                                 alignment: Alignment.center,
-  //                                 height:
-  //                                     MediaQuery.of(context).size.height * 0.06,
-  //                                 width:
-  //                                     MediaQuery.of(context).size.width * 0.7,
-  //                                 decoration: BoxDecoration(
-  //                                     borderRadius: BorderRadius.circular(10),
-  //                                     image: DecorationImage(
-  //                                         image: AssetImage(
-  //                                             "assets/User-interface/confirm-button.png"),
-  //                                         fit: BoxFit.fitHeight)),
-  //                               ),
-  //                             )
-  //                           ],
-  //                         ),
-  //                       ),
-  //                       Positioned(
-  //                         left: width * 0.61,
-  //                         top: 15,
-  //                         child: InkWell(
-  //                           onTap: () {
-  //                             Navigator.pop(context);
-  //                           },
-  //                           child: Image.asset(
-  //                             "assets/User-interface/close-button.png",
-  //                             scale: 4,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 
   double mainBalance = 0;
 

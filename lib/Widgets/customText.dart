@@ -22,7 +22,7 @@ class CustomText extends StatelessWidget {
     style: TextStyle(
       fontFamily:'Poppins',
       fontSize: fontSize,
-      color: color,
+      color: color  ,
       fontWeight: fontWeight,
       letterSpacing: letterSpacing,
       wordSpacing: wordSpacing,

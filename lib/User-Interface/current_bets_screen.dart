@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/data/model/current_bet_model.dart';
 
 import '../Utils/api_helper.dart';
 import '../Utils/apis.dart';
 
 class CurrentBetsScreen extends StatefulWidget {
-  const CurrentBetsScreen({super.key});
+  bool? playBackgroundMusic=false;
+   CurrentBetsScreen({super.key, playBackgroundMusic});
 
   @override
   State<CurrentBetsScreen> createState() => _CurrentBetsScreenState();
@@ -79,6 +81,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
               ),
               GestureDetector(
                 onTap: () {
+                       widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -105,6 +110,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = true;
                           backButton = false;
@@ -136,6 +144,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = false;
                           backButton = true;
@@ -167,6 +178,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                     ),
                     InkWell(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = false;
                           backButton = false;
@@ -336,82 +350,88 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
             child: Row(
               children: [
                 Container(
+                        width: width / 16,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Sports",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+              
                 Container(
+                        width: width / 5,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Event Name",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+               
                 Container(
+                        width: width / 7,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Market Name",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+              
                 Container(
+                        width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Nation",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+              
                 Container(
+                        width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("User Rate",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+               
                 Container(
+                        width: width / 8,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   child: Text("Amount",
+                  textAlign: TextAlign.center,
+
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+               
                 Container(
+                        width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   child: Text("Place Date",
+                  textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+             
               ],
             ),
           ),
@@ -447,98 +467,91 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                                 Row(
                                   children: [
                                     Container(
-                                      width: width * 0.05,
+                                      width: width /16,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.sportName.toString(),
+                                      textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                
                                     Container(
-                                      width: width * 0.15,
+                                    width: width / 5,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.eventName.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                 
                                     Container(
-                                      width: width * 0.13,
+                                  width: width / 8,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.marketname.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                 
                                     Container(
-                                      width: width * 0.1,
+                                         width: width / 7,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.nation.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                  
                                     Container(
-                                      width: width * 0.04,
+                               width: width / 12,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.rate.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                
                                     Container(
                                       alignment: Alignment.center,
-                                      width: width * 0.09,
+                                     width: width / 7,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 1),
                                       child: Text(items.amount.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                 
                                     Container(
                                       alignment: Alignment.center,
-                                      width: width * 0.12,
+                                    
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 1),
                                       child: Text(items.time.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 13,
+                                            fontSize: 11,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                   
                                   ],
                                 ),
                                 Divider(
@@ -578,6 +591,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
               ),
               GestureDetector(
                 onTap: () {
+                       widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -668,6 +684,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = true;
                           backButton = false;
@@ -699,6 +718,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = false;
                           backButton = true;
@@ -730,6 +752,9 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                     ),
                     InkWell(
                       onTap: () {
+                             widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         setState(() {
                           allButton = false;
                           backButton = false;
@@ -842,71 +867,68 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("Sports",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                       )),
                 ),
-                SizedBox(
-                  width: 15,
-                ),
+              
                 Container(
-                  width: width * 0.12,
+                  width: width /5,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("Event Name",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 40,
-                ),
+             
                 Container(
-                  width: width * 0.12,
+               width: width /5,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("Market Name",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 20,
-                ),
+               
                 Container(
+                    width: width /6,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("Nation",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                       )),
                 ),
-                SizedBox(
-                  width: 3,
-                ),
+              
                 Container(
+                    width: width /10,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("User Rate",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                       )),
                 ),
-                SizedBox(
-                  width: 2,
-                ),
+               
                 Container(
+                    width: width /7,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   child: Text("Amount",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                       )),
                 ),
-                SizedBox(
-                  width: 10,
-                ),
+              
               ],
             ),
           ),
@@ -942,85 +964,79 @@ class _CurrentBetsScreenState extends State<CurrentBetsScreen> {
                             var items = currentBetList[index];
                             return Column(
                               children: [
-                                SizedBox(
-                                  height: 5,
-                                ),
+                             
                                 Row(
                                   children: [
                                     Container(
-                                      width: width * 0.1,
+                                      width: width/13,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.sportName.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 0,
-                                    ),
+                                 
                                     Container(
-                                      width: width * 0.18,
+                                    width: width/5,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.eventName.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                
                                     Container(
-                                      width: width * 0.14,
+                                       width: width/5,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.marketname.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                 
                                     Container(
-                                      width: width * 0.12,
+                                     width: width/7,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.nation.toString(),
+                                      textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                  
                                     Container(
-                                      width: width * 0.1,
+                                   width: width/10,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 4),
                                       child: Text(items.rate.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                  
                                     Container(
                                       alignment: Alignment.center,
-                                      width: width * 0.1,
+                          width: width/7,
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 1),
                                       child: Text(items.amount.toString(),
+                                         textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                   ],

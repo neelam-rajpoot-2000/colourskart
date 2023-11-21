@@ -3,12 +3,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
 import 'package:virtual_casino/Utils/apis.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  bool? playBackgroundMusic=false;
+   ChangePasswordScreen({super.key, this.playBackgroundMusic});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -17,6 +19,7 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   double height = 0;
   double width = 0;
+  bool playBackgroundMusic=false;
   var oldPasswordController = TextEditingController();
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
@@ -49,7 +52,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                         
+                   
                       Navigator.pop(context);
+                         widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                     },
                     child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -137,7 +145,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             GestureDetector(
               onTap: () {
+                   
                 changePasswordDetails();
+                   widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
               },
               child: Container(
                 height: height * 0.11,
@@ -172,7 +184,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      
                       Navigator.pop(context);
+                            widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                     },
                     child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -260,7 +276,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             GestureDetector(
               onTap: () {
+                    
                 changePasswordDetails();
+                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
               },
               child: Container(
                 height: height * 0.06,
@@ -294,9 +314,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       oldPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],);
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],);
     }
   }
 }

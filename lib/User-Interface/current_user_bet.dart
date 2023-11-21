@@ -1,15 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 import '../Utils/api_helper.dart';
 import '../Utils/apis.dart';
 import '../data/model/match_id_model.dart';
 
 class CurrentUserBet extends StatefulWidget {
+  bool playBackgroundMusic;
   final String gameCode;
   final String matchId;
-  const CurrentUserBet({
+   CurrentUserBet({
     super.key,
+    required this.playBackgroundMusic, 
     required this.matchId,
     required this.gameCode,
   });
@@ -26,6 +29,7 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
   bool allButton = true;
   bool backButton = false;
   bool layButton = false;
+  
 
   List<MatchIdModel> matchIdList = [];
 
@@ -84,6 +88,9 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
               ),
               GestureDetector(
                 onTap: () {
+                     widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -112,82 +119,82 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
             child: Row(
               children: [
                 Container(
+                                width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Market Name",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 40,
-                ),
+            
                 Container(
+                                width: width / 8,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Nation",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 40,
-                ),
+             
                 Container(
+                                width: width / 8,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Rate",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 40,
-                ),
+             
                 Container(
+                                width: width / 10,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Price Value",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 40,
-                ),
+             
                 Container(
+                                width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text("Amount",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+             
                 Container(
+                                width: width / 9,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   child: Text("Pnl",
+                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 50,
-                ),
+              
                 Container(
+                                width: width / 6,
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   child: Text("Place Date",
+                  textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 13,
                       )),
                 ),
-                SizedBox(
-                  width: 30,
-                ),
+              
               ],
             ),
           ),
@@ -232,100 +239,87 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
                             return Column(
                               children: [
                                 Row(
+                                  
                                   children: [
                                     Container(
-                                      width: width * 0.15,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                             width: width /9,
+                                      
                                       child: Text(items.marketName.toString(),
+                                      textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                
                                     Container(
-                                      width: width * 0.1,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                           width: width /9,
+
+                                 
                                       child: Text(items.nation.toString(),
+                                            textAlign: TextAlign.end,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 0,
-                                    ),
+                                
                                     Container(
-                                      width: width * 0.08,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                      width: width / 5,
+                                
                                       child: Text(items.rate.toString(),
+                                            textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                              
                                     Container(
-                                      width: width * 0.1,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                        width: width /10,
+                                    
                                       child: Text(items.priveValue.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                  
                                     Container(
-                                      width: width * 0.04,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                         width: width / 12,
+                           
                                       child: Text(items.amount.toString(),
+                                            textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                   
                                     Container(
                                       alignment: Alignment.center,
-                                      width: width * 0.09,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 1),
+                                width: width /7,
+                                 
                                       child: Text(items.pnl.toString(),
+                                            textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                 
                                     Container(
                                       alignment: Alignment.center,
-                                      width: width * 0.12,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 1),
+                                  
+                                
                                       child: Text(items.betTime.toString(),
+                                            textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                           )),
                                     ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
+                                  
                                   ],
                                 ),
                                 Divider(
@@ -365,6 +359,9 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
               ),
               GestureDetector(
                 onTap: () {
+                    widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -424,7 +421,7 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
                       )),
                 ),
                 Container(
-                  width: width / 6,
+                  width: width / 7,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   child: Text("Nation",
                       style: TextStyle(
@@ -499,38 +496,38 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
                                       child: Text(items.nation.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                     Container(
                                       width: width / 9,
                                       margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
+                                          horizontal: 10),
                                       child: Text(items.priveValue.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                     Container(
                                       alignment: Alignment.centerLeft,
-                                      width: width / 5,
+                                      width: width / 6,
                                       margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
+                                          horizontal: 0),
                                       child: Text(items.marketName.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 10,
+                                            fontSize: 9,
                                           )),
                                     ),
                                     Container(
                                       width: width / 6,
                                       margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
+                                          horizontal: 0),
                                       child: Text(items.nation.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                     Container(
@@ -540,7 +537,7 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
                                       child: Text(items.rate.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                     Container(
@@ -551,7 +548,7 @@ class _CurrentUserBetState extends State<CurrentUserBet> {
                                       child: Text(items.amount.toString(),
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12,
+                                            fontSize: 9,
                                           )),
                                     ),
                                   ],

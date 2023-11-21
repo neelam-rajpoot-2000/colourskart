@@ -755,7 +755,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               onTap: () {
                Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => const WithdrawScreen()),
+    MaterialPageRoute(builder: (context) =>  WithdrawScreen()),
   );
               },
               child: Container(
@@ -774,7 +774,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
                 // _globalKey.currentState!.openDrawer();
                 Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => const AddCashScreen()),
+    MaterialPageRoute(builder: (context) =>  AddCashScreen()),
   );
               },
               child: Container(
@@ -805,7 +805,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               onTap: () {
                         Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => const WithdrawScreen()),
+    MaterialPageRoute(builder: (context) =>  WithdrawScreen()),
   );
                 // _globalKey.currentState!.openDrawer();
               },
@@ -827,7 +827,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               onTap: () {
                         Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => const AddCashScreen()),
+    MaterialPageRoute(builder: (context) =>  AddCashScreen()),
   );
                 // _globalKey.currentState!.openDrawer();
               },
@@ -1135,7 +1135,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Route _createRoute() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+           MyAccountPage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -1155,7 +1155,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Route _createRouteProfile() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+           ProfileScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -1175,7 +1175,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Route _createRouteCurrentBets() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const CurrentBetsScreen(),
+           CurrentBetsScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -1195,7 +1195,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+           ChangePasswordScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 import 'package:virtual_casino/Widgets/customButton.dart';
 import '../Lucky7/Modal/matchIdModelLucky.dart';
@@ -222,7 +223,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   List<String> roundIdList = [];
   late AnimationController _controller1;
   late AnimationController _controller;
-   late AnimationController  _animationController;
+  late AnimationController _animationController;
   late Animation<double> _animation;
   final _player = AudioPlayer();
   final _cardPlayer = AudioPlayer();
@@ -286,9 +287,14 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   double _maxXRytLandRand = 0;
   double _minYRytLandRand = 0;
   double _maxYRytLandRand = 0;
+       int startTimeSmall=0;
 
   @override
   void initState() {
+      startTimeSmall=startTimes*100;
+       Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        startTimeSmall =startTimeSmall-1;
+       });
     AudioPlayer.clearAssetCache();
     WidgetsBinding.instance.addObserver(this);
     bgMusic();
@@ -306,7 +312,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     setState(() {
       checkInternet();
     });
- _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       getResult().then((value) => getCardData());
       stopBettingMusic();
       startBettingMusic();
@@ -320,17 +326,11 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     _animation = CurvedAnimation(parent: _controller1, curve: Curves.easeInOut);
     _controller1.repeat(reverse: true);
 
-      _controller = AnimationController(
+    _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
-    
- 
-   
 
-
-
-    
     super.initState();
   }
 
@@ -342,16 +342,14 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
       print('No internet connection');
     } else {
       // Internet connection is available
-  _startCoinAnimationRytPortRand();
-  _startCoinAnimationLeftPortRand();
- _startCoinAnimationLeftLandRand();
- _startCoinAnimationRytLandRand();
- }
-
+      _startCoinAnimationRytPortRand();
+      _startCoinAnimationLeftPortRand();
+      _startCoinAnimationLeftLandRand();
+      _startCoinAnimationRytLandRand();
+    }
   }
 
-
-///left land random
+  ///left land random
   // void _startCoinAnimationLeftLandRand() {
   //   if (_currentCoinIndex >= _totalCoins) {
   //     return;
@@ -368,8 +366,6 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   //   double _endY =
   //       _random.nextDouble() * (_maxYLeftLandRand - _minYLeftLandRand) +
   //           _minYLeftLandRand;
-
-               
 
   //   // coin = int.parse(widget.autotime.toString());
   //   //   print("====>$coin");
@@ -408,9 +404,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   //   //     ?_coinsLeftLandRand.clear() : null;
   // }
 
-
-
-///ryt land random
+  ///ryt land random
   // void _startCoinAnimationRytPortRand() {
   //   if (_currentCoinIndex >= _totalCoins) {
   //     return;
@@ -427,7 +421,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
 
   //   cardNameImage2 == ""
   //       ? _coinsRytPortRand.add(TweenAnimationBuilder(
-          
+
   //          tween: Tween(
   //           begin: Offset(0, 1),end:  Offset(_endX - _startX, _endY - _startY)),
   //           duration: const Duration(seconds: 2),
@@ -447,7 +441,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   //                     : SizedBox());
   //           },
   //         ))
-        
+
   //       :  _coinsRytPortRand.clear()
   //         ;
 
@@ -463,10 +457,8 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   //   // cardNameImage2 == ''
   //   //     ?_coinsRytPortRand.clear() : null;
   // }
-  
 
-   void _startCoinAnimationRytPortRand() {
-
+  void _startCoinAnimationRytPortRand() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
@@ -476,112 +468,99 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     double _endY =
         _random.nextDouble() * (_maxYRytPortRand - _minYRytPortRand) +
             _minYRytPortRand;
-    _maxXRytPortRand = width-900;
-    _maxYRytPortRand =width-850;
+    _maxXRytPortRand = width - 900;
+    _maxYRytPortRand = width - 850;
 
-       cardNameImage2 == ""
+    cardNameImage2 == ""
         ? _coinsRytPortRand.add(
-      TweenAnimationBuilder(
-        duration: Duration(milliseconds: 900),
-        tween: Tween(
-          begin: Offset(0, 0),
-          end: Offset(_endX
-          -40,_endY-108), // Adjust for the fixed starting point
-        ),
-        builder: (BuildContext context, Offset value, Widget? child) {
+            TweenAnimationBuilder(
+              duration: Duration(milliseconds: 900),
+              tween: Tween(
+                begin: Offset(0, 0),
+                end: Offset(_endX - 40,
+                    _endY - 108), // Adjust for the fixed starting point
+              ),
+              builder: (BuildContext context, Offset value, Widget? child) {
+                return Positioned(
+                  right: width * 0.1 + value.dx,
+                  top: height * 0.1 + value.dy,
+                  child: child!,
+                );
+              },
+              child: startTimes > 3
+                  ? Image.asset(
+                      _coinImages[_currentCoinIndex % _coinImages.length],
+                      height: 15,
+                      width: 15,
+                    )
+                  : SizedBox(),
+            ),
+          )
+        : _coinsRytPortRand.clear();
+    _currentCoinIndex++;
 
-          return Positioned(
-            right:width*0.1 + value.dx,
-            top: height*0.1+ value.dy,
-            child: child!,
-          );
-        },
-        child:  startTimes > 3
-                      ? Image.asset(
-                          _coinImages[
-                              _currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox(),
-      ),
-    )
-    : _coinsRytPortRand.clear()
-;
-   _currentCoinIndex++;
- 
     if (startTimes > 15) {
       Timer(Duration(seconds: 2), _startCoinAnimationRytPortRand);
     } else {
       Timer(Duration(seconds: 3), _startCoinAnimationRytPortRand);
     }
 
-      startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
-  
   }
 
-
-
   void _startCoinAnimationLeftPortRand() {
-
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
 
-   double _endX =
+    double _endX =
         _random.nextDouble() * (_maxXLeftPortRand - _minXLeftPortRand) +
             _minXLeftPortRand;
     double _endY =
         _random.nextDouble() * (_maxYLeftPortRand - _minYLeftPortRand) +
             _minYLeftPortRand;
-    _maxXLeftPortRand = width- 300;
+    _maxXLeftPortRand = width - 300;
 
-    _maxYLeftPortRand =height-870;
+    _maxYLeftPortRand = height - 870;
 
-       cardNameImage2 == ""
+    cardNameImage2 == ""
         ? _coinsLeftPortRand.add(
-      TweenAnimationBuilder(
-        duration: Duration(milliseconds: 900),
-        tween: Tween(
-          begin: Offset(0, 0),
-          end: Offset(_endX
-          +40,_endY-30), // Adjust for the fixed starting point
-        ),
-        builder: (BuildContext context, Offset value, Widget? child) {
-
-          return Positioned(
-            left:width*0.15 + value.dx,
-            bottom: height*0.25+ value.dy,
-            child: child!,
-          );
-        },
-        child:  startTimes > 3
-                      ? Image.asset(
-                          _coinImages[
-                              _currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox(),
-      ),
-    )
-    : _coinsLeftPortRand.clear()
-;
-   _currentCoinIndex++;
+            TweenAnimationBuilder(
+              duration: Duration(milliseconds: 900),
+              tween: Tween(
+                begin: Offset(0, 0),
+                end: Offset(_endX + 40,
+                    _endY - 30), // Adjust for the fixed starting point
+              ),
+              builder: (BuildContext context, Offset value, Widget? child) {
+                return Positioned(
+                  left: width * 0.15 + value.dx,
+                  bottom: height * 0.25 + value.dy,
+                  child: child!,
+                );
+              },
+              child: startTimes > 3
+                  ? Image.asset(
+                      _coinImages[_currentCoinIndex % _coinImages.length],
+                      height: 15,
+                      width: 15,
+                    )
+                  : SizedBox(),
+            ),
+          )
+        : _coinsLeftPortRand.clear();
+    _currentCoinIndex++;
 
     if (startTimes > 15) {
       Timer(Duration(seconds: 1), _startCoinAnimationLeftPortRand);
     } else {
       Timer(Duration(seconds: 2), _startCoinAnimationLeftPortRand);
     }
-  
   }
 
-
-
-///left port random
+  ///left port random
   // void _startCoinAnimationLeftPortRand() {
   //   if (_currentCoinIndex >= _totalCoins) {
   //     return;
@@ -631,8 +610,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   //   }
   // }
 
-void _startCoinAnimationRytLandRand() {
-
+  void _startCoinAnimationRytLandRand() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
@@ -643,40 +621,37 @@ void _startCoinAnimationRytLandRand() {
     double _endY =
         _random.nextDouble() * (_maxYRytLandRand - _minYRytLandRand) +
             _minYRytLandRand;
-    _maxXRytLandRand = MediaQuery.of(context).size.width- 740;
+    _maxXRytLandRand = MediaQuery.of(context).size.width - 740;
 
-    _maxYRytLandRand =MediaQuery.of(context).size.width-890;
+    _maxYRytLandRand = MediaQuery.of(context).size.width - 890;
 
-       cardNameImage2 == ""
+    cardNameImage2 == ""
         ? _coinsRytLandRand.add(
-      TweenAnimationBuilder(
-        duration: Duration(milliseconds: 900),
-        tween: Tween(
-          begin: Offset(0, 0),
-          end: Offset(_endX
-          +60,_endY- 60), // Adjust for the fixed starting point
-        ),
-        builder: (BuildContext context, Offset value, Widget? child) {
-
-          return Positioned(
-            right:width*0.3 + value.dx,
-            bottom: height*0.55+ value.dy,
-            child: child!,
-          );
-        },
-        child:  startTimes > 3
-                      ? Image.asset(
-                          _coinImagesRyt[
-                              _currentCoinIndex % _coinImagesRyt.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox(),
-      ),
-    )
-    : _coinsRytLandRand.clear()
-;
-   _currentCoinIndex++;
+            TweenAnimationBuilder(
+              duration: Duration(milliseconds: 900),
+              tween: Tween(
+                begin: Offset(0, 0),
+                end: Offset(_endX + 60,
+                    _endY - 60), // Adjust for the fixed starting point
+              ),
+              builder: (BuildContext context, Offset value, Widget? child) {
+                return Positioned(
+                  right: width * 0.3 + value.dx,
+                  bottom: height * 0.55 + value.dy,
+                  child: child!,
+                );
+              },
+              child: startTimes > 3
+                  ? Image.asset(
+                      _coinImagesRyt[_currentCoinIndex % _coinImagesRyt.length],
+                      height: 15,
+                      width: 15,
+                    )
+                  : SizedBox(),
+            ),
+          )
+        : _coinsRytLandRand.clear();
+    _currentCoinIndex++;
 
     if (startTimes > 15) {
       Timer(Duration(seconds: 3), _startCoinAnimationRytLandRand);
@@ -684,13 +659,12 @@ void _startCoinAnimationRytLandRand() {
       Timer(Duration(seconds: 1), _startCoinAnimationRytLandRand);
     }
 
-    startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
 
-void _startCoinAnimationLeftLandRand() {
-
+  void _startCoinAnimationLeftLandRand() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
@@ -701,51 +675,46 @@ void _startCoinAnimationLeftLandRand() {
     double _endY =
         _random.nextDouble() * (_maxYLeftLandRand - _minYLeftLandRand) +
             _minYLeftLandRand;
-    _maxXLeftLandRand = MediaQuery.of(context).size.width- 740;
+    _maxXLeftLandRand = MediaQuery.of(context).size.width - 740;
 
-    _maxYLeftLandRand =MediaQuery.of(context).size.width-890;
+    _maxYLeftLandRand = MediaQuery.of(context).size.width - 890;
 
-       cardNameImage2 == ""
+    cardNameImage2 == ""
         ? _coinsLeftLandRand.add(
-      TweenAnimationBuilder(
-        duration: Duration(milliseconds: 900),
-        tween: Tween(
-          begin: Offset(0, 0),
-          end: Offset(_endX
-          +60,_endY- 45), // Adjust for the fixed starting point
-        ),
-        builder: (BuildContext context, Offset value, Widget? child) {
+            TweenAnimationBuilder(
+              duration: Duration(milliseconds: 900),
+              tween: Tween(
+                begin: Offset(0, 0),
+                end: Offset(_endX + 60,
+                    _endY - 45), // Adjust for the fixed starting point
+              ),
+              builder: (BuildContext context, Offset value, Widget? child) {
+                return Positioned(
+                  left: width * 0.3 + value.dx,
+                  bottom: height * 0.55 + value.dy,
+                  child: child!,
+                );
+              },
+              child: startTimes > 3
+                  ? Image.asset(
+                      _coinImages[_currentCoinIndex % _coinImages.length],
+                      height: 15,
+                      width: 15,
+                    )
+                  : SizedBox(),
+            ),
+          )
+        : _coinsLeftLandRand.clear();
+    _currentCoinIndex++;
 
-          return Positioned(
-            left:width*0.3 + value.dx,
-            bottom: height*0.55+ value.dy,
-            child: child!,
-          );
-        },
-        child:  startTimes > 3
-                      ? Image.asset(
-                          _coinImages[
-                              _currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox(),
-      ),
-    )
-    : _coinsLeftLandRand.clear()
-;
-   _currentCoinIndex++;
- 
     if (startTimes > 15) {
       Timer(Duration(seconds: 2), _startCoinAnimationLeftLandRand);
     } else {
       Timer(Duration(seconds: 3), _startCoinAnimationLeftLandRand);
     }
-  
   }
 
-
-///ryt port random
+  ///ryt port random
   // void _startCoinAnimationRytLandRand() {
   //   if (_currentCoinIndex >= _totalCoins) {
   //     return;
@@ -877,7 +846,7 @@ void _startCoinAnimationLeftLandRand() {
             ? _coinsRytPort.reversed
             : "";
 
-       startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -958,7 +927,7 @@ void _startCoinAnimationLeftLandRand() {
             ? _coinsRytLand.clear()
             : "";
 
-       startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -1001,7 +970,11 @@ void _startCoinAnimationLeftLandRand() {
     } catch (e) {
       print("Error loading audio source: $e");
     }
-   autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0' && playBackgroundMusic == false
+    autoTime == '3' &&
+            autoTime != '2' &&
+            autoTime != '1' &&
+            autoTime != '0' &&
+            playBackgroundMusic == false
         ? stopBettingmusic.play()
         : stopBettingmusic.stop();
     stopBettingmusic.setVolume(1);
@@ -1072,7 +1045,7 @@ void _startCoinAnimationLeftLandRand() {
     } catch (e) {
       print("Error loading audio source: $e");
     }
-       startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedmusic.play()
         : onPressedmusic.stop();
   }
@@ -1104,9 +1077,9 @@ void _startCoinAnimationLeftLandRand() {
     final oreintation = MediaQuery.of(context).orientation;
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-  // _minXRytLandRand = 270;
+    // _minXRytLandRand = 270;
     // _maxXRytLandRand = width - 405;
-   //  _minYRytLandRand = 200;
+    //  _minYRytLandRand = 200;
     // _maxYRytLandRand = height - 100;
     //   _minXLeftLandRand = 270;
     // _maxXLeftLandRand = width - 405;
@@ -1120,7 +1093,7 @@ void _startCoinAnimationLeftLandRand() {
     _maxXRytPortRand = width - 210;
     _minYRytPortRand = 90;
     _maxYRytPortRand = height - 610;
-  
+
     _minXRytPort = 80;
     _maxXRytPort = width - 200;
     _minYRytPort = 85;
@@ -1148,6 +1121,7 @@ void _startCoinAnimationLeftLandRand() {
   Widget landscapeWidget() {
     return Scaffold(
       key: _globalKey,
+      backgroundColor: Colors.transparent,
       drawerEnableOpenDragGesture: false,
       drawer: SizedBox(
         width: width * 0.3,
@@ -1181,7 +1155,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   _globalKey.currentState!.openDrawer();
                                 },
@@ -1192,17 +1166,16 @@ void _startCoinAnimationLeftLandRand() {
                                 width: width * 0.03,
                               ),
                               Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.02,
+                                      vertical: height * 0.015),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         image: AssetImage(
                                             DragonTigerImages.amountBg),
                                         fit: BoxFit.fill)),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: width * 0.02,
-                                      vertical: height * 0.015),
-                                  child: Row(
+                                child:  Row(
                                     children: [
                                       Image.asset(
                                         'assets/lucky7/images/Group 658.png',
@@ -1218,7 +1191,7 @@ void _startCoinAnimationLeftLandRand() {
                                       ),
                                     ],
                                   ),
-                                ),
+                                
                               ),
                             ],
                           ),
@@ -1227,7 +1200,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               Navigator.push(
@@ -1274,37 +1247,37 @@ void _startCoinAnimationLeftLandRand() {
                         height: height * 0.28,
                       ),
                     ),
-                         startTimes >= 1
-                              ?  Positioned(
+                    startTimes >= 1
+                        ? Positioned(
                             top: height * 0.02,
-                  right: width * 0.18,
-                        child: CustomText(
-                                        text: "Starting in ",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 09.0,
-                                        textAlign: TextAlign.end,
-                                      ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                            top: height * 0.02,
-                  right: width * 0.148,
-                        child: SizedBox(
-                          width: width*0.03,
-                          child: Center(
+                            right: width * 0.18,
                             child: CustomText(
-                                            text: "$autoTime  s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                          ),
-                        ),
-                      ):SizedBox()
-                      ,
+                              text: "Starting in ",
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 09.0,
+                              textAlign: TextAlign.end,
+                            ),
+                          )
+                        : SizedBox(),
+                    startTimes >= 1
+                        ? Positioned(
+                            top: height * 0.02,
+                            right: width * 0.148,
+                            child: SizedBox(
+                              width: width * 0.03,
+                              child: Center(
+                                child: CustomText(
+                                  text: "$autoTime  s",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 09.0,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
                     Positioned(
                       top: height * 0.05,
                       right: width * 0.02,
@@ -1319,17 +1292,17 @@ void _startCoinAnimationLeftLandRand() {
                               startTimes >= 1
                                   ? Column(
                                       children: [
-                                     
                                         SizedBox(
                                           height: 6,
                                           width: width * 0.15,
                                           child: LinearProgressIndicator(
-                                            value: startTimes/45, // Calculate the progress
-                                            backgroundColor: Colors.grey,
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xaaC8038D)),
-                                           
-                                          ),
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
                                         ),
                                         SizedBox(
                                           height: 4,
@@ -1353,7 +1326,7 @@ void _startCoinAnimationLeftLandRand() {
                                         setState(() {
                                           playBackgroundMusic == false
                                               ? onPressedMusic()
-                                              : HapticFeedback.vibrate();
+                                              : Vibration.vibrate();
                                         });
                                         _player.stop();
                                         setState(() {
@@ -1370,7 +1343,7 @@ void _startCoinAnimationLeftLandRand() {
                                         setState(() {
                                           playBackgroundMusic == false
                                               ? onPressedMusic()
-                                              : HapticFeedback.vibrate();
+                                              : Vibration.vibrate();
                                         });
                                         _player.play();
                                         setState(() {
@@ -1396,44 +1369,18 @@ void _startCoinAnimationLeftLandRand() {
                       ),
                     ),
                     Positioned(
-                       top: height * 0.38,
+                      top: height * 0.38,
                       left: width * 0.28,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
+                      child:  Image.asset(
                               'assets/lucky7/images/frame/logo.png',
                               fit: BoxFit.cover,
                               height: height * 0.10,
                             ),
                     ),
                     Positioned(
-                         top: height * 0.38,
+                      top: height * 0.38,
                       right: width * 0.28,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
+                      child: Image.asset(
                               'assets/lucky7/images/frame/logo.png',
                               fit: BoxFit.cover,
                               height: height * 0.10,
@@ -1467,7 +1414,9 @@ void _startCoinAnimationLeftLandRand() {
                                     top: height * 0.36,
                                     right: width * 0.35,
                                     child: showCurrentCardLand()),
-                    autoTime == "3" ? gameStopBetting(autoTime) : SizedBox(),
+                    startTimes <= 3 && autoTime != '0'
+                        ? gameStopBetting(autoTime)
+                        : SizedBox(),
                     Positioned(
                       bottom: height * 0.01,
                       left: width * 0.31,
@@ -1478,7 +1427,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               setState(() {
                                 redCoinAnimation = true;
@@ -1520,7 +1469,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               setState(() {
                                 lightGreenCoinAnimation = true;
@@ -1564,7 +1513,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               setState(() {
                                 redCoinAnimation = false;
@@ -1607,7 +1556,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               setState(() {
                                 redCoinAnimation = false;
@@ -1647,8 +1596,8 @@ void _startCoinAnimationLeftLandRand() {
                           //                   ),
                           //                   InkWell(
                           //                     onTap: () {
-                          //                  
-                          // HapticFeedback.vibrate();
+                          //
+                          //  Vibration.vibrate();
                           //                       setState(() {
                           //                         redCoinAnimation = false;
                           //                         lightGreenCoinAnimation = false;
@@ -1692,7 +1641,7 @@ void _startCoinAnimationLeftLandRand() {
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? ''
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
                                 });
                                 redCoinAnimation = false;
                                 lightGreenCoinAnimation = false;
@@ -1731,7 +1680,7 @@ void _startCoinAnimationLeftLandRand() {
                       ),
                     ),
                     Positioned(
-                      top: height*0.16,
+                      top: height * 0.16,
                       right: width * 0.02,
                       child: Container(
                         height: height * 0.65,
@@ -1756,9 +1705,9 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
-                                  DialogUtils.showResultDTLand(
+                                  showResultDTLand(
                                       context,
                                       item.c1,
                                       item.c2,
@@ -1848,7 +1797,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = true;
                                   tieButton = false;
@@ -1863,12 +1812,20 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(
+                                      context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -1922,7 +1879,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = true;
@@ -1937,12 +1894,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2006,7 +1970,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2021,12 +1985,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2080,7 +2051,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2095,12 +2066,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2169,7 +2147,7 @@ void _startCoinAnimationLeftLandRand() {
                       //         itemBuilder: (context, index) {
                       //           return InkWell(
                       //             onTap: () {
-                      //               HapticFeedback.vibrate();
+                      //                Vibration.vibrate();
                       //               setState(() {
                       //                 cardIndex = index;
                       //                 selectCard = true;
@@ -2226,11 +2204,11 @@ void _startCoinAnimationLeftLandRand() {
                         children: [
                           InkWell(
                             onTap: () {
-                               setState(() {
-                              playBackgroundMusic == false
-                                  ?   ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
                               setState(() {
                                 dragon = true;
                                 tiger = false;
@@ -2262,11 +2240,11 @@ void _startCoinAnimationLeftLandRand() {
                           ),
                           InkWell(
                             onTap: () {
-                            setState(() {
-                              playBackgroundMusic == false
-                                  ?   ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
 
                               setState(() {
                                 dragon = true;
@@ -2308,7 +2286,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2325,12 +2303,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2401,7 +2386,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2418,12 +2403,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
                                   redTigerButton = false;
                                   if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2498,7 +2490,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2515,12 +2507,19 @@ void _startCoinAnimationLeftLandRand() {
                                   blackTigerButton = false;
 
                                   if ((redCoinAnimation == true ||
-                                      lightGreenCoinAnimation == true ||
-                                      blueCoinAnimation == true ||
-                                      greenCoinAnimation == true ||
-                                      lightBlueCoinAnimation == true ||
-                                      brownCoinAnimation == true)&& startTimes>1) {
-                                    showMyDialog(redCoinAnimation == true
+                                          lightGreenCoinAnimation == true ||
+                                          blueCoinAnimation == true ||
+                                          greenCoinAnimation == true ||
+                                          lightBlueCoinAnimation == true ||
+                                          brownCoinAnimation == true) &&
+                                      startTimes > 1) {
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2593,7 +2592,7 @@ void _startCoinAnimationLeftLandRand() {
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? ''
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   dragonButton = false;
                                   tieButton = false;
@@ -2615,7 +2614,13 @@ void _startCoinAnimationLeftLandRand() {
                                       greenCoinAnimation == true ||
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) {
-                                    showMyDialog(redCoinAnimation == true
+                                    showMyDialog(context,
+                              height * 0.45,
+                              width * 0.33,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.64,
+                              width * 0.55,redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
@@ -2691,479 +2696,11 @@ void _startCoinAnimationLeftLandRand() {
     );
   }
 
-  Future<void> showMyDialog(int stake) async {
-    return
-     showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: SizedBox(
-                height: height * 0.5,
-                width: width * 0.35,
-              child: Stack(
-                children: [
-                  Container(
-                    // padding:
-                    //     EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        height: height * 0.5,
-                width: width * 0.35,
-                    // width: width * 0.4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: const <Color>[
-                            Color(0xff110020),
-                            Color(0xff250443),
-                          ],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Amount",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: height * 0.05,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                                Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/minus-image.png",
-                                      scale: 3,
-                                    ),
-                                  ),
-                              SizedBox(
-                                height: height * 0.1,
-                                width: width * 0.15,
-                                child: Center(
-                                  child: TextField(
-                                    textAlign: TextAlign.center,
-                                    controller: stakeController,
-                                    onChanged: (String value) async {
-                                      manualAmount = true;
-                                    },
-                                    maxLength: 5,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      counterText: "",
-                                      hintText: '$stake',
-                                      hintStyle: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(2),
-                                          borderSide: BorderSide(
-                                            color: Color(0xff4E4E4E),
-                                            width: 3,
-                                          )),
-                                      filled: true,
-                                      // contentPadding:  EdgeInsets.only(top: height*0.1),
-                                      fillColor: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                                   Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/plus-image.png",
-                                      scale: 3,
-                                    ),
-                                  ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: height * 0.03,
-                          ),
-                          Text(
-                            "Are you sure you want to continue?",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold),
-                          ),
-                             SizedBox(
-                            height: height * 0.05,
-                          ),
 
-                              manualAmount == true &&
-                                    int.parse(stakeController.text) > 99 &&
-                                    int.parse(stakeController.text) < 25000
-                                ? GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        playBackgroundMusic == false
-                                            ? onPressedMusicForBet()
-                                            : HapticFeedback.vibrate();
-                                      });
-                                      setState(() {
-                                        _currentCoinIndex++;
-                                        _startCoinAnimationLeftPortRand();
-                                      });
-
-                                      makeBet();
-                                      Navigator.pop(context);
-
-                                      setState(() {
-                                        confirmButton = true;
-                                      });
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.09,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.75,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  "assets/User-interface/confirm-button.png"),
-                                              fit: BoxFit.fitHeight)),
-                                    ),
-                                  )
-                                : manualAmount == false
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            playBackgroundMusic == false
-                                                ? onPressedMusicForBet()
-                                                : HapticFeedback.vibrate();
-                                          });
-                                          setState(() {
-                                            _currentCoinIndex++;
-                                            _startCoinAnimation();
-                                          });
-
-                                          makeBet();
-                                          Navigator.pop(context);
-
-                                          setState(() {
-                                            confirmButton = true;
-                                          });
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                         height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.09,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.75,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                      "assets/User-interface/confirm-button.png"),
-                                                  fit: BoxFit.fitHeight)),
-                                        ),
-                                      )
-                                    : GestureDetector(
-                                        onTap: () {
-                                          DialogUtils.showOneBtn(context,
-                                              "Please Select Existing amount");
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.09,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.75,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                    "assets/lucky7/images/button/comfirm.png"),
-                                              )),
-                                        ),
-                                      ),
-                          ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: width * 0.01,
-                    top: 2,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset(
-                        "assets/User-interface/close-button.png",
-                        scale: 4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
- 
-     }
-
-  Future<void> showMyDialogPortrait(int stake) async {
-    return showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: SingleChildScrollView(
-              child: Stack(
-                children: [
-                  Container(
-                    width: width * 0.8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: const <Color>[
-                          Color(0xff110020),
-                          Color(0xff250443),
-                        ],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Amount",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                            SizedBox(
-                            height: height * 0.02,
-                          ),  
-                          
-                          Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 5),
-                                  // alignment: Alignment.center,
-                                  child: Image.asset(
-                                    "assets/User-interface/minus-image.png",
-                                    scale: 3,
-                                  ),
-                                ),
-                           
-                            SizedBox(
-                              height: height * 0.05,
-                              width: width * 0.3,
-                              child: Center(
-                                child: TextField(
-                                  textAlign: TextAlign.center,
-                                  controller: stakeController,
-                                  onChanged: (String value) async {
-                                    manualAmount = true;
-                                  },
-                                  maxLength: 5,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    counterText: "",
-                                    hintText: '$stake',
-                                    hintStyle: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(1),
-                                      borderSide: BorderSide(
-                                        width: 0,
-                                        style: BorderStyle.none,
-                                      ),
-                                    ),
-                                    filled: true,
-                                    // contentPadding:  EdgeInsets.only(top: height*0.1),
-                                    fillColor: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                                   Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 5),
-                              // alignment: Alignment.center,
-                              child: Image.asset(
-                                "assets/User-interface/plus-image.png",
-                                scale: 3,
-                              ),
-                            ),
-                             ],
-                          ),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),  Text(
-                            "Are you sure you want to continue?",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(
-                            height: height * 0.02,
-                          ),
-                          manualAmount == true &&
-                                  int.parse(stakeController.text) > 99 &&
-                                  int.parse(stakeController.text) < 25000
-                              ? GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      playBackgroundMusic == false
-                                          ? onPressedMusicForBet()
-                                          : HapticFeedback.vibrate();
-                                    });
-                                    setState(() {
-                                      _currentCoinIndexRytPort++;
-                                      _startCoinAnimationRightPort();
-                                    });
-
-                                    makeBetPortrait();
-                                    Navigator.pop(context);
-
-                                    setState(() {
-                                      confirmButton = true;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.04,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                "assets/User-interface/confirm-button.png"),
-                                            fit: BoxFit.fitHeight)),
-                                  ),
-                                )
-                              : manualAmount == false
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          playBackgroundMusic == false
-                                              ? onPressedMusicForBet()
-                                              : HapticFeedback.vibrate();
-                                        });
-                                        setState(() {
-                                          _currentCoinIndexRytPort++;
-                                          _startCoinAnimationRightPort();
-                                        });
-
-                                        makeBetPortrait();
-                                        Navigator.pop(context);
-
-                                        setState(() {
-                                          confirmButton = true;
-                                        });
-                                      },
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.04,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "assets/User-interface/confirm-button.png"),
-                                                fit: BoxFit.fitHeight)),
-                                      ),
-                                    )
-                                  : GestureDetector(
-                                      onTap: () {
-                                        DialogUtils.showOneBtn(context,
-                                            "Please Select Existing amount");
-                                      },
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.04,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    "assets/lucky7/images/button/comfirm.png"),
-                                                fit: BoxFit.fitHeight)),
-                                      ),
-                                    ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: width * 0.01,
-                    top: 2,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset(
-                        "assets/User-interface/close-button.png",
-                        scale: 4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget protraitModeWidget() {
+   Widget protraitModeWidget() {
     return Scaffold(
       key: _globalKey,
+      backgroundColor: Colors.transparent,
       drawerEnableOpenDragGesture: false,
       drawer: SizedBox(
         width: width * 0.55,
@@ -3229,7 +2766,7 @@ void _startCoinAnimationLeftLandRand() {
                         setState(() {
                           playBackgroundMusic == false
                               ? onPressedMusic()
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
                         _globalKey.currentState!.openDrawer();
                       },
@@ -3245,7 +2782,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               _player.stop();
 
@@ -3261,7 +2798,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               _player.play();
 
@@ -3306,7 +2843,7 @@ void _startCoinAnimationLeftLandRand() {
                         setState(() {
                           playBackgroundMusic == false
                               ? onPressedMusic()
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
                         Navigator.push(context, _createRouteCurrentBetsList());
                       },
@@ -3366,9 +2903,9 @@ void _startCoinAnimationLeftLandRand() {
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
                                 });
-                                DialogUtils.showResultDT(
+                                showResultDT(
                                     context,
                                     item.c1,
                                     item.c2,
@@ -3448,44 +2985,18 @@ void _startCoinAnimationLeftLandRand() {
                     //width: width * 1.00,
                   ),
                   Positioned(
-                       top: height*0.07,
-                      left:width*0.13,
-                    child: startTimes >= 3
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -25 * _animation.value),
-                                child: Image.asset(
-                                  'assets/lucky7/images/frame/logo.png',
-                                  fit: BoxFit.cover,
-                                  height: height * 0.05,
-                                ),
-                              );
-                            })
-                        : Image.asset(
+                    top: height * 0.07,
+                    left: width * 0.13,
+                    child:  Image.asset(
                             'assets/lucky7/images/frame/logo.png',
                             fit: BoxFit.cover,
                             height: height * 0.05,
                           ),
                   ),
                   Positioned(
-                      top: height*0.07,
-                      right:width*0.05,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -25 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.05,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
+                      top: height * 0.07,
+                      right: width * 0.05,
+                      child:  Image.asset(
                               'assets/lucky7/images/frame/logo.png',
                               fit: BoxFit.cover,
                               height: height * 0.05,
@@ -3515,52 +3026,53 @@ void _startCoinAnimationLeftLandRand() {
                           children: _coinsLeftPortRand,
                         ),
                       )),
-                        startTimes >= 1
-                              ?  Positioned(
-                       left: width * 0.35,
-                    top: height * 0.02,
-                        child: CustomText(
-                                        text: "Starting in ",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 09.0,
-                                        textAlign: TextAlign.end,
-                                      ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                           left: width * 0.49,
-                    top: height * 0.02,
-                        child: SizedBox(
-                          width: width*0.05,
-                          child: Center(
-                            child: CustomText(
-                                            text: "$autoTime s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.35,
+                          top: height * 0.02,
+                          child: CustomText(
+                            text: "Starting in ",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 09.0,
+                            textAlign: TextAlign.end,
                           ),
-                        ),
-                      ):SizedBox()
-                      ,
+                        )
+                      : SizedBox(),
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.49,
+                          top: height * 0.02,
+                          child: SizedBox(
+                            width: width * 0.05,
+                            child: Center(
+                              child: CustomText(
+                                text: "$autoTime s",
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 09.0,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   Positioned(
                     left: width * 0.33,
                     top: height * 0.04,
                     child: startTimes >= 1
                         ? Column(
                             children: [
-                             
                               SizedBox(
                                 height: 5,
                                 width: width * 0.25,
                                 child: LinearProgressIndicator(
-                                  value: startTimes/45,
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
                                   backgroundColor: Colors.grey,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xaaC8038D)),
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
                                 ),
                               ),
                             ],
@@ -3577,7 +3089,7 @@ void _startCoinAnimationLeftLandRand() {
                                   top: height * 0.03,
                                   left: width * 0.18,
                                   child: showCurrentCardPort()),
-                  autoTime == "3"
+                  startTimes <= 3 && autoTime != '0'
                       ? gameStopBettingPortrait(autoTime)
                       : SizedBox(),
                   Positioned(
@@ -3590,7 +3102,7 @@ void _startCoinAnimationLeftLandRand() {
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
                             });
                             setState(() {
                               redCoinAnimation = !redCoinAnimation;
@@ -3631,7 +3143,7 @@ void _startCoinAnimationLeftLandRand() {
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
                             });
                             setState(() {
                               redCoinAnimation = false;
@@ -3676,7 +3188,7 @@ void _startCoinAnimationLeftLandRand() {
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
                             });
                             setState(() {
                               redCoinAnimation = false;
@@ -3719,7 +3231,7 @@ void _startCoinAnimationLeftLandRand() {
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
                             });
 
                             setState(() {
@@ -3761,7 +3273,7 @@ void _startCoinAnimationLeftLandRand() {
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
                             });
 
                             setState(() {
@@ -3810,6 +3322,581 @@ void _startCoinAnimationLeftLandRand() {
     );
   }
 
+ 
+  showMyDialog(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            backgroundColor: Colors.transparent,
+            content: SingleChildScrollView(
+              child: SizedBox(
+                height: heightImage,
+                width: widthImage,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: heightImage,
+                      width: widthImage,
+                     decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                          colors: const <Color>[
+                            Color(0xff110020),
+                            Color(0xff250443),
+                          ],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            CustomText(
+                              text: "Amount",
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            SizedBox(
+                              height: height * 0.09,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/minus-image.png",
+                                    scale: 3,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height * 0.26,
+                                  width: width * 0.22,
+                                  child: Center(
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      controller: stakeController,
+                                      onChanged: (String value) async {
+                                        manualAmount = true;
+                                      },
+                                      maxLength: 5,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        counterText: "",
+                                        hintText: '$stake',
+                                        hintStyle: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(2),
+                                            borderSide: BorderSide(
+                                              color: Color(0xff4E4E4E),
+                                              width: 3,
+                                            )),
+                                        filled: true,
+                                        // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                        fillColor: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/plus-image.png",
+                                    scale: 3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: height * 0.08,
+                            ),
+                            Text(
+                              "Are you sure you want to continue?",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: height * 0.07,
+                            ),
+                            manualAmount == true &&
+                                    int.parse(stakeController.text) > 99 &&
+                                    int.parse(stakeController.text) < 25000
+                                ? InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        playBackgroundMusic == false
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
+                                      });
+                                   
+                                        if (evenDragonButton == true ||
+                                            oddDragonButton == true ||
+                                            blackDragonButton == true ||
+                                            redDragonButton == true ||
+                                            evenTigerButton == true ||
+                                            oddTigerButton == true ||
+                                            blackTigerButton == true ||
+                                            redTigerButton == true ||
+                                            dragonButton == true ||
+                                            pairButton == true ||
+                                            tieButton == true ||
+                                            tigerButton == true ||
+                                            selectCard == true) {
+                                          makeBet();
+                                          Navigator.pop(context);
+
+                                          evenDragonButton = false;
+                                          oddDragonButton = false;
+                                          blackDragonButton = false;
+                                          redDragonButton = false;
+                                          evenTigerButton = false;
+                                          oddTigerButton = false;
+                                          blackTigerButton = false;
+                                          redTigerButton = false;
+                                          dragonButton = false;
+                                          pairButton = false;
+                                          tieButton = false;
+                                          tigerButton = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
+                                    },
+                                    child: Container(
+                                        height: height * 0.22,
+                                        width: width * 0.23,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png")))),
+                                  )
+                                : manualAmount == false
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+                                          });
+
+                                         
+                                        if (evenDragonButton == true ||
+                                            oddDragonButton == true ||
+                                            blackDragonButton == true ||
+                                            redDragonButton == true ||
+                                            evenTigerButton == true ||
+                                            oddTigerButton == true ||
+                                            blackTigerButton == true ||
+                                            redTigerButton == true ||
+                                            dragonButton == true ||
+                                            pairButton == true ||
+                                            tieButton == true ||
+                                            tigerButton == true ||
+                                            selectCard == true) {
+                                          makeBet();
+                                          Navigator.pop(context);
+
+                                          evenDragonButton = false;
+                                          oddDragonButton = false;
+                                          blackDragonButton = false;
+                                          redDragonButton = false;
+                                          evenTigerButton = false;
+                                          oddTigerButton = false;
+                                          blackTigerButton = false;
+                                          redTigerButton = false;
+                                          dragonButton = false;
+                                          pairButton = false;
+                                          tieButton = false;
+                                          tigerButton = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
+                                        },
+                                        child: Container(
+                                            height: height * 0.22,
+                                            width: width * 0.23,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png")))),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? ''
+                                                : Vibration.vibrate();
+                                            ;
+                                          });
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: height * 0.22,
+                                          width: width * 0.23,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png"),
+                                              )),
+                                        ),
+                                      ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: width * 0.01,
+                      top: 2,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+ 
+ showMyDialogPortrait(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+              backgroundColor: Colors.transparent,
+              alignment: Alignment.center,
+              content: SingleChildScrollView(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: heightImage,
+                      width: widthImage,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                          colors: const <Color>[
+                            Color(0xff110020),
+                            Color(0xff250443),
+                          ],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                text: "Amount",
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              SizedBox(
+                                height: height * 0.07,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 5),
+                                    // alignment: Alignment.center,
+                                    child: Image.asset(
+                                      "assets/User-interface/minus-image.png",
+                                      scale: 3,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: height * 0.125,
+                                    width: width * 0.45,
+                                    child: Center(
+                                      child: TextField(
+                                        textAlign: TextAlign.center,
+                                        controller: stakeController,
+                                        onChanged: (String value) async {
+                                          manualAmount = true;
+                                        },
+                                        maxLength: 5,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 10,
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          counterText: "",
+                                          hintText: '$stake',
+                                          hintStyle: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(1),
+                                            borderSide: BorderSide(
+                                              width: 0,
+                                              style: BorderStyle.none,
+                                            ),
+                                          ),
+                                          filled: true,
+                                          // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                          fillColor: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 5),
+                                    // alignment: Alignment.center,
+                                    child: Image.asset(
+                                      "assets/User-interface/plus-image.png",
+                                      scale: 3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * 0.04,
+                              ),
+                              Text(
+                                "Are you sure you want to continue?",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 08,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                height: height * 0.05,
+                              ),
+                              manualAmount == true &&
+                                      int.parse(stakeController.text) > 99 &&
+                                      int.parse(stakeController.text) < 25000
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
+                                        });
+
+                                        if (evenDragonButton == true ||
+                                            oddDragonButton == true ||
+                                            blackDragonButton == true ||
+                                            redDragonButton == true ||
+                                            evenTigerButton == true ||
+                                            oddTigerButton == true ||
+                                            blackTigerButton == true ||
+                                            redTigerButton == true ||
+                                            dragonButton == true ||
+                                            pairButton == true ||
+                                            tieButton == true ||
+                                            tigerButton == true ||
+                                            selectCard == true) {
+                                          makeBetPortrait();
+                                          Navigator.pop(context);
+
+                                          evenDragonButton = false;
+                                          oddDragonButton = false;
+                                          blackDragonButton = false;
+                                          redDragonButton = false;
+                                          evenTigerButton = false;
+                                          oddTigerButton = false;
+                                          blackTigerButton = false;
+                                          redTigerButton = false;
+                                          dragonButton = false;
+                                          pairButton = false;
+                                          tieButton = false;
+                                          tigerButton = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.04,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/User-interface/confirm-button.png"),
+                                                fit: BoxFit.fitHeight)),
+                                      ),
+                                    )
+                                  : manualAmount == false
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+
+                                            if (evenDragonButton == true ||
+                                                oddDragonButton == true ||
+                                                blackDragonButton == true ||
+                                                redDragonButton == true ||
+                                                evenTigerButton == true ||
+                                                oddTigerButton == true ||
+                                                blackTigerButton == true ||
+                                                redTigerButton == true ||
+                                                dragonButton == true ||
+                                                pairButton == true ||
+                                                tieButton == true ||
+                                                tigerButton == true ||
+                                                selectCard == true) {
+                                              makeBetPortrait();
+                                              Navigator.pop(context);
+
+                                              evenDragonButton = false;
+                                              oddDragonButton = false;
+                                              blackDragonButton = false;
+                                              redDragonButton = false;
+                                              evenTigerButton = false;
+                                              oddTigerButton = false;
+                                              blackTigerButton = false;
+                                              redTigerButton = false;
+                                              dragonButton = false;
+                                              pairButton = false;
+                                              tieButton = false;
+                                              tigerButton = false;
+                                              setState(() {
+                                                confirmButton = true;
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.04,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.4,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png"),
+                                                    fit: BoxFit.fitHeight)),
+                                          ),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            setState(() {
+                                              playBackgroundMusic == false
+                                                  ? ""
+                                                  : Vibration.vibrate();
+                                            });
+                                            DialogUtils.showOneBtn(
+                                              context,
+                                              "Please Select Existing amount",
+                                            );
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.04,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.4,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png"),
+                                                    fit: BoxFit.fitHeight)),
+                                          ),
+                                        ),
+                            ]),
+                      ),
+                    ),
+                    Positioned(
+                      right: width * 0.01,
+                      top: 2,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ));
+        });
+  }
+
   Widget drawerWidget() {
     return Container(
       height: height,
@@ -3826,7 +3913,7 @@ void _startCoinAnimationLeftLandRand() {
             onTap: () {
               Navigator.pop(context);
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3850,7 +3937,7 @@ void _startCoinAnimationLeftLandRand() {
             onTap: () async {
               Navigator.push(context, _createRouteProfile());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3868,7 +3955,7 @@ void _startCoinAnimationLeftLandRand() {
             onTap: () async {
               Navigator.push(context, _createRoute());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3886,7 +3973,7 @@ void _startCoinAnimationLeftLandRand() {
             onTap: () async {
               Navigator.push(context, _createRouteCurrentBets());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3903,7 +3990,7 @@ void _startCoinAnimationLeftLandRand() {
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3920,7 +4007,7 @@ void _startCoinAnimationLeftLandRand() {
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
               Navigator.push(context, _createRouteChangePassword());
             },
@@ -3945,7 +4032,7 @@ void _startCoinAnimationLeftLandRand() {
             onTap: () async {
               getlogout();
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -3969,6 +4056,7 @@ void _startCoinAnimationLeftLandRand() {
       pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
         matchId: widget.matchId,
         gameCode: widget.gameCode,
+        playBackgroundMusic: playBackgroundMusic,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
@@ -3988,8 +4076,9 @@ void _startCoinAnimationLeftLandRand() {
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4008,8 +4097,9 @@ void _startCoinAnimationLeftLandRand() {
 
   Route _createRouteProfile() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4029,7 +4119,9 @@ void _startCoinAnimationLeftLandRand() {
   Route _createRouteCurrentBets() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const CurrentBetsScreen(),
+          CurrentBetsScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4049,7 +4141,9 @@ void _startCoinAnimationLeftLandRand() {
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+          ChangePasswordScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4112,7 +4206,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = true;
                               tieButton = false;
@@ -4127,12 +4221,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4183,7 +4284,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = true;
@@ -4198,12 +4299,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4258,7 +4366,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4273,12 +4381,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4329,7 +4444,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4344,12 +4459,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4401,7 +4523,7 @@ void _startCoinAnimationLeftLandRand() {
                         setState(() {
                           playBackgroundMusic == false
                               ? ''
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
 
                         setState(() {
@@ -4439,7 +4561,7 @@ void _startCoinAnimationLeftLandRand() {
                         setState(() {
                           playBackgroundMusic == false
                               ? ''
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
 
                         setState(() {
@@ -4485,7 +4607,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4502,12 +4624,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4572,7 +4701,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4589,12 +4718,19 @@ void _startCoinAnimationLeftLandRand() {
                               blackTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4667,7 +4803,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4684,12 +4820,19 @@ void _startCoinAnimationLeftLandRand() {
                               oddTigerButton = false;
                               redTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4756,7 +4899,7 @@ void _startCoinAnimationLeftLandRand() {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? ''
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
                               dragonButton = false;
                               tieButton = false;
@@ -4772,12 +4915,19 @@ void _startCoinAnimationLeftLandRand() {
                               oddTigerButton = false;
                               blackTigerButton = false;
                               if ((redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true)&& startTimes>1) {
-                                showMyDialogPortrait(redCoinAnimation == true
+                                      lightGreenCoinAnimation == true ||
+                                      blueCoinAnimation == true ||
+                                      greenCoinAnimation == true ||
+                                      lightBlueCoinAnimation == true ||
+                                      brownCoinAnimation == true) &&
+                                  startTimes > 1) {
+                                showMyDialogPortrait(    context,
+                            height * 0.23,
+                            width,
+                            height * 0.4,
+                            width * 0.7,
+                            height * 0.26,
+                            width * 0.98,redCoinAnimation == true
                                     ? stack1
                                     : lightGreenCoinAnimation == true
                                         ? stack2
@@ -4838,76 +4988,6 @@ void _startCoinAnimationLeftLandRand() {
                     ),
                   ],
                 ),
-                // SizedBox(
-                //   height: height * 0.02,
-                // ),
-                // Container(
-                //   margin: const EdgeInsets.symmetric(vertical: 5),
-                //   height: height * 0.01,
-                //   width: width * 0.99,
-                //   decoration: BoxDecoration(
-                //       image: DecorationImage(
-                //           image: AssetImage(DragonTigerImages.divider),
-                //           fit: BoxFit.fitWidth)),
-                // ),
-                // Text(
-                //   "12.0",
-                //   style: TextStyle(color: Colors.white),
-                // ),
-                // SizedBox(
-                //   height: 10,
-                // ),
-                // SizedBox(
-                //   height: height * 0.18,
-                //   width: width,
-                //   child: GridView.builder(
-                //       gridDelegate:
-                //           const SliverGridDelegateWithMaxCrossAxisExtent(
-                //               maxCrossAxisExtent: 50,
-                //               childAspectRatio: 3 / 2,
-                //               crossAxisSpacing: 10,
-                //               mainAxisSpacing: 10),
-                //       itemCount: 13,
-                //       itemBuilder: (BuildContext ctx, index) {
-                //         return InkWell(
-                //           onTap: () {
-                //             HapticFeedback.vibrate();
-                //                 setState(() {
-                //       cardIndex = index;
-                //       selectCard = true;
-                //     });
-                //             if (redCoinAnimation == true ||
-                //                 lightGreenCoinAnimation == true ||
-                //                 blueCoinAnimation == true ||
-                //                 greenCoinAnimation == true ||
-                //                 lightBlueCoinAnimation == true ||
-                //                 brownCoinAnimation == true) {
-                //               showMyDialogPortrait(redCoinAnimation == true
-                //                   ? stack1
-                //                   : lightGreenCoinAnimation == true
-                //                       ? stack2
-                //                       : blueCoinAnimation == true
-                //                           ? stack3
-                //                           : greenCoinAnimation == true
-                //                               ? stack4
-                //                               : lightBlueCoinAnimation == true
-                //                                   ? stack5
-                //                                   : brownCoinAnimation == true
-                //                                       ? stack6
-                //                                       : 0);
-                //             }
-                //           },
-                //           child: Container(
-                //             height: height * 0.12,
-                //             width: width * 0.06,
-                //             decoration: BoxDecoration(
-                //                 image: DecorationImage(
-                //                     image: AssetImage(
-                //                         "assets/AmarAkhbarAnthony/Images/card-image.png"))),
-                //           ),
-                //         );
-                //       }),
-                // ),
               ],
             )),
       ],
@@ -4956,7 +5036,7 @@ void _startCoinAnimationLeftLandRand() {
   }
 
   Widget gameStopBettingPortrait(String time) {
-    return  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -4981,7 +5061,7 @@ void _startCoinAnimationLeftLandRand() {
   }
 
   Widget gameStopBetting(String time) {
-    return  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -5009,8 +5089,11 @@ void _startCoinAnimationLeftLandRand() {
     var response = await GlobalFunction.apiGetRequestae(url);
     var result = jsonDecode(response);
     if (result['status'] == true) {
-      setState(() {
+ 
         autoTime = result['data']['t1'][0]['autotime'].toString();
+          if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
         cardNameImage2 = result['data']['t1'][0]['C2'].toString();
         dragonRate = result['data']['t2'][0]['rate'];
@@ -5054,7 +5137,7 @@ void _startCoinAnimationLeftLandRand() {
         startTimes = int.parse(autoTime.toString());
         print("====>$startTimes");
         marketId = result['data']['t1'][0]['mid'].toString();
-      });
+
       autoTime == "0"
           ? setState(() {
               redCoinAnimation = false;
@@ -5206,6 +5289,232 @@ void _startCoinAnimationLeftLandRand() {
                       'http://admin.kalyanexch.com/images/cards/$cardImage.png',
                       fit: BoxFit.cover),
                 )));
+  }
+
+  showResultDT(BuildContext context, cardImage1, cardImage2, cardDetail,
+      cardDetail2, cardDetail3, roundIdList) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return AlertDialog(
+            backgroundColor: Colors.transparent,
+            content: Stack(
+              children: [
+                Container(
+                  // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  height: height * 0.26,
+                  width: width * 0.9,
+
+                  // width: width * 0.4,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(DragonTigerImages.pastResult),
+                          fit: BoxFit.fill)),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: height * 0.04),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: width * 0.25, top: height * 0.015),
+                          child: Row(
+                            children: [
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                height: height * 0.09,
+                                width: width * 0.12,
+                              ),
+                              SizedBox(
+                                width: width * 0.1,
+                              ),
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                height: height * 0.09,
+                                width: width * 0.12,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: height * 0.0,
+                        ),
+                        CustomText(
+                            text: 'Round ID: ${roundIdList}',
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: width * 0.07, top: height * 0.04),
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: "$cardDetail".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                width: width * 0.05,
+                              ),
+                              CustomText(
+                                text: "$cardDetail2".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                width: width * 0.05,
+                              ),
+                              CustomText(
+                                text: "$cardDetail3".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  showResultDTLand(BuildContext context, cardImage1, cardImage2, cardDetail,
+      cardDetail2, cardDetail3, roundIdList) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return AlertDialog(
+            backgroundColor: Colors.transparent,
+            content: Stack(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  height: height * 0.54,
+                  width: width * 0.40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(DragonTigerImages.pastResult),
+                          fit: BoxFit.fill)),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: height * 0.05),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: width * 0.15, top: height * 0.04),
+                          child: Row(
+                            children: [
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                height: height * 0.14,
+                                // width: width * 0.19,
+                              ),
+                              SizedBox(
+                                width: width * 0.07,
+                              ),
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                height: height * 0.14,
+                                //  width: width * 0.14,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: height * 0.03,
+                        ),
+                        CustomText(
+                            text: 'Round ID: ${roundIdList}',
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: width * 0.03, top: height * 0.11),
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: "$cardDetail".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                width: width * 0.06,
+                              ),
+                              CustomText(
+                                text: "$cardDetail2".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                width: width * 0.065,
+                              ),
+                              CustomText(
+                                text: "$cardDetail3".replaceAll("||", "|"),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white60,
+                                fontSize: 6.0,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   Widget showCurrentCardPort() {
@@ -5566,7 +5875,10 @@ void _startCoinAnimationLeftLandRand() {
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
       setState(() {
         evenDragonButton = false;
         oddDragonButton = false;
@@ -5584,7 +5896,10 @@ void _startCoinAnimationLeftLandRand() {
       getuserBalance();
       getVcLiablity();
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
     }
   }
 
@@ -5805,8 +6120,11 @@ void _startCoinAnimationLeftLandRand() {
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-          print("betBody--->$response");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      print("betBody--->$response");
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
       setState(() {
         evenDragonButton = false;
         oddDragonButton = false;
@@ -5824,327 +6142,10 @@ void _startCoinAnimationLeftLandRand() {
       getuserBalance();
       getVcLiablity();
     } else {
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
     }
-  }
-
-  showAlertDialogLand(BuildContext context, hBg, wBg) {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.center,
-            content: Stack(alignment: Alignment.center, children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                height: height * 0.6,
-                width: width * 0.6,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Color(0xff120021),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: CustomText(
-                        text: "MY BET",
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: Color(0xff9023E0),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 3),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: Color(0xff4D117A),
-                            ),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  CustomText(
-                                    text: "PLAYER NAME",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "ODD",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "AMOUNT",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ]),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 2, horizontal: 3),
-                            height: height * 0.37,
-                            width: width * 0.7,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: matchIdList.length,
-                                itemBuilder: (context, index) {
-                                  var items = matchIdList[index];
-                                  print(
-                                      'match ----------${items.nation.toString()}');
-
-                                  return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: width * 0.16,
-                                          child: CustomText(
-                                            text: items.nation.toString(),
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: width * 0.1,
-                                          child: Text(
-                                            items.rate.toString(),
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: width * 0.06,
-                                          child: CustomText(
-                                            text: items.amount.toString(),
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                      ]);
-                                }),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    playBackgroundMusic == false
-                        ? onPressedMusic()
-                        : HapticFeedback.vibrate();
-                  });
-                },
-                child: Container(
-                  alignment: Alignment.topRight,
-                  height: height * 0.60,
-                  width: width * 0.54,
-                  margin: const EdgeInsets.only(left: 100, bottom: 20),
-                  child: Container(
-                      alignment: Alignment.center,
-                      height: height * 0.07,
-                      width: width * 0.07,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/User-interface/Buttons/close-button.png")))),
-                ),
-              ),
-            ]),
-          );
-        });
-  }
-
-  showAlertDialog(BuildContext context, hBg, wBg) {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.center,
-            content: Stack(alignment: Alignment.center, children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                height: height * 0.7,
-                width: width * 0.9,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Color(0xff120021),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: CustomText(
-                        text: "MY BET",
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: Color(0xff9023E0),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 3),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: Color(0xff4D117A),
-                            ),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: const [
-                                  CustomText(
-                                    text: "PLAYERNAME",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "ODD",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  CustomText(
-                                    text: "AMOUNT",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ]),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 2, horizontal: 3),
-                            height: height * 0.37,
-                            width: width * 0.7,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: matchIdList.length,
-                                itemBuilder: (context, index) {
-                                  var items = matchIdList[index];
-                                  print(
-                                      'match ----------${items.nation.toString()}');
-
-                                  return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: width * 0.20,
-                                          child: CustomText(
-                                            text: items.nation.toString(),
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: width * 0.1,
-                                          child: Text(
-                                            items.rate.toString(),
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: width * 0.12,
-                                          child: CustomText(
-                                            text: items.amount.toString(),
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                      ]);
-                                }),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    playBackgroundMusic == false
-                        ? onPressedMusic()
-                        : HapticFeedback.vibrate();
-                  });
-                },
-                child: Container(
-                  alignment: Alignment.topRight,
-                  height: hBg,
-                  width: wBg,
-                  margin: const EdgeInsets.only(left: 100, bottom: 20),
-                  child: Container(
-                      alignment: Alignment.center,
-                      height: height * 0.05,
-                      width: width * 0.05,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/User-interface/Buttons/close-button.png")))),
-                ),
-              ),
-            ]),
-          );
-        });
   }
 }

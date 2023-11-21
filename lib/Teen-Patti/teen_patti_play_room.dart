@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/User-Interface/current_user_bet.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
 import 'package:virtual_casino/Utils/apis.dart';
@@ -55,6 +57,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   String cardImage4 = "";
   String cardImage5 = "";
   String cardImage6 = "";
+  bool confirmButton = false;
   List<ResultsModel> resultList = [];
   String userBalance = "";
   String liablity = "";
@@ -68,12 +71,6 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   final onPressedmusic = AudioPlayer();
   List<BetListModel> betListResult = [];
 
-  late AnimationController coinAnimation;
-  late AnimationController coinAnimation2;
-  late AnimationController coinAnimation3;
-  late AnimationController coinAnimation4;
-  late AnimationController coinAnimation5;
-  late AnimationController coinAnimation6;
   late AnimationController animationController;
 
   bool playBackgroundMusic = false;
@@ -84,12 +81,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   int stack5 = 0;
   int stack6 = 0;
   bool shakeWidget = false;
-  bool animatedContainer = false;
-  bool animatedContainer2 = false;
-  bool animatedContainer3 = false;
-  bool animatedContainer4 = false;
-  bool animatedContainer5 = false;
-  bool animatedContainer6 = false;
+
   bool selectPlayerA = false;
   bool selectPlayerB = false;
   bool teamBbutton = false;
@@ -101,13 +93,9 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   String cardNameImage6 = "";
 
   final Random _random = Random();
-  final double _minXRytPort = 40;
-  final double _maxXRytPort = 200;
-  final double _minYRytPort = 40;
-  final double _maxYRytPort = 200;
+
   bool redCoinAnimation = false;
   bool lightGreenCoinAnimation = false;
-  bool blueCoinAnimation = false;
   bool greenCoinAnimation = false;
   bool lightBlueCoinAnimation = false;
   bool brownCoinAnimation = false;
@@ -133,9 +121,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
 
   final int _totalCoins = 7000;
   int _currentCoinIndex = 0;
-  int _currentCoinIndexRyt = 0;
-  int _currentCoinIndexPort = 0;
-  int _currentCoinIndexRytPort = 0;
+
   String playerASid = "";
   String playerBSid = "";
   String playerARate = "";
@@ -159,10 +145,19 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   String playerStake = "";
   int startTimes = 0;
 
+      int startTimeSmall=0;
+  
+
   late Animation<double> _animation;
 
   @override
   void initState() {
+
+      startTimeSmall=startTimes*100;
+       Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        startTimeSmall =startTimeSmall-1;
+       });
+
     showPopUp = true;
     getCardDetailsForBar();
     _controller = AnimationController(
@@ -201,6 +196,8 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     super.initState();
   }
 
+
+  
   void _startCoinAnimation() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
@@ -224,35 +221,35 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                     right: currentX.clamp(_minX, _maxX),
                     bottom: currentY.clamp(_minY, _maxY),
                     child: autoTime != "0"
-                        ? animatedContainer == true
+                        ? redCoinAnimation == true
                             ? Image.asset(
                                 _redcoinImages[
                                     _currentCoinIndex % _redcoinImages.length],
                                 height: 20,
                                 width: 20,
                               )
-                            : animatedContainer2 == true
+                            : lightGreenCoinAnimation == true
                                 ? Image.asset(
                                     _lightGreencoinImages[_currentCoinIndex %
                                         _lightGreencoinImages.length],
                                     height: 20,
                                     width: 20,
                                   )
-                                : animatedContainer3 == true
+                                : lightBlueCoinAnimation == true
                                     ? Image.asset(
                                         _bluecoinImages[_currentCoinIndex %
                                             _bluecoinImages.length],
                                         height: 20,
                                         width: 20,
                                       )
-                                    : animatedContainer4 == true
+                                    : greenCoinAnimation == true
                                         ? Image.asset(
                                             _greencoinImages[_currentCoinIndex %
                                                 _greencoinImages.length],
                                             height: 20,
                                             width: 20,
                                           )
-                                        : animatedContainer5 == true
+                                        : brownCoinAnimation == true
                                             ? Image.asset(
                                                 _skybluecoinImages[
                                                     _currentCoinIndex %
@@ -261,16 +258,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                                 height: 20,
                                                 width: 20,
                                               )
-                                            : animatedContainer6 == true
-                                                ? Image.asset(
-                                                    _browncoinImages[
-                                                        _currentCoinIndex %
-                                                            _browncoinImages
-                                                                .length],
-                                                    height: 20,
-                                                    width: 20,
-                                                  )
-                                                : SizedBox()
+                                            : SizedBox()
                         : SizedBox());
               },
             ))
@@ -444,6 +432,1540 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     );
   }
 
+  Widget landscapeWidget() {
+    showPopUp = true;
+    return Scaffold(
+      key: _globalKey,
+      backgroundColor: Colors.transparent,
+      drawerEnableOpenDragGesture: false,
+      drawer: SizedBox(width: width * 0.3, child: drawerWidget()),
+      body: Container(
+          height: height,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(
+                      "assets/Teen-patti/images/backgroud-image.png"),
+                  fit: BoxFit.fill)),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                top: height * 0.03,
+                left: width * 0.02,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+                                  _globalKey.currentState!.openDrawer();
+                                },
+                                child: Image.asset(  'assets/Teen-patti/images/menu-button.png',
+                                    fit: BoxFit.fill, width: width * 0.045),
+                              ),
+                              SizedBox(
+                                width: width * 0.01,
+                              ),
+                              Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.02,
+                                      vertical: height * 0.015),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                           'assets/Teen-patti/images/balance-frame.png'),
+                                        fit: BoxFit.fill)),
+                                child:  Row(
+                                    children: [
+                                      Image.asset(
+                                        'assets/lucky7/images/Group 658.png',
+                                        height: height * 0.05,
+                                        width: width * 0.03,
+                                      ),
+                                      Text(
+                                        "  ${mainBalance.toStringAsFixed(2)}",
+                                        style: TextStyle(
+                                            color: Color(0xffFFEFC1),
+                                            fontSize: height * 0.03,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                
+                              ),
+                            ],
+                          ),
+                    InkWell(
+                      onTap: () {
+                        HapticFeedback.vibrate();
+                        setState(() {
+                          playBackgroundMusic == false ? onPressedMusic() : "";
+                        });
+                        Navigator.push(context, _createRouteCurrentBets());
+                        // showBetHistory(context);
+                      },
+                      child:Container(
+                              padding: EdgeInsets.only(
+                                  left: width * 0.085, top: height * 0.001),
+                              height: height * 0.09,
+                              width: width * 0.13,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/Teen-patti/images/my-bet.png',
+                                      ),
+                                      fit: BoxFit.fill)),
+                              child: CustomText(
+                                text: matchIdList.length.toString(),
+                                fontWeight: FontWeight.w500,
+                                color: Colors.yellow[50],
+                                fontSize: width * 0.014,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                    ),
+                    SizedBox(
+                      height: 1,
+                    ),
+                    BlinkText(
+                      "Round Id : $marketId",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: height * 0.05,
+                child: Image.asset(
+                  'assets/dragonTigerLion/tableImges/table-girl.png',
+                  fit: BoxFit.cover,
+                  height: height * 0.28,
+                ),
+              ),
+
+                    startTimes <= 1
+                    ? Positioned(
+                        top: height * 0.08,
+                        child: Image.asset(
+                          'assets/lucky7/images/tableGirl.png',
+                          fit: BoxFit.cover,
+                          height: height * 0.28,
+                        ),
+                      )
+                    : SizedBox(),
+                startTimes >= 1
+                    ? Positioned(
+                        top: height * 0.02,
+                        right: width * 0.18,
+                        child: CustomText(
+                          text: "Starting in ",
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 09.0,
+                          textAlign: TextAlign.end,
+                        ),
+                      )
+                    : SizedBox(),
+
+                startTimes >= 1
+                    ? Positioned(
+                        top: height * 0.02,
+                        right: width * 0.148,
+                        child: SizedBox(
+                          width: width * 0.03,
+                          child: Center(
+                            child: CustomText(
+                              text: "$autoTime  s",
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 09.0,
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SizedBox(),
+                //     startTimes >= 1
+                //             ?  Positioned(
+                //           top: height * 0.02,
+                // right: width * 0.14,
+                //       child: CustomText(
+                //                       text: "sec",
+                //                       fontWeight: FontWeight.bold,
+                //                       color: Colors.white,
+                //                       fontSize: 09.0,
+                //                       textAlign: TextAlign.end,
+                //                     ),
+                //     ):SizedBox(),
+                Positioned(
+                  top: height * 0.045,
+                  right: width * 0.015,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          //---------------Game Timer------------//
+                          startTimes >= 1
+                              ? Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 5,
+                                      width: width * 0.15,
+                                      child: LinearProgressIndicator(
+                                        value: startTimeSmall /
+                                            4500, // Calculate the progress
+                                        backgroundColor: Colors.grey,
+                                        valueColor: AlwaysStoppedAnimation(
+                                            Color(0xaa9919D2)),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                      "Min:100 Max: 250000",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 10),
+                                    )
+                                  ],
+                                )
+                              : SizedBox(),
+                          SizedBox(
+                            width: width * 0.05,
+                          ),
+                          playBackgroundMusic == false
+                              ? InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? onPressedMusic()
+                                          : Vibration.vibrate();
+                                      ;
+                                    });
+                                    _player.stop();
+                                    setState(() {
+                                      playBackgroundMusic = true;
+                                    });
+                                  },
+                                  child: Image.asset(
+                                      'assets/Teen-patti/images/sound-unmute.png',
+                                      fit: BoxFit.fill,
+                                      width: width * 0.045),
+                                )
+                              : InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? onPressedMusic()
+                                          : Vibration.vibrate();
+                                      ;
+                                    });
+                                    _player.play();
+                                    setState(() {
+                                      playBackgroundMusic = false;
+                                    });
+                                  },
+                                  child: Image.asset(
+                                     'assets/Teen-patti/images/sound-button.png',
+                                      fit: BoxFit.fill,
+                                      width: width * 0.055),
+                                ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+              
+            
+              Positioned(
+                bottom: 1,
+                child: Image.asset(
+                  'assets/Teen-patti/images/table-image.png',
+                  fit: BoxFit.fill,
+                  height: height * 0.67,
+                ),
+              ),
+              Positioned(
+                top: height * 0.37,
+                left: width * 0.2,
+                child: Image.asset(
+                  'assets/lucky7/images/frame/logo.png',
+                  fit: BoxFit.cover,
+                  height: height * 0.09,
+                ),
+              ),
+              Positioned(
+                  top: height * 0.37,
+                  right: width * 0.2,
+                  child: Image.asset(
+                    'assets/lucky7/images/frame/logo.png',
+                    fit: BoxFit.cover,
+                    height: height * 0.09,
+                  )),
+
+              AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: Stack(
+                  children: _coins,
+                ),
+              ),
+              // ?
+              //------------------- RESULT IMAGE----------------//
+              Positioned(
+                  top: height * 0.45,
+                  right: width * 0.28,
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          HapticFeedback.vibrate();
+                          setState(() {
+                            if (redCoinAnimation == true ||
+                                lightGreenCoinAnimation == true ||
+                                greenCoinAnimation == true ||
+                                lightBlueCoinAnimation == true ||
+                                brownCoinAnimation == true) {
+                              selectPlayerA = !selectPlayerA;
+                            }
+                            if (selectPlayerA == true) {
+                              selectPlayerB = false;
+                              showMyDialog(
+                                  context,
+                                  height * 0.45,
+                                  width * 0.33,
+                                  height * 0.4,
+                                  width * 0.7,
+                                  height * 0.64,
+                                  width * 0.55,
+                                  redCoinAnimation == true
+                                      ? stack1
+                                      : lightGreenCoinAnimation == true
+                                          ? stack2
+                                          : lightBlueCoinAnimation == true
+                                              ? stack3
+                                              : greenCoinAnimation == true
+                                                  ? stack4
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
+                            }
+                          });
+                        },
+                        child: AnimatedContainer(
+                          height: selectPlayerA == true
+                              ? height * 0.35
+                              : height * 0.3,
+                          width: selectPlayerA == true
+                              ? width * 0.25
+                              : width * 0.2,
+                          duration: Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  width: 3,
+                                  color: selectPlayerA == true
+                                      ? Colors.white
+                                      : Color.fromRGBO(157, 50, 204, 2))),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 25,
+                                width: width,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10))),
+                                child: Container(
+                                  margin:  EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Image.asset(
+                                        "assets/User-interface/teen-patti-small-coin.png",
+                                        scale: 1,
+                                      ),
+                                      Text(
+                                        "Player A",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Icon(
+                                        Icons.person,
+                                        color: Color.fromRGBO(157, 50, 204, 2),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  Image.asset(
+                                    "assets/User-interface/chips.png",
+                                    scale: 1,
+                                  ),
+                                  Text(
+                                    playerARate,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                height: 25,
+                                width: width,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10))),
+                                child: Container(
+                                  margin:  EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Image.asset(
+                                        "assets/User-interface/teen-patti-small-coin.png",
+                                        scale: 1,
+                                      ),
+                                      Text(
+                                        "MY : $liablity1",
+                                        style: TextStyle(
+                                            color: liablity1 > 0
+                                                ? Colors.green
+                                                : Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "0",
+                                        style: TextStyle(
+                                            color: Colors.yellow,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          HapticFeedback.vibrate();
+                          setState(() {
+                            if (redCoinAnimation == true ||
+                                lightGreenCoinAnimation == true ||
+                                greenCoinAnimation == true ||
+                                lightBlueCoinAnimation == true ||
+                                brownCoinAnimation == true) {
+                              selectPlayerB = !selectPlayerB;
+                            }
+                            if (selectPlayerB == true) {
+                              selectPlayerA = false;
+                              showMyDialog(
+                                  context,
+                                  height * 0.45,
+                                  width * 0.33,
+                                  height * 0.4,
+                                  width * 0.7,
+                                  height * 0.64,
+                                  width * 0.55,
+                                  redCoinAnimation == true
+                                      ? stack1
+                                      : lightGreenCoinAnimation == true
+                                          ? stack2
+                                          : lightBlueCoinAnimation == true
+                                              ? stack3
+                                              : greenCoinAnimation == true
+                                                  ? stack4
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
+                            }
+                          });
+                        },
+                        child: AnimatedContainer(
+                          height: selectPlayerB == true
+                              ? height * 0.35
+                              : height * 0.3,
+                          width: selectPlayerB == true
+                              ? width * 0.25
+                              : width * 0.2,
+                          duration: Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  width: 3,
+                                  color: selectPlayerB == true
+                                      ? Colors.white
+                                      : Color.fromRGBO(157, 50, 204, 2))),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 25,
+                                width: width,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10))),
+                                child: Container(
+                                  margin:  EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Image.asset(
+                                        "assets/User-interface/teen-patti-small-coin.png",
+                                        scale: 1,
+                                      ),
+                                      Text(
+                                        "Player B",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Icon(
+                                        Icons.person,
+                                        color: Color.fromRGBO(157, 50, 204, 2),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  Image.asset(
+                                    "assets/User-interface/chips.png",
+                                    scale: 1,
+                                  ),
+                                  Text(
+                                    playerBRate,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                height: 25,
+                                width: width,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10))),
+                                child: Container(
+                                  margin:  EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Image.asset(
+                                        "assets/User-interface/teen-patti-small-coin.png",
+                                        scale: 1,
+                                      ),
+                                      Text(
+                                        "MY : $liablity2",
+                                        style: TextStyle(
+                                            color: liablity2 > 0
+                                                ? Colors.green
+                                                : Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "0",
+                                        style: TextStyle(
+                                            color: Colors.yellow,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+
+              LandscapeRandomCoinLeftSide(coinsSound: playBackgroundMusic),
+              RandomCoinThroughRightSide(),
+
+              autoTime == "45"
+                  ? placeyourbetWidget(autoTime)
+                  : autoTime == "3" || autoTime == "2" || autoTime == "1"
+                      ? goWidget()
+                      : autoTime != "0"
+                          ? SizedBox()
+                          : Positioned(
+                              top: height * 0.32,
+                              right: width * 0.3,
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: height * 0.5,
+                                width: width * 0.4,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                          "assets/Teen-patti/images/Current Result.png",
+                                        ),
+                                        fit: BoxFit.cover)),
+                                child: Container(
+                                  margin:  EdgeInsets.symmetric(
+                                      horizontal: 30),
+                                  child: Row(
+                                    children: [
+                                      buildImage(cardImage1),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      buildImage(cardImage2),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      buildImage(cardImage3),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      buildImage(cardImage4),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      buildImage(cardImage5),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      buildImage(cardImage6),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+// //Animated Coins : a
+              startTimes <= 3 && autoTime != '0'
+                  ? gameStopBetting(autoTime)
+                  : SizedBox(),
+
+              animatedCoinsSeletion(),
+              Positioned(
+                bottom: height * 0.05,
+                left: width * 0.02,
+                child: Row(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/Teen-patti/images/exp-image.png"),
+                              fit: BoxFit.fitWidth)),
+                      height: height * 0.09,
+                      width: width * 0.15,
+                      child: Text(
+                        "EXP : $liablity",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.57,
+                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     _globalKey.currentState!.openDrawer();
+
+                    //     HapticFeedback.vibrate();
+                    //     onPressedMusic();
+                    //     setState(() {
+                    //       menubar = false;
+                    //     });
+                    //   },
+                    //   child: Image.asset(
+                    //     'assets/Teen-patti/images/bet-button.png',
+                    //     height: height * 0.09,
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+
+                 Positioned(
+                  top: height * 0.18,
+                  right: width * 0.02,
+                  child: Container(
+                    height: height * 0.75,
+                    width: width * 0.04,
+        
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage(
+                          "assets/lucky7/images/coin_background.png"),
+                      fit: BoxFit.cover,
+                    )),
+                    child:Padding(
+                  padding:  EdgeInsets.only(top: 2.0),
+                  child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      itemCount: resultList.length,
+                      itemBuilder: (context, index) {
+                        var items = resultList[index];
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : "";
+                                HapticFeedback.vibrate();
+                                showPopUp == true
+                                    ? DialogUtils.showResult(
+                                        context,
+                                        "",
+                                        items.c1,
+                                        items.c2,
+                                        items.c3,
+                                        items.c4,
+                                        items.c5,
+                                        items.c6,
+                                        items.winner,
+                                        items.mid,
+                                        showPopUp,
+                                        playBackgroundMusic)
+                                    : "";
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin:  EdgeInsets.symmetric(vertical: 5),
+                                height: 20,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                    color: items.winner == "1"
+                                        ? Color(0xaa028BA9)
+                                        : Color(0xaaA90270),
+                                    borderRadius: BorderRadius.circular(100)),
+                                child: Text(
+                                  items.winner == "1" ? "A" : "B",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                ),)
+              ),
+            ],
+          )),
+    );
+  }
+
+  Widget potraitMode() {
+    showPopUp = false;
+    return Scaffold(
+      drawerEnableOpenDragGesture: false,
+      backgroundColor: Colors.transparent,
+      key: _globalKey,
+      drawer: SizedBox(width: width * 0.55, child: drawerWidget()),
+      body: Container(
+          height: height * 1.35,
+          width: width,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage(
+              "assets/Teen-patti/images/backgroud-image.png",
+            ),
+            fit: BoxFit.fill,
+          )),
+          child: SingleChildScrollView(
+            child: Column(children: [
+                 Padding(
+                padding: EdgeInsets.only(
+                    left: width * 0.02,
+                    right: width * 0.02,
+                    bottom: height * 0.01,
+                    top: height * 0.02),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  'assets/Teen-patti/images/balance-frame.png'),
+                              fit: BoxFit.fill)),
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: width * 0.016),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'assets/lucky7/images/Group 658.png',
+                              height: height * 0.04,
+                              width: width * 0.045,
+                            ),
+                            Text(
+                              "  ${mainBalance.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  color: Color(0xffFFEFC1),
+                                  fontSize: height * 0.015,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                        });
+
+                        _globalKey.currentState!.openDrawer();
+                      },
+                      child: Image.asset( 'assets/Teen-patti/images/menu-button.png',
+                          fit: BoxFit.cover, height: height * 0.05),
+                    ),
+                    SizedBox(
+                      width: width * 0.001,
+                    ),
+                    playBackgroundMusic == false
+                        ? InkWell(
+                            onTap: () {
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : Vibration.vibrate();
+                                ;
+                              });
+                              _player.stop();
+                              setState(() {
+                                playBackgroundMusic = true;
+                              });
+                            },
+                            child: Image.asset(
+                                'assets/Teen-patti/images/sound-unmute.png',
+                                fit: BoxFit.fill,
+                                height: height * 0.045),
+                          )
+                        : InkWell(
+                            onTap: () {
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : Vibration.vibrate();
+                                ;
+                              });
+                              _player.play();
+                              setState(() {
+                                playBackgroundMusic = false;
+                              });
+                            },
+                            child: Image.asset(
+                                'assets/Teen-patti/images/sound-button.png',
+                                fit: BoxFit.fill,
+                                height: height * 0.045),
+                          ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.01,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                          left: width * 0.02,
+                          right: width * 0.015,
+                          top: height * 0.001),
+                      height: height * 0.035,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  'assets/Teen-patti/images/exp-image.png'),
+                              fit: BoxFit.fill)),
+                      child: CustomText(
+                          text: "EXP: ${liablity.toString()}",
+                          color: Color(0xffFFEFC1),
+                          fontSize: height * 0.0125,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                        });
+
+                      //  Navigator.push(context, _createRouteCurrentBetsList());
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: width * 0.165, top: height * 0.001),
+                        height: height * 0.040,
+                        width: width * 0.25,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  'assets/Teen-patti/images/my-bet-p.png',
+                                ),
+                                fit: BoxFit.fill)),
+                        child: CustomText(
+                          text: matchIdList.length.toString(),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: width * 0.024,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+                BlinkText(
+                "Round Id : $marketId",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                padding:
+                    EdgeInsets.only(left: width * 0.04, top: height * 0.01),
+                margin:  EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage(
+                    "assets/Teen-patti/images/small-result-p.png",
+                  ),
+                  fit: BoxFit.fill,
+                )),
+                height: height * 0.04,
+                width: width,
+                child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: resultList.length,
+                    itemBuilder: (context, index) {
+                      var items = resultList[index];
+                      return Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : "";
+                              HapticFeedback.vibrate();
+                              DialogUtils.showResultPortrait(
+                                  context,
+                                  "",
+                                  items.c1,
+                                  items.c2,
+                                  items.c3,
+                                  items.c4,
+                                  items.c5,
+                                  items.c6,
+                                  items.winner,
+                                  items.mid,
+                                  playBackgroundMusic);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              margin:  EdgeInsets.symmetric(horizontal: 5),
+                              height: 20,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                  color: items.winner == "1"
+                                      ? Color(0xaa028BA9)
+                                      : Color(0xaaA90270),
+                                  borderRadius: BorderRadius.circular(100)),
+                              child: Text(
+                                items.winner == "1" ? "A" : "B",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                margin:  EdgeInsets.symmetric(horizontal: 30),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "( Min:100 Max:25000 )",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Image.asset(
+                'assets/dragonTigerLion/tableImges/table-girl.png',
+                fit: BoxFit.cover,
+                height: height * 0.13,
+              ),
+              Stack(
+                children: [
+                  Image.asset(
+                    'assets/Teen-patti/images/table-p.png',
+                    fit: BoxFit.fill,
+                    height: height * 0.35,
+                  ),
+                  Positioned(
+                    left: 30,
+                    child:Image.asset(
+                            'assets/lucky7/images/frame/logo.png',
+                            fit: BoxFit.cover,
+                            height: height * 0.04,
+                          ),
+                  ),
+                  Positioned(
+                    right: 30,
+                    child: Image.asset(
+                            'assets/lucky7/images/frame/logo.png',
+                            fit: BoxFit.cover,
+                            height: height * 0.04,
+                          ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/Teen-patti/images/player-image.png',
+                        fit: BoxFit.fitWidth,
+                        height: height * 0.3,
+                        width: width * 0.8,
+                      ),
+                    ],
+                  ),
+                  autoTime == "0"
+                      ? SizedBox()
+                      : Container(
+                          width: width,
+                          alignment: Alignment.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "Starting in $autoTime Sec",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                              // SizedBox(
+                              //   height: 16,
+                              //   width: width * 0.25,
+                              //   child: LinearPercentIndicator(
+                              //     animation: autoTime == "0" ? false : true,
+                              //     restartAnimation:
+                              //         autoTime == "0" ? false : true,
+                              //     lineHeight: 5.0,
+                              //     animationDuration: 45000,
+                              //     percent: 1.0,
+                              //     progressColor: Color(0xaa9919D2),
+                              //     barRadius: Radius.circular(20),
+                              //   ),
+                              // ),
+                              SizedBox(
+                                height: 2,
+                                width: width * 0.25,
+                                child: LinearProgressIndicator(
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                  SizedBox(
+                      height: 200,
+                      child: PotraitRandomCoinLeftSide(
+                        coinsSound: playBackgroundMusic,
+                      )),
+                  SizedBox(
+                    height: height * 0.36,
+                    child: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 900),
+                      child: Stack(
+                        children: _coinsRytPort,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 200, child: PotraitRandomCoinRightSide()),
+                  autoTime == "45"
+                      ? placeyourbetWidget(autoTime)
+                      : autoTime == "3" || autoTime == "2" || autoTime == "1"
+                          ? goWidget()
+                          : startTimes <= 3 && autoTime != '0'
+                              ? gameStopBetting(autoTime)
+                              : autoTime != "0"
+                                  ? SizedBox()
+                                  : Positioned(
+                                      top: height * 0.0,
+                                      left: 60,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height: height * 0.3,
+                                        width: width * 0.7,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                  "assets/Teen-patti/images/Current Result.png",
+                                                ),
+                                                fit: BoxFit.contain)),
+                                        child: Container(
+                                          margin: 
+                                           EdgeInsets.symmetric(
+                                              horizontal: 30),
+                                          child: Row(
+                                            children: [
+                                              buildImagePortrait(cardImage1),
+                                              SizedBox(
+                                                width: 3,
+                                              ),
+                                              buildImagePortrait(cardImage2),
+                                              SizedBox(
+                                                width: 3,
+                                              ),
+                                              buildImagePortrait(cardImage3),
+                                              SizedBox(
+                                                width: 30,
+                                              ),
+                                              buildImagePortrait(cardImage4),
+                                              SizedBox(
+                                                width: 3,
+                                              ),
+                                              buildImagePortrait(cardImage5),
+                                              SizedBox(
+                                                width: 3,
+                                              ),
+                                              buildImagePortrait(cardImage6),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                ],
+              ),
+              Stack(
+                children: [
+                  Image.asset(
+                    'assets/Teen-patti/images/bottom-pic-p.png',
+                    fit: BoxFit.cover,
+                    width: width,
+                    height: height * 0.08,
+                  ),
+                  Positioned(
+                    bottom: height * 0.01,
+                    left: width * 0.155,
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
+                              redCoinAnimation = !redCoinAnimation;
+                              lightGreenCoinAnimation = false;
+
+                              greenCoinAnimation = false;
+                              lightBlueCoinAnimation = false;
+                              brownCoinAnimation = false;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 700),
+                            alignment: Alignment.center,
+                            height: redCoinAnimation == true && startTimes > 1
+                                ? height * 0.07
+                                : height * 0.05,
+                            width: redCoinAnimation == true && startTimes > 1
+                                ? width * 0.15
+                                : width * 0.105,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/lucky7/images/coins/red_coin.png"),
+                              fit: BoxFit.fill,
+                            )),
+                            child: Text(
+                              stack1.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: height * 0.01),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.045,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
+                              redCoinAnimation = false;
+                              lightGreenCoinAnimation =
+                                  !lightGreenCoinAnimation;
+
+                              greenCoinAnimation = false;
+                              lightBlueCoinAnimation = false;
+                              brownCoinAnimation = false;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 700),
+                            alignment: Alignment.center,
+                            height: lightGreenCoinAnimation == true &&
+                                    startTimes > 1
+                                ? height * 0.07
+                                : height * 0.05,
+                            width: lightGreenCoinAnimation == true &&
+                                    startTimes > 1
+                                ? width * 0.15
+                                : width * 0.105,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/lucky7/images/coins/light_green_coin.png"),
+                              fit: BoxFit.fill,
+                            )),
+                            child: Text(
+                              stack1 != 0 ? "1K" : stack2.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: height * 0.01),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.045,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            playBackgroundMusic == false
+                                ? ''
+                                : Vibration.vibrate();
+                            setState(() {
+                              redCoinAnimation = false;
+                              lightGreenCoinAnimation = false;
+
+                              greenCoinAnimation = false;
+                              lightBlueCoinAnimation = !lightBlueCoinAnimation;
+                              brownCoinAnimation = false;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 700),
+                            alignment: Alignment.center,
+                            height:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? height * 0.07
+                                    : height * 0.05,
+                            width:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? width * 0.15
+                                    : width * 0.105,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/lucky7/images/coins/skyblue.png"),
+                              fit: BoxFit.fill,
+                            )),
+                            child: Text(
+                              stack2 != 0 ? "2K" : stack3.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: height * 0.01),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.045,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+                            setState(() {
+                              redCoinAnimation = false;
+                              lightGreenCoinAnimation = false;
+
+                              greenCoinAnimation = !greenCoinAnimation;
+                              lightBlueCoinAnimation = false;
+                              brownCoinAnimation = false;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 700),
+                            alignment: Alignment.center,
+                            height: greenCoinAnimation == true && startTimes > 1
+                                ? height * 0.07
+                                : height * 0.05,
+                            width: greenCoinAnimation == true && startTimes > 1
+                                ? width * 0.15
+                                : width * 0.105,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/lucky7/images/coins/green_coin.png"),
+                              fit: BoxFit.fill,
+                            )),
+                            child: Text(
+                              stack3 != 0 ? "5K" : stack4.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: height * 0.01),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width * 0.045,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
+                              redCoinAnimation = false;
+                              lightGreenCoinAnimation = false;
+
+                              greenCoinAnimation = false;
+                              lightBlueCoinAnimation = false;
+                              brownCoinAnimation = !brownCoinAnimation;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 700),
+                            alignment: Alignment.center,
+                            height: brownCoinAnimation == true && startTimes > 1
+                                ? height * 0.08
+                                : height * 0.06,
+                            width: brownCoinAnimation == true && startTimes > 1
+                                ? width * 0.17
+                                : width * 0.13,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/lucky7/images/coins/brown.png"),
+                              fit: BoxFit.fill,
+                            )),
+                            child: Text(
+                              stack4 != 0 ? "20K" : stack6.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: height * 0.01),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                margin:  EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (redCoinAnimation == true ||
+                                  lightGreenCoinAnimation == true ||
+                                  greenCoinAnimation == true ||
+                                  lightBlueCoinAnimation == true ||
+                                  brownCoinAnimation == true) {
+                                selectPlayerB = !selectPlayerB;
+                              }
+                              if (selectPlayerB == true) {
+                                selectPlayerA = false;
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : lightBlueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
+                              }
+                            });
+                          },
+                          child: Image.asset(
+                            'assets/Teen-patti/images/player-A.png',
+                            height: height * 0.07,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Text(
+                          liablity1 != 0 ? "$liablity1" : "",
+                          style: TextStyle(
+                              color:
+                                  liablity1 > 0 ? Colors.green : Colors.white),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (redCoinAnimation == true ||
+                                  lightGreenCoinAnimation == true ||
+                                  greenCoinAnimation == true ||
+                                  lightBlueCoinAnimation == true ||
+                                  brownCoinAnimation == true) {
+                                selectPlayerB = !selectPlayerB;
+                              }
+                              if (selectPlayerB == true) {
+                                selectPlayerA = false;
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : lightBlueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
+                              }
+                            });
+                          },
+                          child: Image.asset(
+                            'assets/Teen-patti/images/player-B.png',
+                            height: height * 0.07,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Text(
+                          liablity2 != 0 ? "$liablity2" : "",
+                          style: TextStyle(
+                            color: liablity2 > 0 ? Colors.green : Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+          )),
+    );
+  }
+
   Widget drawerWidget() {
     return Container(
       height: height,
@@ -467,7 +1989,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               width: width,
               decoration: BoxDecoration(color: Colors.black),
               child: Padding(
-                padding: const EdgeInsets.only(right: 5),
+                padding:  EdgeInsets.only(right: 5),
                 child: Image.asset(
                   "assets/User-interface/Buttons/close-button.png",
                   scale: 0.8,
@@ -484,7 +2006,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               HapticFeedback.vibrate();
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              margin:  EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: Text(
                 "Profile",
                 style: TextStyle(
@@ -516,7 +2038,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               HapticFeedback.vibrate();
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              margin:  EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: Text(
                 "Current Bets",
                 style: TextStyle(
@@ -547,7 +2069,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               Navigator.push(context, _createRouteChangePassword());
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              margin:  EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: Text(
                 "Change Password",
                 style: TextStyle(
@@ -608,8 +2130,9 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -628,8 +2151,9 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
 
   Route _createRouteProfile() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -649,7 +2173,9 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+          ChangePasswordScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -666,1675 +2192,247 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     );
   }
 
-  Widget landscapeWidget() {
-    showPopUp = true;
-    return Scaffold(
-      key: _globalKey,
-      drawerEnableOpenDragGesture: false,
-      drawer: drawerWidget(),
-      body: Container(
-          height: height,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                      "assets/Teen-patti/images/backgroud-image.png"),
-                  fit: BoxFit.fill)),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                top: height * 0.03,
-                left: width * 0.02,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            HapticFeedback.vibrate();
-                            setState(() {
-                              playBackgroundMusic == false
-                                  ? onPressedMusic()
-                                  : "";
-                            });
-                            _globalKey.currentState!.openDrawer();
-                          },
-                          child: Image.asset(
-                              'assets/Teen-patti/images/menu-button.png',
-                              fit: BoxFit.fill,
-                              width: width * 0.05),
-                        ),
-                        SizedBox(
-                          width: width * 0.03,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          width: width * 0.15,
-                          height: height * 0.09,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      'assets/Teen-patti/images/balance-frame.png'),
-                                  fit: BoxFit.fitWidth)),
-                          child: Container(
-                            width: width * 0.15,
-                            margin: const EdgeInsets.only(left: 50),
-                            child: Text(
-                              mainBalance.toStringAsFixed(2),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: () {
-                        HapticFeedback.vibrate();
-                        setState(() {
-                          playBackgroundMusic == false ? onPressedMusic() : "";
-                        });
-                        Navigator.push(context, _createRouteCurrentBets());
-                        // showBetHistory(context);
-                      },
-                      child: Image.asset(
-                        'assets/Teen-patti/images/my-bet.png',
-                        fit: BoxFit.fill,
-                        height: height * 0.10,
-                        width: width * 0.19,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 1,
-                    ),
-                    BlinkText(
-                      "Round Id : $marketId",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: height * 0.05,
-                child: Image.asset(
-                  'assets/dragonTigerLion/tableImges/table-girl.png',
-                  fit: BoxFit.cover,
-                  height: height * 0.28,
-                ),
-              ),
-
-              Positioned(
-                top: height * 0.16,
-                left: width * 0.17,
-                child: CustomText(
-                  text: matchIdList.length.toString(),
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                  fontSize: 15.0,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              Positioned(
-                top: height * 0.02,
-                right: width * 0.1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        //---------------Game Timer------------//
-                        autoTime == "0"
-                            ? SizedBox()
-                            : Column(
-                                children: [
-                                  Text(
-                                    "Starting in $autoTime Sec",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   height: 16,
-                                  //   width: width * 0.25,
-                                  //   child: LinearPercentIndicator(
-                                  //     animation: autoTime == "0" ? false : true,
-                                  //     restartAnimation:
-                                  //         autoTime == "0" ? false : true,
-                                  //     lineHeight: 5.0,
-                                  //     animationDuration: 45000,
-                                  //     percent: 1.0,
-                                  //     progressColor: Color(0xaa9919D2),
-                                  //     barRadius: Radius.circular(20),
-                                  //   ),
-                                  // ),
-                                  SizedBox(
-                                    height: 4,
-                                    width: width * 0.2,
-                                    child: LinearProgressIndicator(
-                                      value: startTimes /
-                                          45, // Calculate the progress
-                                      backgroundColor: Colors.white,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Color(0xaa9919D2)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "Min:100 Max: 25000",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12),
-                                  )
-                                ],
-                              ),
-                        SizedBox(
-                          width: width * 0.05,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: height * 0.02,
-                right: width * 0.055,
-                child: playBackgroundMusic == false
-                    ? InkWell(
-                        onTap: () {
-                          HapticFeedback.vibrate();
-                          playBackgroundMusic == false ? onPressedMusic() : "";
-                          _player.stop();
-                          setState(() {
-                            playBackgroundMusic = true;
-                          });
-                        },
-                        child: Image.asset(
-                            'assets/Teen-patti/images/sound-unmute.png',
-                            fit: BoxFit.cover,
-                            width: width * 0.05),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          HapticFeedback.vibrate();
-                          playBackgroundMusic == false ? onPressedMusic() : "";
-                          _player.play();
-                          setState(() {
-                            playBackgroundMusic = false;
-                          });
-                        },
-                        child: Image.asset(
-                            'assets/Teen-patti/images/sound-button.png',
-                            fit: BoxFit.cover,
-                            width: width * 0.057),
-                      ),
-              ),
-
-              Positioned(
-                bottom: 1,
-                child: Image.asset(
-                  'assets/Teen-patti/images/table-image.png',
-                  fit: BoxFit.fill,
-                  height: height * 0.67,
-                ),
-              ),
-              Positioned(
-                top: height * 0.37,
-                left: width * 0.2,
-                child: startTimes >= 3
-                    ? AnimatedBuilder(
-                        animation: _animation,
-                        builder: (context, child) {
-                          return Transform.translate(
-                            offset: Offset(0, -25 * _animation.value),
-                            child: Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.09,
-                            ),
-                          );
-                        })
-                    : Image.asset(
-                        'assets/lucky7/images/frame/logo.png',
-                        fit: BoxFit.cover,
-                        height: height * 0.09,
-                      ),
-              ),
-              Positioned(
-                  top: height * 0.37,
-                  right: width * 0.2,
-                  child: startTimes >= 3
-                      ? AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, -25 * _animation.value),
-                              child: Image.asset(
-                                'assets/lucky7/images/frame/logo.png',
-                                fit: BoxFit.cover,
-                                height: height * 0.09,
-                              ),
-                            );
-                          })
-                      : Image.asset(
-                          'assets/lucky7/images/frame/logo.png',
-                          fit: BoxFit.cover,
-                          height: height * 0.09,
-                        )),
-
-              AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                child: Stack(
-                  children: _coins,
-                ),
-              ),
-              // ?
-              //------------------- RESULT IMAGE----------------//
-              Positioned(
-                  top: height * 0.45,
-                  right: width * 0.28,
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          HapticFeedback.vibrate();
-                          setState(() {
-                            if (animatedContainer == true ||
-                                animatedContainer2 == true ||
-                                animatedContainer3 == true ||
-                                animatedContainer4 == true ||
-                                animatedContainer5 == true ||
-                                animatedContainer6 == true) {
-                              selectPlayerA = !selectPlayerA;
-                            }
-                            if (selectPlayerA == true) {
-                              selectPlayerB = false;
-                              showMyDialog(animatedContainer == true
-                                  ? stack1
-                                  : animatedContainer2 == true
-                                      ? stack2
-                                      : animatedContainer3 == true
-                                          ? stack3
-                                          : animatedContainer4 == true
-                                              ? stack4
-                                              : animatedContainer5 == true
-                                                  ? stack5
-                                                  : animatedContainer6 == true
-                                                      ? stack6
-                                                      : 0);
-                            }
-                          });
-                        },
-                        child: AnimatedContainer(
-                          height: selectPlayerA == true
-                              ? height * 0.35
-                              : height * 0.3,
-                          width: selectPlayerA == true
-                              ? width * 0.25
-                              : width * 0.2,
-                          duration: Duration(milliseconds: 300),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 3,
-                                  color: selectPlayerA == true
-                                      ? Colors.white
-                                      : Color.fromRGBO(157, 50, 204, 2))),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                height: 25,
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10))),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Image.asset(
-                                        "assets/User-interface/teen-patti-small-coin.png",
-                                        scale: 1,
-                                      ),
-                                      Text(
-                                        "Player A",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Icon(
-                                        Icons.person,
-                                        color: Color.fromRGBO(157, 50, 204, 2),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Image.asset(
-                                    "assets/User-interface/chips.png",
-                                    scale: 1,
-                                  ),
-                                  Text(
-                                    playerARate,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                              Container(
-                                alignment: Alignment.center,
-                                height: 25,
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10))),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Image.asset(
-                                        "assets/User-interface/teen-patti-small-coin.png",
-                                        scale: 1,
-                                      ),
-                                      Text(
-                                        "MY : $liablity1",
-                                        style: TextStyle(
-                                            color: liablity1 > 0
-                                                ? Colors.green
-                                                : Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        "0",
-                                        style: TextStyle(
-                                            color: Colors.yellow,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 30,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          HapticFeedback.vibrate();
-                          setState(() {
-                            if (animatedContainer == true ||
-                                animatedContainer2 == true ||
-                                animatedContainer3 == true ||
-                                animatedContainer4 == true ||
-                                animatedContainer5 == true ||
-                                animatedContainer6 == true) {
-                              selectPlayerB = !selectPlayerB;
-                            }
-                            if (selectPlayerB == true) {
-                              selectPlayerA = false;
-                              showMyDialog(animatedContainer == true
-                                  ? stack1
-                                  : animatedContainer2 == true
-                                      ? stack2
-                                      : animatedContainer3 == true
-                                          ? stack3
-                                          : animatedContainer4 == true
-                                              ? stack4
-                                              : animatedContainer5 == true
-                                                  ? stack5
-                                                  : animatedContainer6 == true
-                                                      ? stack6
-                                                      : 0);
-                            }
-                          });
-                        },
-                        child: AnimatedContainer(
-                          height: selectPlayerB == true
-                              ? height * 0.35
-                              : height * 0.3,
-                          width: selectPlayerB == true
-                              ? width * 0.25
-                              : width * 0.2,
-                          duration: Duration(milliseconds: 300),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 3,
-                                  color: selectPlayerB == true
-                                      ? Colors.white
-                                      : Color.fromRGBO(157, 50, 204, 2))),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                height: 25,
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10))),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Image.asset(
-                                        "assets/User-interface/teen-patti-small-coin.png",
-                                        scale: 1,
-                                      ),
-                                      Text(
-                                        "Player B",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Icon(
-                                        Icons.person,
-                                        color: Color.fromRGBO(157, 50, 204, 2),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Image.asset(
-                                    "assets/User-interface/chips.png",
-                                    scale: 1,
-                                  ),
-                                  Text(
-                                    playerBRate,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                              Container(
-                                alignment: Alignment.center,
-                                height: 25,
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10))),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Image.asset(
-                                        "assets/User-interface/teen-patti-small-coin.png",
-                                        scale: 1,
-                                      ),
-                                      Text(
-                                        "MY : $liablity2",
-                                        style: TextStyle(
-                                            color: liablity2 > 0
-                                                ? Colors.green
-                                                : Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        "0",
-                                        style: TextStyle(
-                                            color: Colors.yellow,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-
-              LandscapeRandomCoinLeftSide(coinsSound: playBackgroundMusic),
-              RandomCoinThroughRightSide(),
-
-              autoTime == "45"
-                  ? placeyourbetWidget(autoTime)
-                  : autoTime == "3" || autoTime == "2" || autoTime == "1"
-                      ? goWidget()
-                      : autoTime != "0"
-                          ? SizedBox()
-                          : Positioned(
-                              top: height * 0.32,
-                              right: width * 0.3,
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: height * 0.5,
-                                width: width * 0.4,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                          "assets/Teen-patti/images/Current Result.png",
-                                        ),
-                                        fit: BoxFit.cover)),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 30),
-                                  child: Row(
-                                    children: [
-                                      buildImage(cardImage1),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      buildImage(cardImage2),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      buildImage(cardImage3),
-                                      SizedBox(
-                                        width: 30,
-                                      ),
-                                      buildImage(cardImage4),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      buildImage(cardImage5),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      buildImage(cardImage6),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-
-// //Animated Coins : a
-              autoTime == "3" ? gameStopBetting(autoTime) : SizedBox(),
-
-              animatedCoinsSeletion(),
-              Positioned(
-                bottom: height * 0.05,
-                left: width * 0.02,
-                child: Row(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/exp-image.png"),
-                              fit: BoxFit.fitWidth)),
-                      height: height * 0.09,
-                      width: width * 0.15,
-                      child: Text(
-                        "EXP : $liablity",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11),
-                      ),
-                    ),
-                    SizedBox(
-                      width: width * 0.57,
-                    ),
-                    // InkWell(
-                    //   onTap: () {
-                    //     _globalKey.currentState!.openDrawer();
-
-                    //     HapticFeedback.vibrate();
-                    //     onPressedMusic();
-                    //     setState(() {
-                    //       menubar = false;
-                    //     });
-                    //   },
-                    //   child: Image.asset(
-                    //     'assets/Teen-patti/images/bet-button.png',
-                    //     height: height * 0.09,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-
-              Positioned(
-                height: height * 0.8,
-                width: width * 0.3,
-                left: width * 0.77,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      itemCount: resultList.length,
-                      itemBuilder: (context, index) {
-                        var items = resultList[index];
-                        return Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                playBackgroundMusic == false
-                                    ? onPressedMusic()
-                                    : "";
-                                HapticFeedback.vibrate();
-                                showPopUp == true
-                                    ? DialogUtils.showResult(
-                                        context,
-                                        "",
-                                        items.c1,
-                                        items.c2,
-                                        items.c3,
-                                        items.c4,
-                                        items.c5,
-                                        items.c6,
-                                        items.winner,
-                                        items.mid,
-                                        showPopUp,
-                                      )
-                                    : "";
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                margin: const EdgeInsets.symmetric(vertical: 5),
-                                height: 20,
-                                width: 20,
-                                decoration: BoxDecoration(
-                                    color: items.winner == "1"
-                                        ? Color(0xaa028BA9)
-                                        : Color(0xaaA90270),
-                                    borderRadius: BorderRadius.circular(100)),
-                                child: Text(
-                                  items.winner == "1" ? "A" : "B",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                ),
-              ),
-            ],
-          )),
-    );
-  }
-
-  Widget potraitMode() {
-    showPopUp = false;
-    return Scaffold(
-      drawerEnableOpenDragGesture: false,
-      key: _globalKey,
-      drawer: drawerWidget(),
-      body: Container(
-          height: height * 1.35,
-          width: width,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image: AssetImage(
-              "assets/Teen-patti/images/backgroud-image.png",
-            ),
-            fit: BoxFit.fill,
-          )),
-          child: SingleChildScrollView(
-            child: Column(children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: width * 0.02,
-                    right: width * 0.02,
-                    bottom: height * 0.02,
-                    top: height * 0.02),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: width * 0.35,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/Teen-patti/images/balance-frame.png'),
-                              fit: BoxFit.fill)),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: width * 0.02, vertical: height * 0.001),
-                        child: Text(
-                          "         ${mainBalance.toStringAsFixed(2)}",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 248, 244, 204),
-                              fontSize: height * 0.015,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: SizedBox(),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        HapticFeedback.vibrate();
-                        playBackgroundMusic == false ? onPressedMusic() : "";
-                        _globalKey.currentState!.openDrawer();
-                      },
-                      child: Image.asset(
-                          'assets/Teen-patti/images/menu-button.png',
-                          fit: BoxFit.cover,
-                          height: height * 0.05),
-                    ),
-                    SizedBox(
-                      width: width * 0.001,
-                    ),
-                    playBackgroundMusic == false
-                        ? InkWell(
-                            onTap: () {
-                              HapticFeedback.vibrate();
-                              playBackgroundMusic == false
-                                  ? onPressedMusic()
-                                  : "";
-                              _player.stop();
-                              setState(() {
-                                playBackgroundMusic = true;
-                              });
-                            },
-                            child: Image.asset(
-                                'assets/Teen-patti/images/sound-unmute.png',
-                                fit: BoxFit.fill,
-                                height: height * 0.045),
-                          )
-                        : InkWell(
-                            onTap: () {
-                              HapticFeedback.vibrate();
-                              playBackgroundMusic == false
-                                  ? onPressedMusic()
-                                  : "";
-                              _player.play();
-                              setState(() {
-                                playBackgroundMusic = false;
-                              });
-                            },
-                            child: Image.asset(
-                                'assets/Teen-patti/images/sound-button.png',
-                                fit: BoxFit.fill,
-                                height: height * 0.05),
-                          ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.01,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        HapticFeedback.vibrate();
-                        playBackgroundMusic == false ? onPressedMusic() : "";
-
-                        Navigator.push(context, _createRouteCurrentBets());
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            left: width * 0.16, top: height * 0.004),
-                        height: height * 0.05,
-                        width: width * 0.25,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage(
-                                  'assets/Teen-patti/images/my-bet-p.png',
-                                ),
-                                fit: BoxFit.fill)),
-                        child: CustomText(
-                          text: matchIdList.length.toString(),
-                          fontWeight: FontWeight.w500,
-                          color: Colors.yellow[50],
-                          fontSize: width * 0.03,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(
-                          left: width * 0.05, right: width * 0.01),
-                      height: height * 0.04,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/Teen-patti/images/exp-image.png'),
-                              fit: BoxFit.fill)),
-                      child: CustomText(
-                        text: "EXP : $liablity",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.yellow[50],
-                        fontSize: width * 0.03,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              BlinkText(
-                "Round Id : $marketId",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                padding:
-                    EdgeInsets.only(left: width * 0.04, top: height * 0.01),
-                margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage(
-                    "assets/Teen-patti/images/small-result-p.png",
-                  ),
-                  fit: BoxFit.fill,
-                )),
-                height: height * 0.04,
-                width: width,
-                child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: resultList.length,
-                    itemBuilder: (context, index) {
-                      var items = resultList[index];
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              playBackgroundMusic == false
-                                  ? onPressedMusic()
-                                  : "";
-                              HapticFeedback.vibrate();
-                              DialogUtils.showResultPortrait(
-                                context,
-                                "",
-                                items.c1,
-                                items.c2,
-                                items.c3,
-                                items.c4,
-                                items.c5,
-                                items.c6,
-                                items.winner,
-                                items.mid,
-                              );
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                  color: items.winner == "1"
-                                      ? Color(0xaa028BA9)
-                                      : Color(0xaaA90270),
-                                  borderRadius: BorderRadius.circular(100)),
-                              child: Text(
-                                items.winner == "1" ? "A" : "B",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 30),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "( Min:100 Max:25000 )",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Image.asset(
-                'assets/dragonTigerLion/tableImges/table-girl.png',
-                fit: BoxFit.cover,
-                height: height * 0.13,
-              ),
-              Stack(
-                children: [
-                  Image.asset(
-                    'assets/Teen-patti/images/table-p.png',
-                    fit: BoxFit.fill,
-                    height: height * 0.35,
-                  ),
-                  Positioned(
-                    left: 30,
-                    child: startTimes >= 3
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -25 * _animation.value),
-                                child: Image.asset(
-                                  'assets/lucky7/images/frame/logo.png',
-                                  fit: BoxFit.cover,
-                                  height: height * 0.04,
-                                ),
-                              );
-                            })
-                        : Image.asset(
-                            'assets/lucky7/images/frame/logo.png',
-                            fit: BoxFit.cover,
-                            height: height * 0.04,
-                          ),
-                  ),
-                  Positioned(
-                    right: 30,
-                    child: startTimes >= 3
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -25 * _animation.value),
-                                child: Image.asset(
-                                  'assets/lucky7/images/frame/logo.png',
-                                  fit: BoxFit.cover,
-                                  height: height * 0.04,
-                                ),
-                              );
-                            })
-                        : Image.asset(
-                            'assets/lucky7/images/frame/logo.png',
-                            fit: BoxFit.cover,
-                            height: height * 0.04,
-                          ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/Teen-patti/images/player-image.png',
-                        fit: BoxFit.fitWidth,
-                        height: height * 0.3,
-                        width: width * 0.8,
-                      ),
-                    ],
-                  ),
-                  autoTime == "0"
-                      ? SizedBox()
-                      : Container(
-                          width: width,
-                          alignment: Alignment.center,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(
-                                "Starting in $autoTime Sec",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                              // SizedBox(
-                              //   height: 16,
-                              //   width: width * 0.25,
-                              //   child: LinearPercentIndicator(
-                              //     animation: autoTime == "0" ? false : true,
-                              //     restartAnimation:
-                              //         autoTime == "0" ? false : true,
-                              //     lineHeight: 5.0,
-                              //     animationDuration: 45000,
-                              //     percent: 1.0,
-                              //     progressColor: Color(0xaa9919D2),
-                              //     barRadius: Radius.circular(20),
-                              //   ),
-                              // ),
-                              SizedBox(
-                                height: 2,
-                                width: width * 0.25,
-                                child: LinearProgressIndicator(
-                                  value:
-                                      startTimes / 45, // Calculate the progress
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xaa9919D2)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                  SizedBox(
-                      height: 200,
-                      child: PotraitRandomCoinLeftSide(
-                        coinsSound: playBackgroundMusic,
-                      )),
-                  SizedBox(
-                    height: height * 0.36,
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 900),
-                      child: Stack(
-                        children: _coinsRytPort,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 200, child: PotraitRandomCoinRightSide()),
-                  autoTime == "45"
-                      ? placeyourbetWidget(autoTime)
-                      : autoTime == "3" || autoTime == "2" || autoTime == "1"
-                          ? goWidget()
-                          : autoTime == "3"
-                              ? gameStopBetting(autoTime)
-                              : autoTime != "0"
-                                  ? SizedBox()
-                                  : Positioned(
-                                      top: height * 0.0,
-                                      left: 60,
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height: height * 0.3,
-                                        width: width * 0.7,
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                  "assets/Teen-patti/images/Current Result.png",
-                                                ),
-                                                fit: BoxFit.contain)),
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 30),
-                                          child: Row(
-                                            children: [
-                                              buildImagePortrait(cardImage1),
-                                              SizedBox(
-                                                width: 3,
-                                              ),
-                                              buildImagePortrait(cardImage2),
-                                              SizedBox(
-                                                width: 3,
-                                              ),
-                                              buildImagePortrait(cardImage3),
-                                              SizedBox(
-                                                width: 30,
-                                              ),
-                                              buildImagePortrait(cardImage4),
-                                              SizedBox(
-                                                width: 3,
-                                              ),
-                                              buildImagePortrait(cardImage5),
-                                              SizedBox(
-                                                width: 3,
-                                              ),
-                                              buildImagePortrait(cardImage6),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                ],
-              ),
-              Stack(
-                children: [
-                  Image.asset(
-                    'assets/Teen-patti/images/bottom-pic-p.png',
-                    fit: BoxFit.cover,
-                    width: width,
-                    height: height * 0.08,
-                  ),
-                  Positioned(
-                    top: 2,
-                    left: width * 0.13,
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            HapticFeedback.vibrate();
-                            setState(() {
-                              animatedContainer = !animatedContainer;
-                              if (animatedContainer == true) {
-                                animatedContainer4 = false;
-                                animatedContainer2 = false;
-                                animatedContainer3 = false;
-                                animatedContainer5 = false;
-                                animatedContainer6 = false;
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            height: animatedContainer == false
-                                ? height * 0.055
-                                : height * 0.08,
-                            width: animatedContainer == false
-                                ? width * 0.12
-                                : width * 0.17,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/coins-image/Group 115.png"),
-                              fit: BoxFit.cover,
-                            )),
-                            child: Text(
-                              stack1 != 0 ? "100" : stack6.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              animatedContainer2 = !animatedContainer2;
-                              if (animatedContainer2 == true) {
-                                animatedContainer4 = false;
-                                animatedContainer = false;
-                                animatedContainer3 = false;
-                                animatedContainer5 = false;
-                                animatedContainer6 = false;
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            height: animatedContainer2 == false
-                                ? height * 0.055
-                                : height * 0.08,
-                            width: animatedContainer2 == false
-                                ? width * 0.12
-                                : width * 0.17,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/coins-image/Group 654.png"),
-                              fit: BoxFit.cover,
-                            )),
-                            child: Text(
-                              stack2 != 0 ? "1K" : stack6.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              animatedContainer3 = !animatedContainer3;
-                              if (animatedContainer3 == true) {
-                                animatedContainer4 = false;
-                                animatedContainer = false;
-                                animatedContainer2 = false;
-                                animatedContainer5 = false;
-                                animatedContainer6 = false;
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            height: animatedContainer3 == false
-                                ? height * 0.055
-                                : height * 0.08,
-                            width: animatedContainer3 == false
-                                ? width * 0.12
-                                : width * 0.17,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/coins-image/Group 656.png"),
-                              fit: BoxFit.cover,
-                            )),
-                            child: Text(
-                              stack3 != 0 ? "2K" : stack6.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              animatedContainer4 = !animatedContainer4;
-                              if (animatedContainer4 == true) {
-                                animatedContainer2 = false;
-                                animatedContainer = false;
-                                animatedContainer3 = false;
-                                animatedContainer5 = false;
-                                animatedContainer6 = false;
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            height: animatedContainer4 == false
-                                ? height * 0.058
-                                : height * 0.08,
-                            width: animatedContainer4 == false
-                                ? width * 0.14
-                                : width * 0.19,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/coins-image/Group 677.png"),
-                              fit: BoxFit.cover,
-                            )),
-                            child: Text(
-                              stack4 != 0 ? "5K" : stack6.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 14,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              animatedContainer5 = !animatedContainer5;
-                              if (animatedContainer5 == true) {
-                                animatedContainer2 = false;
-                                animatedContainer = false;
-                                animatedContainer3 = false;
-                                animatedContainer4 = false;
-                                animatedContainer6 = false;
-                              }
-                            });
-                          },
-                          child: AnimatedContainer(
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            height: animatedContainer5 == false
-                                ? height * 0.055
-                                : height * 0.08,
-                            width: animatedContainer5 == false
-                                ? width * 0.12
-                                : width * 0.17,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/Teen-patti/images/coins-image/Group 657.png"),
-                              fit: BoxFit.cover,
-                            )),
-                            child: Text(
-                              stack5 != 0 ? "10K" : stack5.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 10),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              if (animatedContainer == true ||
-                                  animatedContainer2 == true ||
-                                  animatedContainer3 == true ||
-                                  animatedContainer4 == true ||
-                                  animatedContainer5 == true ||
-                                  animatedContainer6 == true) {
-                                selectPlayerB = !selectPlayerB;
-                              }
-                              if (selectPlayerB == true) {
-                                selectPlayerA = false;
-                                showMyDialogPortrait(animatedContainer == true
-                                    ? stack1
-                                    : animatedContainer2 == true
-                                        ? stack2
-                                        : animatedContainer3 == true
-                                            ? stack3
-                                            : animatedContainer4 == true
-                                                ? stack4
-                                                : animatedContainer5 == true
-                                                    ? stack5
-                                                    : animatedContainer6 == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Image.asset(
-                            'assets/Teen-patti/images/player-A.png',
-                            height: height * 0.07,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          liablity1 != 0 ? "$liablity1" : "",
-                          style: TextStyle(
-                              color:
-                                  liablity1 > 0 ? Colors.green : Colors.white),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              if (animatedContainer == true ||
-                                  animatedContainer2 == true ||
-                                  animatedContainer3 == true ||
-                                  animatedContainer4 == true ||
-                                  animatedContainer5 == true ||
-                                  animatedContainer6 == true) {
-                                selectPlayerB = !selectPlayerB;
-                              }
-                              if (selectPlayerB == true) {
-                                selectPlayerA = false;
-                                showMyDialogPortrait(animatedContainer == true
-                                    ? stack1
-                                    : animatedContainer2 == true
-                                        ? stack2
-                                        : animatedContainer3 == true
-                                            ? stack3
-                                            : animatedContainer4 == true
-                                                ? stack4
-                                                : animatedContainer5 == true
-                                                    ? stack5
-                                                    : animatedContainer6 == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Image.asset(
-                            'assets/Teen-patti/images/player-B.png',
-                            height: height * 0.07,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          liablity2 != 0 ? "$liablity2" : "",
-                          style: TextStyle(
-                            color: liablity2 > 0 ? Colors.green : Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-          )),
-    );
-  }
-
   Widget animatedCoinsSeletion() {
     return Positioned(
-      bottom: 7,
-      left: width * 0.28,
+      bottom: height * 0.01,
+      left: width * 0.30,
       child: Row(
         children: [
           InkWell(
             onTap: () {
               setState(() {
-                animatedContainer = !animatedContainer;
-                if (animatedContainer == true) {
-                  animatedContainer4 = false;
-                  animatedContainer2 = false;
-                  animatedContainer3 = false;
-                  animatedContainer5 = false;
-                  animatedContainer6 = false;
-                }
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
+              setState(() {
+                redCoinAnimation = true;
+                lightGreenCoinAnimation = false;
+
+                greenCoinAnimation = false;
+                lightBlueCoinAnimation = false;
+                brownCoinAnimation = false;
               });
             },
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 700),
               alignment: Alignment.center,
-              height: animatedContainer == true ? height * 0.16 : height * 0.11,
-              width: animatedContainer == true ? width * 0.08 : width * 0.055,
+              height: redCoinAnimation == true && startTimes > 1
+                  ? height * 0.15
+                  : height * 0.11,
+              width: redCoinAnimation == true && startTimes > 1
+                  ? width * 0.07
+                  : width * 0.05,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                image: AssetImage(
-                    "assets/Teen-patti/images/coins-image/Group 115.png"),
-                fit: BoxFit.cover,
+                image: AssetImage("assets/lucky7/images/coins/red_coin.png"),
+                fit: BoxFit.fill,
               )),
               child: Text(
-                stack1 != 0 ? "100" : stack6.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                stack1.toString(),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: height * 0.02),
               ),
             ),
           ),
           SizedBox(
-            width: width * 0.04,
+            width: width * 0.03,
           ),
           InkWell(
             onTap: () {
               setState(() {
-                animatedContainer2 = !animatedContainer2;
-                if (animatedContainer2 == true) {
-                  animatedContainer = false;
-                  animatedContainer4 = false;
-                  animatedContainer3 = false;
-                  animatedContainer5 = false;
-                  animatedContainer6 = false;
-                }
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
+              setState(() {
+                lightGreenCoinAnimation = true;
+                redCoinAnimation = false;
+
+                greenCoinAnimation = false;
+                lightBlueCoinAnimation = false;
+                brownCoinAnimation = false;
               });
             },
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 700),
               alignment: Alignment.center,
-              height:
-                  animatedContainer2 == true ? height * 0.16 : height * 0.11,
-              width: animatedContainer2 == true ? width * 0.08 : width * 0.055,
+              height: lightGreenCoinAnimation == true && startTimes > 1
+                  ? height * 0.15
+                  : height * 0.11,
+              width: lightGreenCoinAnimation == true && startTimes > 1
+                  ? width * 0.07
+                  : width * 0.05,
               decoration: BoxDecoration(
                   image: DecorationImage(
                 image: AssetImage(
-                    "assets/Teen-patti/images/coins-image/Group 654.png"),
-                fit: BoxFit.cover,
+                    "assets/lucky7/images/coins/light_green_coin.png"),
+                fit: BoxFit.fill,
               )),
               child: Text(
-                stack2 != 0 ? "1K" : stack6.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                stack1 != 0 ? "1K" : stack1.toString(),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: height * 0.02),
               ),
             ),
           ),
           SizedBox(
-            width: width * 0.04,
+            width: width * 0.03,
           ),
           InkWell(
             onTap: () {
               setState(() {
-                animatedContainer3 = !animatedContainer3;
-                if (animatedContainer3 == true) {
-                  animatedContainer = false;
-                  animatedContainer2 = false;
-                  animatedContainer4 = false;
-                  animatedContainer5 = false;
-                  animatedContainer6 = false;
-                }
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              alignment: Alignment.center,
-              height:
-                  animatedContainer3 == true ? height * 0.16 : height * 0.11,
-              width: animatedContainer3 == true ? width * 0.08 : width * 0.055,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage(
-                    "assets/Teen-patti/images/coins-image/Group 656.png"),
-                fit: BoxFit.cover,
-              )),
-              child: Text(
-                stack3 != 0 ? "2K" : stack6.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: width * 0.04,
-          ),
-          InkWell(
-            onTap: () {
               setState(() {
-                animatedContainer4 = !animatedContainer4;
-                if (animatedContainer4 == true) {
-                  animatedContainer = false;
-                  animatedContainer2 = false;
-                  animatedContainer3 = false;
-                  animatedContainer5 = false;
-                  animatedContainer6 = false;
-                }
+                redCoinAnimation = false;
+                lightGreenCoinAnimation = false;
+
+                greenCoinAnimation = false;
+                lightBlueCoinAnimation = !lightBlueCoinAnimation;
+                brownCoinAnimation = false;
               });
             },
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              alignment: Alignment.center,
-              height:
-                  animatedContainer4 == true ? height * 0.16 : height * 0.12,
-              width: animatedContainer4 == true ? width * 0.08 : width * 0.06,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage(
-                    "assets/Teen-patti/images/coins-image/Group 677.png"),
-                fit: BoxFit.cover,
-              )),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 3.0),
+                duration: Duration(milliseconds: 700),
+                alignment: Alignment.center,
+                height: lightBlueCoinAnimation == true && startTimes > 1
+                    ? height * 0.15
+                    : height * 0.11,
+                width: lightBlueCoinAnimation == true && startTimes > 1
+                    ? width * 0.07
+                    : width * 0.05,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("assets/lucky7/images/coins/skyblue.png"),
+                  fit: BoxFit.fill,
+                )),
                 child: Text(
-                  stack4 != 0 ? "5K" : stack6.toString(),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-                ),
-              ),
-            ),
+                  stack2 != 0 ? "2K" : stack3.toString(),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: height * 0.02),
+                )),
           ),
           SizedBox(
-            width: width * 0.04,
+            width: width * 0.03,
           ),
           InkWell(
             onTap: () {
               setState(() {
-                animatedContainer5 = !animatedContainer5;
-                if (animatedContainer5 == true) {
-                  animatedContainer = false;
-                  animatedContainer2 = false;
-                  animatedContainer3 = false;
-                  animatedContainer4 = false;
-                  animatedContainer6 = false;
-                }
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
+              setState(() {
+                redCoinAnimation = false;
+                lightGreenCoinAnimation = false;
+
+                greenCoinAnimation = true;
+                lightBlueCoinAnimation = false;
+                brownCoinAnimation = false;
               });
             },
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 700),
               alignment: Alignment.center,
-              height:
-                  animatedContainer5 == true ? height * 0.16 : height * 0.11,
-              width: animatedContainer5 == true ? width * 0.08 : width * 0.055,
+              height: greenCoinAnimation == true && startTimes > 1
+                  ? height * 0.15
+                  : height * 0.11,
+              width: greenCoinAnimation == true && startTimes > 1
+                  ? width * 0.07
+                  : width * 0.05,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                image: AssetImage(
-                    "assets/Teen-patti/images/coins-image/Group 678.png"),
-                fit: BoxFit.cover,
+                image: AssetImage("assets/lucky7/images/coins/green_coin.png"),
+                fit: BoxFit.fill,
               )),
               child: Text(
-                stack5 != 0 ? "10K" : stack6.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                stack3 != 0 ? "5K" : stack4.toString(),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: height * 0.02),
               ),
             ),
           ),
-          SizedBox(
-            width: width * 0.02,
-          ),
-          // InkWell(
-          //   onTap: () {
-          //     setState(() {
-          //       animatedContainer6 = !animatedContainer6;
-          //       if (animatedContainer6 == true) {
-          //         animatedContainer = false;
-          //         animatedContainer2 = false;
-          //         animatedContainer3 = false;
-          //         animatedContainer5 = false;
-          //         animatedContainer4 = false;
-          //       }
-          //     });
-          //   },
-          //   child: AnimatedContainer(
-          //     duration: Duration(milliseconds: 300),
-          //     alignment: Alignment.center,
-          //     height:
-          //         animatedContainer6 == true ? height * 0.16 : height * 0.11,
-          //     width: animatedContainer6 == true ? width * 0.08 : width * 0.05,
-          //     decoration: BoxDecoration(
-          //         image: DecorationImage(
-          //       image: AssetImage(
-          //           "assets/Teen-patti/images/coins-image/Group 657.png"),
-          //       fit: BoxFit.cover,
-          //     )),
-          //     child: Text(
-          //       stack6 != 0 ? "20K" : stack6.toString(),
-          //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-          //     ),
-          //   ),
-          // ),
+          //               SizedBox(
+          //                 width: width * 0.02,
+          //               ),
+          //               InkWell(
+          //                 onTap: () {
+          //                 setState(() {
+          //   playBackgroundMusic == false
+          //       ? onPressedMusic()
+          //       :                  Vibration.vibrate();;
+          // });
+          //                   setState(() {
+          //                     redCoinAnimation = false;
+          //                     lightGreenCoinAnimation = false;
+          //                     blueCoinAnimation = false;
+          //                     greenCoinAnimation = false;
+          //                     lightBlueCoinAnimation = true;
+          //                     brownCoinAnimation = false;
+          //                   });
+          //                 },
+          //                 child: AnimatedContainer(
+          //                   duration: Duration(milliseconds: 700),
+          //                   alignment: Alignment.center,
+          //                   height:
+          //                       lightBlueCoinAnimation == true && startTimes > 1
+          //                           ? height * 0.15
+          //                           : height * 0.11,
+          //                   width:
+          //                       lightBlueCoinAnimation == true && startTimes > 1
+          //                           ? width * 0.07
+          //                       : width * 0.05,
+          //                   decoration: BoxDecoration(
+          //                       image: DecorationImage(
+          //                     image: AssetImage(
+          //                         "assets/lucky7/images/coins/blue.png"),
+          //                     fit: BoxFit.fill,
+          //                   )),
+          //                   child: Text(
+          //                     stack4 != 0 ? "10K" : stack5.toString(),
+          //                     style: TextStyle(
+          //                         fontWeight: FontWeight.bold, fontSize:height * 0.02),
+          //                   ),
+          //                 ),
+          //               ),
 
           SizedBox(
-            width: width * 0.02,
+            width: width * 0.03,
+          ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
+              setState(() {
+                redCoinAnimation = false;
+                lightGreenCoinAnimation = false;
+
+                greenCoinAnimation = false;
+                lightBlueCoinAnimation = false;
+                brownCoinAnimation = true;
+              });
+            },
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 700),
+              alignment: Alignment.center,
+              height: brownCoinAnimation == true && startTimes > 1
+                  ? height * 0.17
+                  : height * 0.13,
+              width: brownCoinAnimation == true && startTimes > 1
+                  ? width * 0.075
+                  : width * 0.06,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage("assets/lucky7/images/coins/brown.png"),
+                fit: BoxFit.fill,
+              )),
+              child: Text(
+                stack4 != 0 ? "20K" : stack6.toString(),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: height * 0.02),
+              ),
+            ),
           ),
         ],
       ),
@@ -2431,7 +2529,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
   }
 
   Widget gameStopBetting(String time) {
-    return int.parse(autoTime) == 1 && int.parse(autoTime) != 0
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -2461,8 +2559,11 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     var response = await GlobalFunction.apiGetRequestae(url);
     var result = jsonDecode(response);
     if (result['status'] == true) {
-      setState(() {
+     
         autoTime = result['data']['t1'][0]['autotime'].toString();
+            if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
         startTimes = int.parse(autoTime);
         cardImage1 = result['data']['t1'][0]['C1'].toString();
         cardImage2 = result['data']['t1'][0]['C2'].toString();
@@ -2477,17 +2578,17 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
         playerBRate = result['data']['t2'][2]['rate'].toString();
         playerASid = result['data']['t2'][0]['sid'].toString();
         playerBSid = result['data']['t2'][2]['sid'].toString();
-      });
+
       if (autoTime == "0") {
         setState(() {
           selectPlayerA = false;
           selectPlayerB = false;
-          animatedContainer = false;
-          animatedContainer2 = false;
-          animatedContainer3 = false;
-          animatedContainer4 = false;
-          animatedContainer5 = false;
-          animatedContainer6 = false;
+          redCoinAnimation = false;
+          lightGreenCoinAnimation = false;
+          greenCoinAnimation = false;
+          lightBlueCoinAnimation = false;
+          brownCoinAnimation = false;
+          confirmButton = false;
         });
       }
     }
@@ -2582,17 +2683,15 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               : "",
       "stake": manualAmount == true
           ? stakeController.text.toString()
-          : animatedContainer == true && manualAmount == false
+          : redCoinAnimation == true && manualAmount == false
               ? stack1.toString()
-              : animatedContainer2 == true && manualAmount == false
+              : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : animatedContainer3 == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
-                      : animatedContainer4 == true && manualAmount == false
+                      : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : animatedContainer5 == true && manualAmount == false
-                              ? stack5.toString()
-                              : animatedContainer6 == true &&
+                           : brownCoinAnimation == true &&
                                       manualAmount == false
                                   ? stack6
                                   : "",
@@ -2627,7 +2726,10 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     if (result['status'] == true) {
       getVcLiablity();
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
       setState(() {
         selectPlayerA = false;
         selectPlayerB = false;
@@ -2638,7 +2740,10 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
       manualAmount = false;
       stakeController.clear();
 
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
     }
     stakeController.clear();
     manualAmount = false;
@@ -2658,17 +2763,15 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
               : "",
       "stake": manualAmount == true
           ? stakeController.text.toString()
-          : animatedContainer == true && manualAmount == false
+          : redCoinAnimation == true && manualAmount == false
               ? stack1.toString()
-              : animatedContainer2 == true && manualAmount == false
+              : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : animatedContainer3 == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
-                      : animatedContainer4 == true && manualAmount == false
+                      : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : animatedContainer5 == true && manualAmount == false
-                              ? stack5.toString()
-                              : animatedContainer6 == true &&
+                           : brownCoinAnimation == true &&
                                       manualAmount == false
                                   ? stack6
                                   : "",
@@ -2702,7 +2805,10 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
       setState(() {
         selectPlayerA = false;
         selectPlayerB = false;
@@ -2714,7 +2820,10 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
       manualAmount = false;
       stakeController.clear();
 
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
     }
 
     stakeController.clear();
@@ -2744,191 +2853,248 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
     }
   }
 
-  Future<void> showMyDialog(int stake) async {
-    return showDialog<void>(
+  showMyDialog(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (_) {
           return AlertDialog(
             backgroundColor: Colors.transparent,
             content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 22),
-                          height: MediaQuery.of(context).size.height * 0.6,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      "assets/User-interface/pop-background-amount.png"),
-                                  fit: BoxFit.fitHeight)),
-                          child: Column(
-                            children: [
-                              Column(
-                                children: const [
-                                  SizedBox(
-                                    height: 10,
+              child: SizedBox(
+                height: heightImage,
+                width: widthImage,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: heightImage,
+                      width: widthImage,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: AssetImage(
+                                "assets/User-interface/pop-background-amount.png"),
+                            fit: BoxFit.cover),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            CustomText(
+                              text: "Amount",
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            SizedBox(
+                              height: height * 0.09,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/minus-image.png",
+                                    scale: 3,
                                   ),
-                                  Text(
-                                    "Amount",
-                                    style: TextStyle(
+                                ),
+                                SizedBox(
+                                  height: height * 0.26,
+                                  width: width * 0.22,
+                                  child: Center(
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      controller: stakeController,
+                                      onChanged: (String value) async {
+                                        manualAmount = true;
+                                      },
+                                      maxLength: 5,
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/minus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: SizedBox(
-                                      height: height * 0.18,
-                                      width: width * 0.24,
-                                      child: TextField(
-                                        controller: stakeController,
-                                        onChanged: (String value) async {
-                                          manualAmount = true;
-                                        },
-                                        maxLength: 5,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        counterText: "",
+                                        hintText: '$stake',
+                                        hintStyle: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
                                             fontWeight: FontWeight.w600),
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          hintText: '$stake',
-                                          hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600),
-                                          border: OutlineInputBorder(
+                                        border: OutlineInputBorder(
                                             borderRadius:
-                                                BorderRadius.circular(8),
+                                                BorderRadius.circular(2),
                                             borderSide: BorderSide(
-                                              width: 0,
-                                              style: BorderStyle.none,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          contentPadding: EdgeInsets.all(16),
-                                          fillColor: Colors.white,
-                                        ),
+                                              color: Color(0xff4E4E4E),
+                                              width: 3,
+                                            )),
+                                        filled: true,
+                                        // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                        fillColor: Colors.black,
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/plus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "Are you sure want to continue !!",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.vibrate();
-                                  setState(() {
-                                    _currentCoinIndex++;
-                                    _startCoinAnimation();
-                                  });
-                                  _currentCoinIndex++;
-                                  _startCoinAnimation();
-                                  _currentCoinIndex++;
-                                  _startCoinAnimation();
-
-                                  makeBet();
-                                  Navigator.pop(context);
-                                  playBackgroundMusic == false
-                                      ? onPressedMusicForBet()
-                                      : "";
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/User-interface/confirm-button.png"),
-                                          fit: BoxFit.fitHeight)),
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          left: width * 0.48,
-                          top: 15,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Image.asset(
-                              "assets/User-interface/close-button.png",
-                              scale: 4,
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/plus-image.png",
+                                    scale: 3,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(
+                              height: height * 0.08,
+                            ),
+                            Text(
+                              "Are you sure you want to continue?",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: height * 0.07,
+                            ),
+                            manualAmount == true &&
+                                    int.parse(stakeController.text) > 99 &&
+                                    int.parse(stakeController.text) < 25000
+                                ? InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        playBackgroundMusic == false
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
+                                      });
+                                      if (selectPlayerA == true ||
+                                          selectPlayerB == true) {
+                                        makeBet();
+                                        Navigator.pop(context);
+
+                                        selectPlayerA = false;
+                                        selectPlayerB = false;
+                                        setState(() {
+                                          confirmButton = true;
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                        height: height * 0.22,
+                                        width: width * 0.23,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png")))),
+                                  )
+                                : manualAmount == false
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+                                          });
+
+                                          if (selectPlayerA == true ||
+                                              selectPlayerB == true) {
+                                            makeBet();
+                                            Navigator.pop(context);
+
+                                            selectPlayerA = false;
+                                            selectPlayerB = false;
+                                            setState(() {
+                                              confirmButton = true;
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                            height: height * 0.22,
+                                            width: width * 0.23,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png")))),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? ''
+                                                : Vibration.vibrate();
+                                            ;
+                                          });
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: height * 0.22,
+                                          width: width * 0.23,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png"),
+                                              )),
+                                        ),
+                                      ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: width * 0.01,
+                      top: 2,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         });
   }
 
-  void getDeviceIp() async {
-    final ipv4 = await Ipify.ipv4();
-    print(ipv4); // 98.207.254.136
-
-    final ipv6 = await Ipify.ipv64();
-    iPAddress = ipv6.toString();
-    print(
-        "Ip Address --->$iPAddress"); // 98.207.254.136 or 2a00:1450:400f:80d::200e
-
-    final ipv4json = await Ipify.ipv64(format: Format.JSON);
-    print(
-        ipv4json); //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
-
-    // The response type can be text, json or jsonp
-  }
-
-  Future<void> showMyDialogPortrait(int stake) {
-    return showDialog(
+  showMyDialogPortrait(
+      BuildContext context,
+      double heightImage,
+      double widthImage,
+      double height,
+      double width,
+      double heightClick,
+      double widthClick,
+      int stake) {
+    showDialog(
         context: context,
         builder: (_) {
           return AlertDialog(
@@ -2939,8 +3105,8 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                   alignment: Alignment.center,
                   children: [
                     Container(
-                      height: height * 0.3,
-                      width: width * 99,
+                      height: heightImage,
+                      width: widthImage,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         image: DecorationImage(
@@ -2960,7 +3126,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                 fontWeight: FontWeight.w500,
                               ),
                               SizedBox(
-                                height: height * 0.05,
+                                height: height * 0.07,
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -2974,8 +3140,8 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                     ),
                                   ),
                                   SizedBox(
-                                    height: height * 0.05,
-                                    width: width * 0.29,
+                                    height: height * 0.125,
+                                    width: width * 0.45,
                                     child: Center(
                                       child: TextField(
                                         textAlign: TextAlign.center,
@@ -2987,6 +3153,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 10,
                                         ),
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
@@ -3022,13 +3189,13 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                 ],
                               ),
                               SizedBox(
-                                height: height * 0.02,
+                                height: height * 0.04,
                               ),
                               Text(
                                 "Are you sure you want to continue?",
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 10,
+                                    fontSize: 08,
                                     fontWeight: FontWeight.w500),
                               ),
                               SizedBox(
@@ -3039,20 +3206,32 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                       int.parse(stakeController.text) < 25000
                                   ? GestureDetector(
                                       onTap: () {
-                                        HapticFeedback.vibrate();
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
+                                        });
 
-                                        makeBetPortrait();
-                                        Navigator.pop(context);
-                                        onPressedMusicForBet();
+                                        if (selectPlayerA == true ||
+                                            selectPlayerB == true) {
+                                          makeBetPortrait();
+                                          Navigator.pop(context);
+
+                                          selectPlayerA = false;
+                                          selectPlayerB = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         alignment: Alignment.center,
                                         height:
                                             MediaQuery.of(context).size.height *
-                                                0.03,
+                                                0.04,
                                         width:
                                             MediaQuery.of(context).size.width *
-                                                0.3,
+                                                0.4,
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(10),
@@ -3065,22 +3244,32 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                   : manualAmount == false
                                       ? GestureDetector(
                                           onTap: () {
-                                            HapticFeedback.vibrate();
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
 
-                                            makeBetPortrait();
-                                            Navigator.pop(context);
-                                            onPressedMusicForBet();
+                                            if (selectPlayerA == true ||
+                                                selectPlayerB == true) {
+                                              makeBetPortrait();
+                                              Navigator.pop(context);
+
+                                              selectPlayerA = false;
+                                              selectPlayerB = false;
+                                              setState(() {
+                                                confirmButton = true;
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.03,
+                                                0.04,
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.3,
+                                                0.4,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -3095,22 +3284,24 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                             Navigator.pop(context);
                                             setState(() {
                                               playBackgroundMusic == false
-                                                  ? ''
-                                                  : HapticFeedback.vibrate();
+                                                  ? ""
+                                                  : Vibration.vibrate();
                                             });
-                                            DialogUtils.showOneBtn(context,
-                                                "Please Select Existing amount");
+                                            DialogUtils.showOneBtn(
+                                              context,
+                                              "Please Select Existing amount",
+                                            );
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.03,
+                                                0.04,
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.3,
+                                                0.4,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -3128,6 +3319,9 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                       top: 2,
                       child: InkWell(
                         onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
                           Navigator.pop(context);
                         },
                         child: Image.asset(
@@ -3554,6 +3748,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
       pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
         matchId: widget.matchID,
         gameCode: widget.gameCode,
+        playBackgroundMusic: playBackgroundMusic,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
@@ -3568,5 +3763,21 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
         );
       },
     );
+  }
+
+  void getDeviceIp() async {
+    final ipv4 = await Ipify.ipv4();
+    print(ipv4); // 98.207.254.136
+
+    final ipv6 = await Ipify.ipv64();
+    iPAddress = ipv6.toString();
+    print(
+        "Ip Address --->$iPAddress"); // 98.207.254.136 or 2a00:1450:400f:80d::200e
+
+    final ipv4json = await Ipify.ipv64(format: Format.JSON);
+    print(
+        ipv4json); //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
+
+    // The response type can be text, json or jsonp
   }
 }

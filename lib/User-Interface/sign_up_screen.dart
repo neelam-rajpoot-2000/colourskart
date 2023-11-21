@@ -5,12 +5,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:vibration/vibration.dart';
+import 'package:virtual_casino/User-Interface/signin_screen.dart';
 import '../Utils/api_helper.dart';
 import '../Utils/apis.dart';
 import '../Utils/toast.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+  bool? playBackgroundMusic=false;
+   SignupScreen({super.key,this.playBackgroundMusic});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -182,6 +185,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               )
                             : InkWell(
                                 onTap: () {
+                                        widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                                   if (userNameController.text.isEmpty) {
                                     DialogUtils.showOneBtn(
                                         context, "Please enter User name !");
@@ -210,7 +216,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           height: 20,
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
+                          },
                           child: Text(
                             "Already have an account? LOGIN",
                             style: TextStyle(
@@ -381,6 +391,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         )
                       : InkWell(
                           onTap: () {
+                                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                             if (userNameController.text.isEmpty) {
                               DialogUtils.showOneBtn(
                                   context, "Please enter User name !");
@@ -409,7 +422,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: 20,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                            widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
+                                    Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInScreen()));
+                    },
                     child: Text(
                       "Already have an account? LOGIN",
                       style: TextStyle(

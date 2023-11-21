@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/User-Interface/signin_screen.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 import 'package:virtual_casino/Widgets/custom_image.dart';
@@ -88,7 +89,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   int stack2 = 0;
   int stack3 = 0;
   int stack4 = 0;
-  int stack5 = 0;
+
   int stack6 = 0;
   var coin = 0;
   bool lowCardButton = false;
@@ -108,7 +109,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
   bool redCoinAnimation = false;
   bool lightGreenCoinAnimation = false;
-  bool blueCoinAnimation = false;
+
   bool greenCoinAnimation = false;
   bool lightBlueCoinAnimation = false;
   bool brownCoinAnimation = false;
@@ -218,39 +219,37 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   double maxXPort = 0;
   double minYPort = 0;
   double maxYPort = 0;
+  int startTimeSmall = 0;
+  int setInterval = 0;
 
   @override
   void initState() {
+    startTimeSmall = startTimes * 100;
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      startTimeSmall = startTimeSmall - 1;
+    });
+
     getDeviceIp();
     getStakeDetails();
-    getUserDetails();
-    _startTimer();
-        _startTimer();
 
     AudioPlayer.clearAssetCache();
     WidgetsBinding.instance.addObserver(this);
     bgMusic();
-
-    getuserBalance();
-  
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
       DeviceOrientation.portraitUp
     ]);
-    setState(() {
-      checkInternet();
-    });
+
+    checkInternet();
+
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      getResult().then((value) => getCardData());
       stopBettingMusic();
       startBettingMusic();
-      getMatchIdDetails();
     });
 
     super.initState();
 
-    _togglePopup();
     getCardData().then((value) => _controller1 = AnimationController(
           vsync: this,
           duration:
@@ -266,17 +265,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     _controller.repeat(reverse: true);
   }
 
-
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (startTimes > 0) {
-        autoTime;
-      } else {
-        _timer?.cancel();
-      }
-    });
-  }
-
   Future<void> checkInternet() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
@@ -284,19 +272,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       // Handle this situation as needed
       print('No internet connection');
     } else {
-      setState(() {
       _startCoinAnimationLeftRandom();
- _startCoinAnimationRightRandom() ;
+      _startCoinAnimationRightRandom();
       _startCoinAnimationLeftRandomPort();
-         _startCoinAnimationRightRandomPort();
-   
-      });
+      _startCoinAnimationRightRandomPort();
+
       // Internet connection is available
-   
     }
   }
 
-  void _startCoinAnimationLeftRandom() { 
+  void _startCoinAnimationLeftRandom() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
@@ -309,32 +294,27 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         _random.nextDouble() * (maxYLeftRandomLand - minYLeftRandomLand) +
             minYLeftRandomLand;
 
-    cardNameImage1 == ''
+    startTimes > 3
         ? _coinsLeftRandomLand.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 900),
             builder: (BuildContext context, double value, Widget? child) {
               double currentX = _startX + (_endX - _startX) * value;
               double currentY = _startY + (_endY - _startY) * value;
-              
 
               return Positioned(
                   left: currentX.clamp(minXLeftRandomLand, maxXLeftRandomLand),
                   top: currentY.clamp(minYLeftRandomLand, maxYLeftRandomLand),
-              
-                  child: startTimes > 3
-                      ? Image.asset(
-                          _coinImages[_currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox());
+                  child: Image.asset(
+                    _coinImages[_currentCoinIndex % _coinImages.length],
+                    height: 15,
+                    width: 15,
+                  ));
             },
           ))
-        : _coinsLeftRandomLand.clear();
+        : null;
     _currentCoinIndex++;
 
-    
     if (startTimes > 15) {
       Timer(
         Duration(seconds: 2),
@@ -342,10 +322,9 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       );
     } else {
       Timer(Duration(seconds: 3), _startCoinAnimationLeftRandom);
-    
     }
 
-        startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -367,10 +346,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         _random.nextDouble() * (maxYRightRandomLand - minYRightRandomLand) +
             minYRightRandomLand;
 
-    cardNameImage1 == ""
+    startTimes > 3
         ? _coinsRightRandomLand.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
-          duration: const Duration(milliseconds: 900),
+            duration: const Duration(milliseconds: 900),
             builder: (BuildContext context, double value, Widget? child) {
               double currentX = _startX + (_endX - _startX) * value;
               double currentY = _startY + (_endY - _startY) * value;
@@ -379,21 +358,17 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   right:
                       currentX.clamp(minXRightRandomLand, maxXRightRandomLand),
                   top: currentY.clamp(minYRightRandomLand, maxYRightRandomLand),
-                  child: startTimes > 3
-                      ? Image.asset(
-                          _coinImagesRyt[
-                              _currentCoinIndex % _coinImagesRyt.length],
-                          height:15,
-                          width: 15,
-                        )
-                      : SizedBox());
+                  child: Image.asset(
+                    _coinImagesRyt[_currentCoinIndex % _coinImagesRyt.length],
+                    height: 15,
+                    width: 15,
+                  ));
             },
           ))
-        : _coinsRightRandomLand.clear();
+        : null;
 
     _currentCoinIndex++;
-    
-    
+
     if (startTimes > 15) {
       Timer(Duration(seconds: 3), _startCoinAnimationRightRandom);
     } else {
@@ -418,7 +393,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         _random.nextDouble() * (maxYLeftRandomPort - minYLeftRandomPort) +
             minYLeftRandomPort;
 
-    cardNameImage1 == ""
+    startTimes > 3
         ? _coinsLeftRandomPort.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 900),
@@ -429,16 +404,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
               return Positioned(
                   right: currentX.clamp(minXLeftRandomPort, maxXLeftRandomPort),
                   top: currentY.clamp(minYLeftRandomPort, maxYLeftRandomPort),
-                  child: startTimes > 3
-                      ? Image.asset(
-                          _coinImages[_currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox());
+                  child: Image.asset(
+                    _coinImages[_currentCoinIndex % _coinImages.length],
+                    height: 15,
+                    width: 15,
+                  ));
             },
           ))
-        : _coinsLeftRandomPort.clear();
+        : null;
 
     _currentCoinIndex++;
 
@@ -448,7 +421,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       Timer(Duration(seconds: 3), _startCoinAnimationLeftRandomPort);
     }
 
-      startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -470,7 +443,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         _random.nextDouble() * (maxYRightRandomPort - minYRightRandomPort) +
             minYRightRandomPort;
 
-    cardNameImage1 == ""
+    startTimes > 3
         ? _coinsRytRandomPort.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 900),
@@ -482,19 +455,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   left:
                       currentX.clamp(minXRightRandomPort, maxXRightRandomPort),
                   top: currentY.clamp(minYRightRandomPort, maxYRightRandomPort),
-                  child: startTimes > 3
-                      ? Image.asset(
-                          _coinImages[_currentCoinIndex % _coinImages.length],
-                          height: 15,
-                          width: 15,
-                        )
-                      : SizedBox());
+                  child: Image.asset(
+                    _coinImages[_currentCoinIndex % _coinImages.length],
+                    height: 15,
+                    width: 15,
+                  ));
             },
           ))
-        : _coinsRytRandomPort.clear();
+        : null;
 
     _currentCoinIndex++;
-
 
     if (startTimes > 15) {
       Timer(Duration(seconds: 3), _startCoinAnimationRightRandomPort);
@@ -528,7 +498,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           ? Image.asset(
                               _redcoinImages[_currentCoinIndexRytPort %
                                   _redcoinImages.length],
-                              height:15,
+                              height: 15,
                               width: 15,
                             )
                           : lightGreenCoinAnimation == true
@@ -539,7 +509,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   height: 15,
                                   width: 15,
                                 )
-                              : blueCoinAnimation == true
+                              : lightBlueCoinAnimation == true
                                   ? Image.asset(
                                       _bluecoinImages[_currentCoinIndexRytPort %
                                           _bluecoinImages.length],
@@ -554,31 +524,21 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           height: 15,
                                           width: 15,
                                         )
-                                      : lightBlueCoinAnimation == true
+                                      : brownCoinAnimation == true
                                           ? Image.asset(
-                                              _skybluecoinImages[
+                                              _browncoinImages[
                                                   _currentCoinIndexRytPort %
-                                                      _skybluecoinImages
-                                                          .length],
+                                                      _browncoinImages.length],
                                               height: 15,
                                               width: 15,
                                             )
-                                          : brownCoinAnimation == true
-                                              ? Image.asset(
-                                                  _browncoinImages[
-                                                      _currentCoinIndexRytPort %
-                                                          _browncoinImages
-                                                              .length],
-                                                  height: 15,
-                                                  width: 15,
-                                                )
-                                              : SizedBox()
+                                          : SizedBox()
                       : SizedBox());
             },
           ))
         : _coinsPort.reversed;
 
-    startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -619,7 +579,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   height: 15,
                                   width: 15,
                                 )
-                              : blueCoinAnimation == true
+                              : lightBlueCoinAnimation == true
                                   ? Image.asset(
                                       _bluecoinImages[_currentCoinIndex %
                                           _bluecoinImages.length],
@@ -633,31 +593,21 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           height: 15,
                                           width: 15,
                                         )
-                                      : lightBlueCoinAnimation == true
+                                      : brownCoinAnimation == true
                                           ? Image.asset(
-                                              _skybluecoinImages[
+                                              _browncoinImages[
                                                   _currentCoinIndex %
-                                                      _skybluecoinImages
-                                                          .length],
+                                                      _browncoinImages.length],
                                               height: 15,
                                               width: 15,
                                             )
-                                          : brownCoinAnimation == true
-                                              ? Image.asset(
-                                                  _browncoinImages[
-                                                      _currentCoinIndex %
-                                                          _browncoinImages
-                                                              .length],
-                                                  height: 15,
-                                                  width: 15,
-                                                )
-                                              : SizedBox()
+                                          : SizedBox()
                       : SizedBox());
             },
           ))
         : _coins.clear();
 
-        startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -715,7 +665,11 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-   autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'&& playBackgroundMusic == false
+    autoTime == '3' &&
+            autoTime != '2' &&
+            autoTime != '1' &&
+            autoTime != '0' &&
+            playBackgroundMusic == false
         ? stopBettingmusic.play()
         : stopBettingmusic.stop();
     stopBettingmusic.setVolume(1);
@@ -786,7 +740,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-      startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 || playBackgroundMusic == false
         ? onPressedmusic.play()
         : onPressedmusic.stop();
   }
@@ -805,37 +759,31 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
 
-  bool _popupVisible = false;
-
-  void _togglePopup() {
-    setState(() {
-      _popupVisible = !_popupVisible;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     getuserBalance();
     getUserDetails();
     getMatchIdDetails();
 
+    getResult().then((value) => getCardData());
+
     final oreintation = MediaQuery.of(context).orientation;
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    minXLeftRandomLand = 190;
+    minXLeftRandomLand = 195;
     maxXLeftRandomLand = width - 250;
-    minYLeftRandomLand = 120;
-    maxYLeftRandomLand = height - 130;
-   
-    minXRightRandomLand = 190;
+    minYLeftRandomLand = startTimes > 3 ? 135 : 200;
+    maxYLeftRandomLand = startTimes > 3 ? height - 130 : height - 50;
+
+    minXRightRandomLand = 195;
     maxXRightRandomLand = width - 250;
-    minYRightRandomLand = 120;
-    maxYRightRandomLand = height - 130;
+    minYRightRandomLand = startTimes > 3 ? 135 : 200;
+    maxYRightRandomLand = startTimes > 3 ? height - 130 : height - 50;
     minXLeftRandomPort = 50;
     maxXLeftRandomPort = width - 100;
-    minYLeftRandomPort = 50;
+    minYLeftRandomPort = 40;
     maxYLeftRandomPort = height - 590;
-    minXRightRandomPort = 40;
+    minXRightRandomPort = 50;
     maxXRightRandomPort = width - 100;
     minYRightRandomPort = 40;
     maxYRightRandomPort = height - 590;
@@ -872,6 +820,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Widget protraitModeWidget() {
     return Scaffold(
       key: _globalKey,
+      backgroundColor: Colors.transparent,
       drawerEnableOpenDragGesture: false,
       drawer: SizedBox(
         width: width * 0.55,
@@ -936,7 +885,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                         setState(() {
                           playBackgroundMusic == false
                               ? onPressedMusic()
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
 
                         _globalKey.currentState!.openDrawer();
@@ -953,7 +902,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
+                                ;
                               });
                               _player.stop();
                               setState(() {
@@ -970,7 +920,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
+                                ;
                               });
                               _player.play();
                               setState(() {
@@ -1015,7 +966,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                         setState(() {
                           playBackgroundMusic == false
                               ? onPressedMusic()
-                              : HapticFeedback.vibrate();
+                              : Vibration.vibrate();
                         });
 
                         Navigator.push(context, _createRouteCurrentBetsList());
@@ -1071,25 +1022,25 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? onPressedMusic()
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
-                          if (_popupVisible) {
-                            DialogUtils.showResultLucky7(
-                                context,
-                                item.c1,
-                                item.detail,
-                                height * 0.26,
-                                width ,
-                                height * 0.1,
-                                width * 0.13,
-                                height * 0.04,
-                                width * 0.05,
-                                height * 0.21,
-                                width * 0.75,
-                                item.mid,
-                                height * 0.015,
-                                _togglePopup);
-                          }
+
+                          DialogUtils.showResultLucky7(
+                              context,
+                              item.c1,
+                              item.detail,
+                              height * 0.26,
+                              width,
+                              height * 0.1,
+                              width * 0.13,
+                              height * 0.04,
+                              width * 0.05,
+                              height * 0.21,
+                              width * 0.75,
+                              item.mid,
+                              height * 0.015,
+                              playBackgroundMusic);
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -1130,10 +1081,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 9
-                          
-                          
-                          ),
+                          fontSize: 9),
                     ),
                   ],
                 ),
@@ -1156,52 +1104,27 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   Image.asset(
                     'assets/lucky7/images/table.png',
                     fit: BoxFit.cover,
-                    height: height * 0.38,
+                    height: height * 0.39,
                     //width: width * 1.00,
                   ),
+
                   Positioned(
-                    top: 13,
-                    left: 30,
-                    child: startTimes >= 3
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -25 * _animation.value),
-                                child: Image.asset(
-                                  'assets/lucky7/images/frame/logo.png',
-                                  fit: BoxFit.cover,
-                                  height: height * 0.05,
-                                ),
-                              );
-                            })
-                        : Image.asset(
-                            'assets/lucky7/images/frame/logo.png',
-                            fit: BoxFit.cover,
-                            height: height * 0.05,
-                          ),
+                    top: height * 0.035,
+                    left: width * 0.06,
+                    child: Image.asset(
+                      'assets/lucky7/images/frame/logo.png',
+                      fit: BoxFit.cover,
+                      height: height * 0.05,
+                    ),
                   ),
                   Positioned(
-                      top: 13,
-                      right: 15,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -25 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.05,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.05,
-                            )),
+                      top: height * 0.035,
+                      right: width * 0.04,
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.05,
+                      )),
                   SizedBox(
                       height: height * 0.36,
                       child: AnimatedSwitcher(
@@ -1227,68 +1150,66 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           children: _coinsRytRandomPort,
                         ),
                       )),
-                           startTimes >= 1
-                              ?  Positioned(
-                       left: width * 0.35,
-                    top: height * 0.02,
-                        child: CustomText(
-                                        text: "Starting in ",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 09.0,
-                                        textAlign: TextAlign.end,
-                                      ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                           left: width * 0.49,
-                    top: height * 0.02,
-                        child: SizedBox(
-                          width: width*0.055,
-                          child: Center(
-                            child: CustomText(
-                                            text: "$autoTime s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.40,
+                          top: height * 0.012,
+                          child: CustomText(
+                            text: "Starting in ",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 09.0,
+                            textAlign: TextAlign.end,
                           ),
-                        ),
-                      ):SizedBox()
-                      ,
-                    //   startTimes >= 1
-                    //           ?  Positioned(
-                    //      right: width * 0.55,
-                    // top: height * 0.02,
-                    //     child: CustomText(
-                    //                     text: "s",
-                    //                     fontWeight: FontWeight.bold,
-                    //                     color: Colors.white,
-                    //                     fontSize: 09.0,
-                    //                     textAlign: TextAlign.end,
-                    //                   ),
-                    //   ):SizedBox(),
-               
+                        )
+                      : SizedBox(),
+
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.54,
+                          top: height * 0.012,
+                          child: SizedBox(
+                            width: width * 0.055,
+                            child: Center(
+                              child: CustomText(
+                                text: "$autoTime s",
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 09.0,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
+                  //   startTimes >= 1
+                  //           ?  Positioned(
+                  //      right: width * 0.55,
+                  // top: height * 0.02,
+                  //     child: CustomText(
+                  //                     text: "s",
+                  //                     fontWeight: FontWeight.bold,
+                  //                     color: Colors.white,
+                  //                     fontSize: 09.0,
+                  //                     textAlign: TextAlign.end,
+                  //                   ),
+                  //   ):SizedBox(),
+
                   Positioned(
-                    left: width * 0.33,
-                    top: height * 0.045,
+                    left: width * 0.39,
+                    top: height * 0.035,
                     child: startTimes >= 1
                         ? Column(
-                             children: [
-                     
+                            children: [
                               SizedBox(
                                 height: 5,
                                 width: width * 0.25,
                                 child: LinearProgressIndicator(
-
-                                  value:
-                                      startTimes / 45, // Calculate the progress
+                                  value: startTimeSmall /
+                                      4500, // Calculate the progress
                                   backgroundColor: Colors.grey,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    
-                                      Color(0xaa9919D2)),
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
                                 ),
                               ),
                             ],
@@ -1302,10 +1223,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           : autoTime != '0'
                               ? SizedBox()
                               : Positioned(
-                                  top: height * 0.03,
-                                  left: width * 0.18,
+                                  top: height * 0.04,
+                                  left: width * 0.16,
                                   child: showCurrentCardPort()),
-                  autoTime == "3"
+                  startTimes <= 3 && autoTime != '0'
                       ? gameStopBettingPortrait(autoTime)
                       : SizedBox(),
                   Positioned(
@@ -1318,13 +1239,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
+                              ;
                             });
 
                             setState(() {
                               redCoinAnimation = !redCoinAnimation;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1361,14 +1283,15 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
+                              ;
                             });
 
                             setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation =
                                   !lightGreenCoinAnimation;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1392,7 +1315,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack2 != 0 ? "1K" : stack2.toString(),
+                              stack1 != 0 ? "1K" : stack2.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1404,10 +1327,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                         ),
                         InkWell(
                           onTap: () {
+                            playBackgroundMusic == false
+                                ? ''
+                                : Vibration.vibrate();
                             setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = !lightBlueCoinAnimation;
                               brownCoinAnimation = false;
@@ -1431,7 +1357,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack3 != 0 ? "2K" : stack3.toString(),
+                              stack2 != 0 ? "2K" : stack3.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1446,12 +1372,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
+                              ;
                             });
                             setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = !greenCoinAnimation;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1473,7 +1400,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack4 != 0 ? "5K" : stack4.toString(),
+                              stack3 != 0 ? "5K" : stack4.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1488,13 +1415,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             setState(() {
                               playBackgroundMusic == false
                                   ? ''
-                                  : HapticFeedback.vibrate();
+                                  : Vibration.vibrate();
+                              ;
                             });
 
                             setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = !brownCoinAnimation;
@@ -1516,7 +1444,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack6 != 0 ? "20K" : stack6.toString(),
+                              stack4 != 0 ? "20K" : stack6.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1545,15 +1473,15 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   lowCardButton = !lowCardButton;
                                 }
                                 if (lowCardButton == true) {
@@ -1574,17 +1502,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomImage(
@@ -1620,15 +1545,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
+                                  ;
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   highCardButton = !highCardButton;
                                 }
                                 if (highCardButton == true) {
@@ -1639,7 +1565,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   redCardButton = false;
                                   betSucessfulllyPlacedPort(
                                       context,
-                                      height * 0.20,
+                                      height * 0.23,
                                       width,
                                       height * 0.4,
                                       width * 0.7,
@@ -1649,17 +1575,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomImage(
@@ -1695,15 +1618,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
+                                  ;
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   evenCardButton = !evenCardButton;
                                 }
                                 if (evenCardButton == true) {
@@ -1714,9 +1638,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   redCardButton = false;
                                   betSucessfulllyPlacedPort(
                                       context,
-                                                                        height * 0.23,
-
-                                      width ,
+                                      height * 0.23,
+                                      width,
                                       height * 0.4,
                                       width * 0.7,
                                       height * 0.26,
@@ -1725,17 +1648,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomImage(
@@ -1782,15 +1702,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
+                                  ;
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   oddCardButton = !oddCardButton;
                                 }
                                 if (oddCardButton == true) {
@@ -1801,9 +1722,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   redCardButton = false;
                                   betSucessfulllyPlacedPort(
                                       context,
-                                                                     height * 0.23,
-
-                                      width ,
+                                      height * 0.23,
+                                      width,
                                       height * 0.4,
                                       width * 0.7,
                                       height * 0.26,
@@ -1812,17 +1732,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomImage(
@@ -1858,15 +1775,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
+                                  ;
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   blackCardButton = !blackCardButton;
                                 }
                                 if (blackCardButton == true) {
@@ -1877,9 +1795,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   redCardButton = false;
                                   betSucessfulllyPlacedPort(
                                       context,
-                                                                      height * 0.23,
-
-                                      width ,
+                                      height * 0.23,
+                                      width,
                                       height * 0.4,
                                       width * 0.7,
                                       height * 0.26,
@@ -1888,17 +1805,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomButton(
@@ -1937,15 +1851,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
+                                  ;
                                 });
 
                                 if ((redCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    brownCoinAnimation == true ||
-                                    greenCoinAnimation == true)&&startTimes>1) {
+                                        lightBlueCoinAnimation == true ||
+                                        lightGreenCoinAnimation == true ||
+                                        brownCoinAnimation == true ||
+                                        greenCoinAnimation == true) &&
+                                    startTimes > 1) {
                                   redCardButton = !redCardButton;
                                 }
                                 if (redCardButton == true) {
@@ -1956,9 +1871,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   lowCardButton = false;
                                   betSucessfulllyPlacedPort(
                                       context,
-                                                                     height * 0.23,
-
-                                      width ,
+                                      height * 0.23,
+                                      width,
                                       height * 0.4,
                                       width * 0.7,
                                       height * 0.26,
@@ -1967,17 +1881,14 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           ? stack1
                                           : lightGreenCoinAnimation == true
                                               ? stack2
-                                              : blueCoinAnimation == true
+                                              : lightBlueCoinAnimation == true
                                                   ? stack3
                                                   : greenCoinAnimation == true
                                                       ? stack4
-                                                      : lightBlueCoinAnimation ==
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
+                                                          ? stack6
+                                                          : 0);
                                 }
                               },
                               child: CustomButton(
@@ -2020,6 +1931,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
   Widget landscapeWidget() {
     return Scaffold(
+        backgroundColor: Colors.transparent,
         key: _globalKey,
         drawerEnableOpenDragGesture: false,
         body: Container(
@@ -2046,7 +1958,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               _globalKey.currentState!.openDrawer();
@@ -2095,7 +2007,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? onPressedMusic()
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           Navigator.push(
                               context, _createRouteCurrentBetsList());
@@ -2142,49 +2055,50 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                         ),
                       )
                     : SizedBox(),
-                      startTimes >= 1
-                              ?  Positioned(
-                            top: height * 0.02,
-                  right: width * 0.18,
+                startTimes >= 1
+                    ? Positioned(
+                        top: height * 0.02,
+                        right: width * 0.18,
                         child: CustomText(
-                                        text: "Starting in ",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 09.0,
-                                        textAlign: TextAlign.end,
-                                      ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                            top: height * 0.02,
-                  right: width * 0.148,
+                          text: "Starting in ",
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 09.0,
+                          textAlign: TextAlign.end,
+                        ),
+                      )
+                    : SizedBox(),
+
+                startTimes >= 1
+                    ? Positioned(
+                        top: height * 0.02,
+                        right: width * 0.148,
                         child: SizedBox(
-                          width: width*0.03,
+                          width: width * 0.03,
                           child: Center(
                             child: CustomText(
-                                            text: "$autoTime  s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
+                              text: "$autoTime  s",
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 09.0,
+                              textAlign: TextAlign.start,
+                            ),
                           ),
                         ),
-                      ):SizedBox()
-                      ,
-                  //     startTimes >= 1
-                  //             ?  Positioned(
-                  //           top: height * 0.02,
-                  // right: width * 0.14,
-                  //       child: CustomText(
-                  //                       text: "sec",
-                  //                       fontWeight: FontWeight.bold,
-                  //                       color: Colors.white,
-                  //                       fontSize: 09.0,
-                  //                       textAlign: TextAlign.end,
-                  //                     ),
-                  //     ):SizedBox(),
+                      )
+                    : SizedBox(),
+                //     startTimes >= 1
+                //             ?  Positioned(
+                //           top: height * 0.02,
+                // right: width * 0.14,
+                //       child: CustomText(
+                //                       text: "sec",
+                //                       fontWeight: FontWeight.bold,
+                //                       color: Colors.white,
+                //                       fontSize: 09.0,
+                //                       textAlign: TextAlign.end,
+                //                     ),
+                //     ):SizedBox(),
                 Positioned(
                   top: height * 0.045,
                   right: width * 0.015,
@@ -2199,17 +2113,15 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           startTimes >= 1
                               ? Column(
                                   children: [
-                                  
                                     SizedBox(
                                       height: 5,
                                       width: width * 0.15,
                                       child: LinearProgressIndicator(
-                                        value: startTimes /
-                                            45, // Calculate the progress
+                                        value: startTimeSmall /
+                                            4500, // Calculate the progress
                                         backgroundColor: Colors.grey,
-                                        valueColor:
-                                        AlwaysStoppedAnimation<Color>(
-                                                Color(0xaa9919D2)),
+                                        valueColor: AlwaysStoppedAnimation(
+                                            Color(0xaa9919D2)),
                                       ),
                                     ),
                                     SizedBox(
@@ -2234,7 +2146,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                     setState(() {
                                       playBackgroundMusic == false
                                           ? onPressedMusic()
-                                          : HapticFeedback.vibrate();
+                                          : Vibration.vibrate();
+                                      ;
                                     });
                                     _player.stop();
                                     setState(() {
@@ -2251,7 +2164,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                     setState(() {
                                       playBackgroundMusic == false
                                           ? onPressedMusic()
-                                          : HapticFeedback.vibrate();
+                                          : Vibration.vibrate();
+                                      ;
                                     });
                                     _player.play();
                                     setState(() {
@@ -2277,52 +2191,26 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                     height: height * 0.57,
                   ),
                 ),
-                      
+
                 Positioned(
-                  top: startTimes >= 1 ? height * 0.35 : height * 0.45,
-                  left: width * 0.22,
-                  child: startTimes >= 3
-                      ? AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, -25 * _animation.value),
-                              child: Image.asset(
-                                'assets/lucky7/images/frame/logo.png',
-                                fit: BoxFit.cover,
-                                height: height * 0.10,
-                              ),
-                            );
-                          })
-                      : Image.asset(
-                          'assets/lucky7/images/frame/logo.png',
-                          fit: BoxFit.cover,
-                          height: height * 0.10,
-                        ),
+                  top: startTimes >= 1 ? height * 0.3 : height * 0.45,
+                  left: width * 0.23,
+                  child: Image.asset(
+                    'assets/lucky7/images/frame/logo.png',
+                    fit: BoxFit.cover,
+                    height: height * 0.10,
+                  ),
                 ),
                 Positioned(
-                  top: startTimes >= 1 ? height * 0.35 : height * 0.45,
-                  right: width * 0.22,
-                  child: startTimes >= 3
-                      ? AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, -25 * _animation.value),
-                              child: Image.asset(
-                                'assets/lucky7/images/frame/logo.png',
-                                fit: BoxFit.cover,
-                                height: height * 0.10,
-                              ),
-                            );
-                          })
-                      : Image.asset(
-                          'assets/lucky7/images/frame/logo.png',
-                          fit: BoxFit.cover,
-                          height: height * 0.10,
-                        ),
+                  top: startTimes >= 1 ? height * 0.3 : height * 0.45,
+                  right: width * 0.23,
+                  child: Image.asset(
+                    'assets/lucky7/images/frame/logo.png',
+                    fit: BoxFit.cover,
+                    height: height * 0.10,
+                  ),
                 ),
-                  AnimatedSwitcher(
+                AnimatedSwitcher(
                   duration: Duration(milliseconds: 500),
                   child: Stack(
                     children: _coinsLeftRandomLand,
@@ -2332,31 +2220,31 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 500),
                   child: Stack(
-                    children: _coinsRightRandomLand,
+                    children: _coins,
                   ),
                 ),
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 500),
                   child: Stack(
-                    children: _coins,
+                    children: _coinsRightRandomLand,
                   ),
                 ),
-        
-                //------------------- RESULT IMAGE----------------//
-         
 
-                                           autoTime == "3" ? gameStopBetting(autoTime) : SizedBox(),
-                 autoTime == "45"
-                        ? placeyourbetWidget(autoTime)
-                        : autoTime == "3" || autoTime == "2" || autoTime == "1" 
-                            ? goWidget():SizedBox()
-                                ,
-                                autoTime != "0"
-                                ?
-                                     SizedBox():Positioned(
-                                    top: height * 0.37,
-                                    right: width * 0.35,
-                                    child: showCurrentCardLand()),
+                //------------------- RESULT IMAGE----------------//
+
+                startTimes <= 3 && autoTime != '0'
+                    ? gameStopBetting(autoTime)
+                    : SizedBox(),
+                autoTime == "45"
+                    ? placeyourbetWidget(autoTime)
+                    : autoTime == "3" || autoTime == "2" || autoTime == "1"
+                        ? goWidget()
+                        : autoTime == "0"
+                            ? Positioned(
+                                top: height * 0.37,
+                                right: width * 0.35,
+                                child: showCurrentCardLand())
+                            : SizedBox(),
 
                 Positioned(
                   bottom: startTimes >= 1 ? height * 0.16 : height * 0.01,
@@ -2368,12 +2256,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? ''
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           setState(() {
                             redCoinAnimation = true;
                             lightGreenCoinAnimation = false;
-                            blueCoinAnimation = false;
+
                             greenCoinAnimation = false;
                             lightBlueCoinAnimation = false;
                             brownCoinAnimation = false;
@@ -2410,12 +2299,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? ''
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           setState(() {
                             lightGreenCoinAnimation = true;
                             redCoinAnimation = false;
-                            blueCoinAnimation = false;
+
                             greenCoinAnimation = false;
                             lightBlueCoinAnimation = false;
                             brownCoinAnimation = false;
@@ -2454,26 +2344,29 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? ''
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           setState(() {
                             redCoinAnimation = false;
                             lightGreenCoinAnimation = false;
-                            blueCoinAnimation = true;
+
                             greenCoinAnimation = false;
-                            lightBlueCoinAnimation = false;
+                            lightBlueCoinAnimation = !lightBlueCoinAnimation;
                             brownCoinAnimation = false;
                           });
                         },
                         child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: blueCoinAnimation == true && startTimes > 1
-                                ? height * 0.15
-                                : height * 0.11,
-                            width: blueCoinAnimation == true && startTimes > 1
-                                ? width * 0.07
-                                : width * 0.05,
+                            height:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? height * 0.15
+                                    : height * 0.11,
+                            width:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? width * 0.07
+                                    : width * 0.05,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
@@ -2495,12 +2388,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? ''
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           setState(() {
                             redCoinAnimation = false;
                             lightGreenCoinAnimation = false;
-                            blueCoinAnimation = false;
+
                             greenCoinAnimation = true;
                             lightBlueCoinAnimation = false;
                             brownCoinAnimation = false;
@@ -2537,7 +2431,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       //                 setState(() {
                       //   playBackgroundMusic == false
                       //       ? onPressedMusic()
-                      //       :         HapticFeedback.vibrate();
+                      //       :                  Vibration.vibrate();;
                       // });
                       //                   setState(() {
                       //                     redCoinAnimation = false;
@@ -2581,12 +2475,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                           setState(() {
                             playBackgroundMusic == false
                                 ? ''
-                                : HapticFeedback.vibrate();
+                                : Vibration.vibrate();
+                            ;
                           });
                           setState(() {
                             redCoinAnimation = false;
                             lightGreenCoinAnimation = false;
-                            blueCoinAnimation = false;
+
                             greenCoinAnimation = false;
                             lightBlueCoinAnimation = false;
                             brownCoinAnimation = true;
@@ -2608,7 +2503,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             fit: BoxFit.fill,
                           )),
                           child: Text(
-                            stack5 != 0 ? "20K" : stack6.toString(),
+                            stack4 != 0 ? "20K" : stack6.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: height * 0.02),
@@ -2618,9 +2513,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                     ],
                   ),
                 ),
-
                 Positioned(
-                  top: height*0.18,
+                  top: height * 0.18,
                   right: width * 0.03,
                   child: Container(
                     height: height * 0.65,
@@ -2645,7 +2539,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
+                                ;
                               });
 
                               DialogUtils.showResultLucky7(
@@ -2654,8 +2549,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   item.detail,
                                   height * 0.50,
                                   width * 0.45,
-                                                                  height * 0.23,
-
+                                  height * 0.23,
                                   width * 0.15,
                                   height * 0.07,
                                   width * 0.07,
@@ -2663,7 +2557,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   width * 0.50,
                                   item.mid,
                                   height * 0.03,
-                                  _togglePopup);
+                                  playBackgroundMusic);
                             },
                             child: Container(
                               margin: EdgeInsets.all(1),
@@ -2721,7 +2615,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       //   onTap: () {
                       //     setState(
                       //       () {
-                      //         HapticFeedback.vibrate();
+                      //                  Vibration.vibrate();;
                       //         onPressedMusic();
                       //         setState(() {
                       //           _currentCoinIndex++;
@@ -2741,7 +2635,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                 ),
                 startTimes >= 1
                     ? Positioned(bottom: height * 0.005, child: betButton())
-                    : SizedBox()
+                    : Container()
               ],
             )),
         drawer: SizedBox(
@@ -2786,7 +2680,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                         //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               CustomText(
                                 text: "Amount",
@@ -2801,16 +2695,15 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                  margin: const EdgeInsets.only(
-                                        right:5),
+                                    margin: const EdgeInsets.only(right: 5),
                                     // alignment: Alignment.center,
                                     child: Image.asset(
                                       "assets/User-interface/minus-image.png",
-                                   scale: 3,
+                                      scale: 3,
                                     ),
                                   ),
                                   SizedBox(
-                                    height: height * 0.10,
+                                    height: height * 0.125,
                                     width: width * 0.45,
                                     child: Center(
                                       child: TextField(
@@ -2823,6 +2716,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 10,
                                         ),
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
@@ -2848,12 +2742,11 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                     ),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.only(
-                                        left:5),
+                                    margin: const EdgeInsets.only(left: 5),
                                     // alignment: Alignment.center,
                                     child: Image.asset(
                                       "assets/User-interface/plus-image.png",
-                                    scale: 3,
+                                      scale: 3,
                                     ),
                                   ),
                                 ],
@@ -2878,12 +2771,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                       onTap: () {
                                         setState(() {
                                           playBackgroundMusic == false
-                                              ? ''
-                                              : HapticFeedback.vibrate();
-                                        });
-                                        setState(() {
-                                          _currentCoinIndexRytPort++;
-                                          _startCoinAnimationRightPort();
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
                                         });
 
                                         if (lowCardButton == true ||
@@ -2894,7 +2783,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                             blackCardButton == true) {
                                           makeBetPortrait();
                                           Navigator.pop(context);
-                                          onPressedMusicForBet();
+
                                           lowCardButton = false;
                                           highCardButton = false;
                                           evenCardButton = false;
@@ -2923,10 +2812,9 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   : manualAmount == false
                                       ? GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              _currentCoinIndexRytPort++;
-                                              _startCoinAnimationRightPort();
-                                            });
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
 
                                             if (lowCardButton == true ||
                                                 highCardButton == true ||
@@ -2935,10 +2823,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                                 redCardButton == true ||
                                                 blackCardButton == true) {
                                               makeBetPortrait();
-                                              playBackgroundMusic == false
-                                                  ? onPressedMusicForBet()
-                                                  : "";
-                                                     Navigator.pop(context);
+
+                                              Navigator.pop(context);
                                               lowCardButton = false;
                                               highCardButton = false;
                                               evenCardButton = false;
@@ -2971,14 +2857,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                         )
                                       : GestureDetector(
                                           onTap: () {
-                                               Navigator.pop(context);
+                                            Navigator.pop(context);
                                             setState(() {
                                               playBackgroundMusic == false
-                                                  ? ''
-                                                  : HapticFeedback.vibrate();
+                                                  ? ""
+                                                  : Vibration.vibrate();
                                             });
-                                            DialogUtils.showOneBtn(context,
-                                                "Please Select Existing amount");
+                                            DialogUtils.showOneBtn(
+                                              context,
+                                              "Please Select Existing amount",
+                                            );
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -3007,6 +2895,9 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       top: 2,
                       child: InkWell(
                         onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
                           Navigator.pop(context);
                         },
                         child: Image.asset(
@@ -3057,7 +2948,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                       
                           children: [
                             CustomText(
                               text: "Amount",
@@ -3081,7 +2971,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   ),
                                 ),
                                 SizedBox(
-                                  height: height * 0.2,
+                                  height: height * 0.26,
                                   width: width * 0.22,
                                   child: Center(
                                     child: TextField(
@@ -3094,6 +2984,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
+                                        fontSize: 10,
                                       ),
                                       keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
@@ -3138,7 +3029,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold),
                             ),
-                               SizedBox(
+                            SizedBox(
                               height: height * 0.07,
                             ),
                             manualAmount == true &&
@@ -3148,12 +3039,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                     onTap: () {
                                       setState(() {
                                         playBackgroundMusic == false
-                                            ? ''
-                                            : HapticFeedback.vibrate();
-                                      });
-                                      setState(() {
-                                        _currentCoinIndex++;
-                                        _startCoinAnimation();
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
                                       });
 
                                       if (lowCardButton == true ||
@@ -3164,9 +3051,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           blackCardButton == true) {
                                         makeBet();
                                         Navigator.pop(context);
-                                        playBackgroundMusic == false
-                                            ? onPressedMusicForBet()
-                                            : "";
+
                                         lowCardButton = false;
                                         highCardButton = false;
                                         evenCardButton = false;
@@ -3174,10 +3059,9 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                         blackCardButton = false;
                                         redCardButton = false;
                                       }
-                                         Navigator.pop(context);
                                     },
                                     child: Container(
-                                    height: height*0.22,
+                                        height: height * 0.22,
                                         width: width * 0.23,
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
@@ -3187,15 +3071,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                 : manualAmount == false
                                     ? InkWell(
                                         onTap: () {
-                                       
                                           setState(() {
                                             playBackgroundMusic == false
-                                                ? ''
-                                                : HapticFeedback.vibrate();
-                                          });
-                                          setState(() {
-                                            _currentCoinIndex++;
-                                            _startCoinAnimation();
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
                                           });
 
                                           if (lowCardButton == true ||
@@ -3206,9 +3085,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                               blackCardButton == true) {
                                             makeBet();
                                             Navigator.pop(context);
-                                            playBackgroundMusic == false
-                                                ? onPressedMusicForBet()
-                                                : "";
+
                                             lowCardButton = false;
                                             highCardButton = false;
                                             evenCardButton = false;
@@ -3221,8 +3098,8 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           }
                                         },
                                         child: Container(
-                                         height: height*0.22,
-                                        width: width * 0.23,
+                                            height: height * 0.22,
+                                            width: width * 0.23,
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
@@ -3230,19 +3107,22 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                       )
                                     : GestureDetector(
                                         onTap: () {
-                                             Navigator.pop(context);
+                                          Navigator.pop(context);
                                           setState(() {
                                             playBackgroundMusic == false
                                                 ? ''
-                                                : HapticFeedback.vibrate();
+                                                : Vibration.vibrate();
+                                            ;
                                           });
-                                          DialogUtils.showOneBtn(context,
-                                              "Please Select Existing amount");
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
                                         },
                                         child: Container(
                                           alignment: Alignment.center,
-                                        height: height*0.22,
-                                        width: width * 0.23,
+                                          height: height * 0.22,
+                                          width: width * 0.23,
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -3261,6 +3141,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                       top: 2,
                       child: InkWell(
                         onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+
                           Navigator.pop(context);
                         },
                         child: Image.asset(
@@ -3287,15 +3171,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     lowCardButton = !lowCardButton;
                   }
                   if (lowCardButton == true) {
@@ -3317,15 +3202,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomImage(
@@ -3363,15 +3246,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     highCardButton = !highCardButton;
                   }
                   if (highCardButton == true) {
@@ -3383,7 +3267,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
                     betSucessfulllyPlaced(
                         context,
-                             height * 0.45,
+                        height * 0.45,
                         width * 0.33,
                         height * 0.4,
                         width * 0.7,
@@ -3393,15 +3277,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomImage(
@@ -3439,15 +3321,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     evenCardButton = !evenCardButton;
                   }
                   if (evenCardButton == true) {
@@ -3459,7 +3342,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
                     betSucessfulllyPlaced(
                         context,
-                             height * 0.45,
+                        height * 0.45,
                         width * 0.33,
                         height * 0.4,
                         width * 0.7,
@@ -3469,15 +3352,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomImage(
@@ -3515,15 +3396,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     oddCardButton = !oddCardButton;
                   }
                   if (oddCardButton == true) {
@@ -3535,7 +3417,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
                     betSucessfulllyPlaced(
                         context,
-                            height * 0.45,
+                        height * 0.45,
                         width * 0.33,
                         height * 0.4,
                         width * 0.7,
@@ -3545,15 +3427,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomImage(
@@ -3591,15 +3471,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     blackCardButton = !blackCardButton;
                   }
                   if (blackCardButton == true) {
@@ -3611,7 +3492,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
                     betSucessfulllyPlaced(
                         context,
-                              height * 0.45,
+                        height * 0.45,
                         width * 0.33,
                         height * 0.4,
                         width * 0.7,
@@ -3621,15 +3502,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomButton(
@@ -3669,15 +3548,16 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
+                    ;
                   });
 
                   if ((redCoinAnimation == true ||
-                      lightBlueCoinAnimation == true ||
-                      lightGreenCoinAnimation == true ||
-                      blueCoinAnimation == true ||
-                      brownCoinAnimation == true ||
-                      greenCoinAnimation == true)&& startTimes > 1) {
+                          lightBlueCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          brownCoinAnimation == true ||
+                          greenCoinAnimation == true) &&
+                      startTimes > 1) {
                     redCardButton = !redCardButton;
                   }
                   if (redCardButton == true) {
@@ -3689,7 +3569,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
                     betSucessfulllyPlaced(
                         context,
-                             height * 0.45,
+                        height * 0.45,
                         width * 0.33,
                         height * 0.4,
                         width * 0.7,
@@ -3699,15 +3579,13 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                   }
                 },
                 child: CustomButton(
@@ -3743,26 +3621,26 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
   goWidget() {
     return Positioned(
-            top: height * 0.4,
-            child: Visibility(
-   visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
-      child: Lottie.asset("assets/lucky7/audio/countdown.json",
-          height: height * 0.3, width: width ),
-    ));
+        top: height * 0.4,
+        child: Visibility(
+          visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
+          child: Lottie.asset("assets/lucky7/audio/countdown.json",
+              height: height * 0.3, width: width),
+        ));
   }
 
   goWidgetPort() {
     return Positioned(
-             top: height * 0.06,
-            child:Visibility(
-visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
-      child: Lottie.asset("assets/lucky7/audio/countdown.json",
-          height: height * 0.2, width: width),
-    ));
+        top: height * 0.06,
+        child: Visibility(
+          visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
+          child: Lottie.asset("assets/lucky7/audio/countdown.json",
+              height: height * 0.2, width: width),
+        ));
   }
 
   Widget placeyourbetWidgetPortrait(String time) {
-    return  autoTime == '45'
+    return autoTime == '45'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -3788,7 +3666,7 @@ visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
   }
 
   Widget placeyourbetWidget(String time) {
-    return  autoTime == '45'
+    return autoTime == '45'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -3813,7 +3691,7 @@ visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
   }
 
   Widget gameStopBettingPortrait(String time) {
-    return  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -3838,7 +3716,7 @@ visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
   }
 
   Widget gameStopBetting(String time) {
-    return  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -3855,7 +3733,7 @@ visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
                 child: Image.asset(
                   'assets/lucky7/images/Stop Betting.png',
                   height: height * 0.2,
-                  width: width * 0.5,
+                  width: width * 0.3,
                   fit: BoxFit.fill,
                 )))
         : SizedBox();
@@ -3956,7 +3834,7 @@ visible: autoTime == "3" || autoTime == "2" || autoTime == "1",
     );
   }
 
-Widget buildImageLand(String cardImage) {
+  Widget buildImageLand(String cardImage) {
     return cardImage == "" || cardImage == "null" || cardImage == null
         ? Image.asset(
             'assets/lucky7/images/cardBg.png',
@@ -4029,7 +3907,8 @@ Widget buildImageLand(String cardImage) {
             onTap: () {
               Navigator.pop(context);
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4053,7 +3932,8 @@ Widget buildImageLand(String cardImage) {
             onTap: () async {
               Navigator.push(context, _createRouteProfile());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4071,7 +3951,8 @@ Widget buildImageLand(String cardImage) {
             onTap: () async {
               Navigator.push(context, _createRoute());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4089,7 +3970,8 @@ Widget buildImageLand(String cardImage) {
             onTap: () async {
               Navigator.push(context, _createRouteCurrentBets());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4106,7 +3988,8 @@ Widget buildImageLand(String cardImage) {
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4123,7 +4006,8 @@ Widget buildImageLand(String cardImage) {
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
               Navigator.push(context, _createRouteChangePassword());
             },
@@ -4148,7 +4032,8 @@ Widget buildImageLand(String cardImage) {
             onTap: () async {
               getlogout();
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
               });
             },
             child: Container(
@@ -4172,6 +4057,7 @@ Widget buildImageLand(String cardImage) {
       pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
         matchId: widget.matchId,
         gameCode: widget.gameCode,
+        playBackgroundMusic: playBackgroundMusic,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
@@ -4191,8 +4077,9 @@ Widget buildImageLand(String cardImage) {
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4211,8 +4098,9 @@ Widget buildImageLand(String cardImage) {
 
   Route _createRouteProfile() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4232,7 +4120,9 @@ Widget buildImageLand(String cardImage) {
   Route _createRouteCurrentBets() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const CurrentBetsScreen(),
+          CurrentBetsScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4252,7 +4142,9 @@ Widget buildImageLand(String cardImage) {
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+          ChangePasswordScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -4296,39 +4188,48 @@ Widget buildImageLand(String cardImage) {
     var response = await GlobalFunction.apiGetRequestae(url);
     var result = jsonDecode(response);
     if (result['status'] == true) {
-  
-        autoTime = result['data']['t1'][0]['autotime'].toString();
-        cardNameImage1 = result['data']['t1'][0]['C1'].toString();
-        startTimes = int.parse(autoTime.toString());
-        print("====>$startTimes");
-        marketId = result['data']['t1'][0]['mid'].toString();
-        print("marketId====>$marketId");
-        lowCard = result['data']['t2'][0]['nat'].toString();
-        highCard = result['data']['t2'][1]['nat'].toString();
-        evenCard = result['data']['t2'][2]['nat'].toString();
-        oddCard = result['data']['t2'][3]['nat'].toString();
-        blackCard = result['data']['t2'][5]['nat'].toString();
-        redCard = result['data']['t2'][4]['nat'].toString();
+      if (marketId != result['data']['t1'][0]['mid'].toString()) {
+        _coinsLeftRandomLand.clear();
+        _coinsRightRandomLand.clear();
+        _coinsLeftRandomPort.clear();
+        _coinsRytRandomPort.clear();
+      }
+      marketId = result['data']['t1'][0]['mid'].toString();
+      autoTime = result['data']['t1'][0]['autotime'].toString();
+      cardNameImage1 = result['data']['t1'][0]['C1'].toString();
+      if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
+      startTimes = int.parse(autoTime.toString());
+      print("====>$startTimes");
 
-        lowCardRate = result['data']['t2'][0]['rate'].toString();
-        highCardRate = result['data']['t2'][1]['rate'].toString();
-        evenCardRate = result['data']['t2'][2]['rate'].toString();
-        oddCardRate = result['data']['t2'][3]['rate'].toString();
-        redCardRate = result['data']['t2'][4]['rate'].toString();
-        blackCardRate = result['data']['t2'][5]['rate'].toString();
+      print("marketId====>$marketId");
+      lowCard = result['data']['t2'][0]['nat'].toString();
+      highCard = result['data']['t2'][1]['nat'].toString();
+      evenCard = result['data']['t2'][2]['nat'].toString();
+      oddCard = result['data']['t2'][3]['nat'].toString();
+      blackCard = result['data']['t2'][5]['nat'].toString();
+      redCard = result['data']['t2'][4]['nat'].toString();
 
-        lowCardSid = result['data']['t2'][0]['sid'].toString();
-        highCardSid = result['data']['t2'][1]['sid'].toString();
-        evenCardSid = result['data']['t2'][2]['sid'].toString();
-        oddCardSid = result['data']['t2'][3]['sid'].toString();
-        redCardSid = result['data']['t2'][4]['sid'].toString();
-        blackCardSid = result['data']['t2'][5]['sid'].toString();
+      lowCardRate = result['data']['t2'][0]['rate'].toString();
+      highCardRate = result['data']['t2'][1]['rate'].toString();
+      evenCardRate = result['data']['t2'][2]['rate'].toString();
+      oddCardRate = result['data']['t2'][3]['rate'].toString();
+      redCardRate = result['data']['t2'][4]['rate'].toString();
+      blackCardRate = result['data']['t2'][5]['rate'].toString();
+
+      lowCardSid = result['data']['t2'][0]['sid'].toString();
+      highCardSid = result['data']['t2'][1]['sid'].toString();
+      evenCardSid = result['data']['t2'][2]['sid'].toString();
+      oddCardSid = result['data']['t2'][3]['sid'].toString();
+      redCardSid = result['data']['t2'][4]['sid'].toString();
+      blackCardSid = result['data']['t2'][5]['sid'].toString();
 
       autoTime == "0"
           ? setState(() {
               redCoinAnimation = false;
               lightGreenCoinAnimation = false;
-              blueCoinAnimation = false;
+
               greenCoinAnimation = false;
               lightBlueCoinAnimation = false;
               brownCoinAnimation = false;
@@ -4369,11 +4270,17 @@ Widget buildImageLand(String cardImage) {
     if (result['status'] == true) {
       setState(() {
         stack1 = result['data']['stack1'];
+        print("stack 1------->$stack1");
         stack2 = result['data']['stack2'];
+        print("stack 2------->$stack2");
+
         stack3 = result['data']['stack3'];
+        print("stack 3------->$stack3");
         stack4 = result['data']['stack4'];
-        stack5 = result['data']['stack5'];
+        print("stack 4------->$stack4");
+
         stack6 = result['data']['stack6'];
+        print("stack 6------->$stack6");
       });
     }
   }
@@ -4449,6 +4356,7 @@ Widget buildImageLand(String cardImage) {
   }
 
   Future makeBet() async {
+    getUserDetails();
     DateTime currentTime = DateTime.now();
     var url = "http://13.250.53.81/VirtualCasinoBetPlacer/vc/place-bet";
     var body = {
@@ -4473,17 +4381,13 @@ Widget buildImageLand(String cardImage) {
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : lightBlueCoinAnimation == true &&
-                                  manualAmount == false
-                              ? stack5.toString()
-                              : brownCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                          : brownCoinAnimation == true && manualAmount == false
+                              ? stack6
+                              : "",
       "selectionId": lowCardButton == true
           ? lowCardSid.toString()
           : highCardButton == true
@@ -4512,21 +4416,47 @@ Widget buildImageLand(String cardImage) {
         "orientation": "landscape"
       }
     };
-    var response = await GlobalFunction.apiPostRequestToken(url, body);
+    var response = await GlobalFunction.apiPostRequestTokenForBet(
+      url,
+      body,
+      context,
+      stakeController,
+    );
+    setState(() {
+      manualAmount = false;
+    });
     var result = jsonDecode(response);
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
+      setState(() {
+        manualAmount = false;
+        stakeController.clear();
+      });
+      setState(() {
+        _currentCoinIndex++;
+        _startCoinAnimation();
+      });
 
-      getuserBalance();
       getVcLiablity();
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      manualAmount = false;
+      stakeController.clear();
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
     }
+    stakeController.clear();
+    manualAmount = false;
   }
 
   Future makeBetPortrait() async {
+    getUserDetails();
     DateTime currentTime = DateTime.now();
     var url = "http://13.250.53.81/VirtualCasinoBetPlacer/vc/place-bet";
     var body = {
@@ -4551,17 +4481,13 @@ Widget buildImageLand(String cardImage) {
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : lightBlueCoinAnimation == true &&
-                                  manualAmount == false
-                              ? stack5.toString()
-                              : brownCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                          : brownCoinAnimation == true && manualAmount == false
+                              ? stack6
+                              : "",
       "selectionId": lowCardButton == true
           ? lowCardSid.toString()
           : highCardButton == true
@@ -4590,18 +4516,44 @@ Widget buildImageLand(String cardImage) {
         "orientation": "landscape"
       }
     };
-    var response = await GlobalFunction.apiPostRequestToken(url, body);
+    var response = await GlobalFunction.apiPostRequestTokenForBetPortrait(
+      url,
+      body,
+      context,
+      stakeController,
+    );
+    setState(() {
+      manualAmount = false;
+    });
     var result = jsonDecode(response);
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
-
-      getuserBalance();
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
+      setState(() {
+        manualAmount = false;
+        stakeController.clear();
+      });
+      setState(() {
+        _currentCoinIndexRytPort++;
+        _startCoinAnimationRightPort();
+      });
       getVcLiablity();
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      manualAmount = false;
+      stakeController.clear();
+
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
     }
+
+    stakeController.clear();
+    manualAmount = false;
   }
 
   List<MatchIdModeLL7> matchIdList = [];

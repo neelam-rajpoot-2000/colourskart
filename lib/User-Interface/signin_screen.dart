@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/User-Interface/dashborad_screen.dart';
 import 'package:virtual_casino/User-Interface/sign_up_screen.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
@@ -12,7 +13,8 @@ import 'package:virtual_casino/Utils/apis.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  bool? playBackgroundMusic =false;
+   SignInScreen({Key? key,this.playBackgroundMusic}) : super(key: key);
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -26,6 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
   var passwordController = TextEditingController();
   final audioPlayer = AudioPlayer();
   bool loading = false;
+  bool playBackgroundMusic=false;
 
   void startButtonSound() async {
     await audioPlayer.setAsset("assets/Teen-patti/audio/button-click.mp3");
@@ -56,7 +59,9 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    return Scaffold(body: OrientationBuilder(builder: (context, orientation) {
+    return Scaffold(
+
+      body: OrientationBuilder(builder: (context, orientation) {
       if (orientation == Orientation.landscape) {
         return landscapeWidget();
       } else {
@@ -160,12 +165,15 @@ class _SignInScreenState extends State<SignInScreen> {
                               )
                             : InkWell(
                                 onTap: () {
+                                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                                   if (userNameController.text.isEmpty) {
                                     DialogUtils.showOneBtn(
-                                        context, "Please enter User name !");
+                                        context, "Please enter User name !",);
                                   } else if (passwordController.text.isEmpty) {
                                     DialogUtils.showOneBtn(context,
-                                        "Password should not be empty !");
+                                        "Password should not be empty !",);
                                   } else {
                                     getLoginDetails();
                                   }
@@ -186,6 +194,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         InkWell(
                           onTap: () {
+                                        widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -338,12 +349,15 @@ class _SignInScreenState extends State<SignInScreen> {
                             )
                           : InkWell(
                               onTap: () {
+                                            widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                                 if (userNameController.text.isEmpty) {
                                   DialogUtils.showOneBtn(
-                                      context, "Please enter User name !");
+                                      context, "Please enter User name !",);
                                 } else if (passwordController.text.isEmpty) {
                                   DialogUtils.showOneBtn(context,
-                                      "Password should not be empty !");
+                                      "Password should not be empty !",);
                                 } else {
                                   getLoginDetails();
                                 }
@@ -364,6 +378,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       InkWell(
                         onTap: () {
+                                      widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -436,7 +453,7 @@ class _SignInScreenState extends State<SignInScreen> {
     var response = await GlobalFunction.apiPostRequest(url, body);
     var result = jsonDecode(response);
     if (result['status'] == false) {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],);
       setState(() {
         loading = false;
       });

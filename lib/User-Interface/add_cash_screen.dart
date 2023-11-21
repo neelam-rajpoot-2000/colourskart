@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
 import 'package:virtual_casino/Utils/apis.dart';
 import 'package:virtual_casino/Widgets/customText.dart';
@@ -8,7 +9,8 @@ import 'package:virtual_casino/Widgets/customText.dart';
 import '../Lucky7/Modal/deposit_type_model.dart';
 
 class AddCashScreen extends StatefulWidget {
-  const AddCashScreen({super.key});
+  bool? playBackgroundMusic=false;
+   AddCashScreen({super.key,this.playBackgroundMusic });
 
   @override
   State<AddCashScreen> createState() => _AddCashScreenState();
@@ -366,6 +368,9 @@ class _AddCashScreenState extends State<AddCashScreen> {
             ),
             GestureDetector(
               onTap: () {
+                      widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                 Navigator.pop(context);
               },
               child: Container(
@@ -429,6 +434,9 @@ class _AddCashScreenState extends State<AddCashScreen> {
           children: [
             GestureDetector(
               onTap: () {
+                      widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                 Navigator.pop(context);
               },
               child: Container(

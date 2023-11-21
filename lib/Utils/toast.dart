@@ -3,11 +3,13 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:vibration/vibration.dart';
 
 import '../DragonTiger/Constants/images_constant_dt.dart';
 import '../Widgets/customText.dart';
 
 class DialogUtils {
+  bool playSound = false;
   static DialogUtils instance = DialogUtils.internal();
 
   DialogUtils.internal();
@@ -44,332 +46,335 @@ class DialogUtils {
       hClose,
       wClose,
       hCloseBg,
-      wCloseBg,roundIdList,heightRoundId,  Function funName) {
+      wCloseBg,
+      roundIdList,
+      heightRoundId,
+      bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
           var height = MediaQuery.of(context).size.height;
           var width = MediaQuery.of(context).size.width;
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Stack(
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
               alignment: Alignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  height: hContainer,
-                  width: wContainer,
-                  // width: width * 0.4,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    gradient: LinearGradient(
-                      colors: const <Color>[
-                        Color(0xff180010),
-                        Color(0xff3F042B),
-                      ],
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: hContainer,
+                    width: wContainer,
+                    // width: width * 0.4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        colors: const <Color>[
+                          Color(0xff180010),
+                          Color(0xff3F042B),
+                        ],
+                      ),
+                    ),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(
+                            text: "RESULT",
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: 17.0,
+                            textAlign: TextAlign.center,
+                          ),
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                            height: hCard,
+                            width: wCard,
+                          ),
+                          CustomText(
+                              text: 'Round ID: ${roundIdList}',
+                              fontSize: heightRoundId,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          Container(
+                            // width: width * 9,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Color(0xff57003D)),
+                            child: CustomText(
+                              text: "$cardDetail".replaceAll("||", "  |  "),
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white60,
+                              fontSize: 09.0,
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(
-                        text: "RESULT",
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: 17.0,
-                        textAlign: TextAlign.center,
-                      ),
-                    
-                      Image.network(
-                        "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                        height: hCard,
-                        width: wCard,
-                      ),
-                       CustomText(text: 'Round ID: ${roundIdList}',fontSize:heightRoundId,color: Colors.white,fontWeight: FontWeight.bold),
-       
-                      Container(
-                        // width: width * 9,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: Color(0xff57003D)),
-                        child: CustomText(
-                          text: "$cardDetail".replaceAll("||", "  |  "),
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white60,
-                          fontSize: 09.0,
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
                   Positioned(
-                      right: width * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                    HapticFeedback.vibrate();
-
-              
-              
-                          Navigator.pop(context);
-                          funName;
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
+                    right: width * 0.005,
+                    top: 2,
+                    child: InkWell(
+                      onTap: () {
+                        playSound == false ? '' : Vibration.vibrate();
+                        Navigator.pop(context);
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
                       ),
                     ),
-                ],
-            ),
-          );
-        });
-  }
-
- static void showResultDT(
-      BuildContext context,
-      cardImage1,
-      cardImage2,
-      cardDetail,
-      cardDetail2,
-      cardDetail3,
-     roundIdList) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          var height = MediaQuery.of(context).size.height;
-          var width = MediaQuery.of(context).size.width;
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content:
-                Stack(
-                  children: [
-                    Container(
-                     // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                     height:     height * 0.26,
-                          width:            width * 0.9,
-                         
-                                    
-                      // width: width * 0.4,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                       image: DecorationImage(
-                            image: AssetImage(DragonTigerImages.pastResult),
-                            fit: BoxFit.fill)
-                      ),
-                      child:  Padding(
-        padding: EdgeInsets.only(top: height * 0.04),
-        child: Column(
-          children: [
-                 Padding(
-              padding: EdgeInsets.only(left:width*0.25,top:height*0.015),
-              child: Row(
-                    children: [
-                       Image.network(
-                              "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                             height: height * 0.09,
-                      width: width * 0.12,
-                            ),
-                            SizedBox(width: width*0.1,),
-                             Image.network(
-                              "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                           height: height * 0.09,
-                      width: width * 0.12,
-                            ),
-                    ],
-              ),
-            ),
-            SizedBox(height: height*0.0,),
-             CustomText(
-               text: 'Round ID: ${roundIdList}',
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-      
-            Padding(
-              padding: EdgeInsets.only(left: width*0.07,top: height*0.04),
-              child: Row(
-               
-                    children: [
-                       CustomText(
-                                text: "$cardDetail".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: width
-                              *0.05,),
-                               CustomText(
-                                text: "$cardDetail2".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                                                   ),
-                                     SizedBox(width: width
-                              *0.05,),             
-                                                    CustomText(
-                                text: "$cardDetail3".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                                                   ),
-                    ],
-              ),
-            )
-          ],
-        ),
-      ),
-              ),
-                   Positioned(
-                      right: width * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-               
-       
-          );
-        });
-  }
-
-  static void showResultDTLand(
-      BuildContext context,
-      cardImage1,
-      cardImage2,
-      cardDetail,
-      cardDetail2,
-      cardDetail3,
-     roundIdList) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          var height = MediaQuery.of(context).size.height;
-          var width = MediaQuery.of(context).size.width;
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content:
-              Stack(
-                  children: [
-                    Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                 height: height * 0.54,
-                      width:          width * 0.40,
-                        
-                             
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                   image: DecorationImage(
-                        image: AssetImage(DragonTigerImages.pastResult),
-                        fit: BoxFit.fill)
                   ),
-                  child:   Padding(
-        padding: EdgeInsets.only(top: height * 0.05),
-        child: Column(
-          children: [
-                Padding(
-              padding: EdgeInsets.only(left:width*0.15,top:height*0.04),
-              child: Row(
-                    children: [
-                       Image.network(
-                          "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                         height: height * 0.14,
-                 // width: width * 0.19,
-                        ),
-                            SizedBox(width: width*0.07,),
-                             Image.network(
-                          "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                         height: height * 0.14,
-                //  width: width * 0.14,
-                        ),
-                    ],
+                ],
               ),
-            ),
-                     SizedBox(height: height*0.03,),
-              CustomText(
-               text: 'Round ID: ${roundIdList}',
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-      
-            Padding(
-              padding: EdgeInsets.only(left: width*0.03,top: height*0.11),
-              child: Row(
-               
-                    children: [
-                       CustomText(
-                                text: "$cardDetail".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: width
-                              *0.06,),
-                               CustomText(
-                                text: "$cardDetail2".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                                                   ),
-                                                      SizedBox(width: width
-                              *0.065,),
-                                                    CustomText(
-                                text: "$cardDetail3".replaceAll("||", "|"),
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white60,
-                                fontSize: 6.0,
-                                textAlign: TextAlign.center,
-                                                   ),
-                    ],
-              ),
-            )
-          ],
-        ),
-      ),
-              ),
-                Positioned(
-                      right: width * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
-                    ),
-                
-                  ],
-                ),
-             
-                    );
+            );
+          });
         });
   }
 
-  
+  static void showResultDT(BuildContext context, cardImage1, cardImage2,
+      cardDetail, cardDetail2, cardDetail3, roundIdList, bool playSound) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
+              alignment: Alignment.center,
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    height: height * 0.26,
+                    width: width * 0.9,
+
+                    // width: width * 0.4,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: AssetImage(DragonTigerImages.pastResult),
+                            fit: BoxFit.fill)),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: height * 0.04),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.25, top: height * 0.015),
+                            child: Row(
+                              children: [
+                                Image.network(
+                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                  height: height * 0.09,
+                                  width: width * 0.12,
+                                ),
+                                SizedBox(
+                                  width: width * 0.1,
+                                ),
+                                Image.network(
+                                  "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                  height: height * 0.09,
+                                  width: width * 0.12,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: height * 0.0,
+                          ),
+                          CustomText(
+                              text: 'Round ID: ${roundIdList}',
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.07, top: height * 0.04),
+                            child: Row(
+                              children: [
+                                CustomText(
+                                  text: "$cardDetail".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  width: width * 0.05,
+                                ),
+                                CustomText(
+                                  text: "$cardDetail2".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  width: width * 0.05,
+                                ),
+                                CustomText(
+                                  text: "$cardDetail3".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: width * 0.005,
+                    top: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        playSound == false ? '' : Vibration.vibrate();
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
+
+  static void showResultDTLand(BuildContext context, cardImage1, cardImage2,
+      cardDetail, cardDetail2, cardDetail3, roundIdList, bool playSound) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
+              alignment: Alignment.center,
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    height: height * 0.54,
+                    width: width * 0.40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: AssetImage(DragonTigerImages.pastResult),
+                            fit: BoxFit.fill)),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: height * 0.05),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.15, top: height * 0.04),
+                            child: Row(
+                              children: [
+                                Image.network(
+                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                  height: height * 0.14,
+                                  // width: width * 0.19,
+                                ),
+                                SizedBox(
+                                  width: width * 0.07,
+                                ),
+                                Image.network(
+                                  "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                  height: height * 0.14,
+                                  //  width: width * 0.14,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: height * 0.03,
+                          ),
+                          CustomText(
+                              text: 'Round ID: ${roundIdList}',
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.03, top: height * 0.11),
+                            child: Row(
+                              children: [
+                                CustomText(
+                                  text: "$cardDetail".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  width: width * 0.06,
+                                ),
+                                CustomText(
+                                  text: "$cardDetail2".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  width: width * 0.065,
+                                ),
+                                CustomText(
+                                  text: "$cardDetail3".replaceAll("||", "|"),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                  fontSize: 6.0,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: width * 0.005,
+                    top: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        playSound == false ? '' : Vibration.vibrate();
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
+
   static void showOneBtn(BuildContext context, String titleText) {
     showDialog(
         context: context,
@@ -379,89 +384,83 @@ class DialogUtils {
             content: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/User-interface/Popup.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
+                Stack(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 22),
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image:
+                                  AssetImage("assets/User-interface/Popup.png"),
+                              fit: BoxFit.fitHeight)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Notice",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 20,
                                 ),
-                                Text(
-                                  "Notice",
+                                child: Text(
+                                  titleText,
                                   style: TextStyle(
                                       color: Colors.white,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    titleText,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  height: 40,
-                                  width: 80,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/User-interface/Buttons/ok-button.png")))),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-               
-                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
+                              ),
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Vibration.vibrate();
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                height: 40,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            "assets/User-interface/Buttons/ok-button.png")))),
+                          ),
+                        ],
                       ),
                     ),
-                
+                  ],
+                ),
+                Positioned(
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 20,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -477,74 +476,84 @@ class DialogUtils {
             content: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/User-interface/Popup.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
+                Stack(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 22),
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image:
+                                  AssetImage("assets/User-interface/Popup.png"),
+                              fit: BoxFit.fitHeight)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Notice",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 20,
                                 ),
-                                Text(
-                                  "Notice",
+                                child: Text(
+                                  titleText,
                                   style: TextStyle(
                                       color: Colors.white,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    titleText,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          
-                          ],
-                        ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              InkWell(
+                                  onTap: () {
+                                    Vibration.vibrate();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      height: 40,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: AssetImage(
+                                                  "assets/User-interface/Buttons/ok-button.png")))))
+                            ],
+                          ),
+                        ],
                       ),
-                      Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
+                    ),
+                    Positioned(
+                      right: MediaQuery.of(context).size.width * 0.005,
+                      top: 20,
                       child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
+                        onTap: () {
+                          Navigator.pop(context);
+                          Vibration.vibrate();
+                        },
                         child: Image.asset(
                           "assets/User-interface/close-button.png",
                           scale: 4,
                         ),
                       ),
                     ),
-                
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -552,7 +561,8 @@ class DialogUtils {
         });
   }
 
-  static void showconfirmBet(BuildContext context, Function onBet) {
+  static void showconfirmBet(
+      BuildContext context, Function onBet, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -602,6 +612,9 @@ class DialogUtils {
                                 children: [
                                   InkWell(
                                     onTap: () {
+                                      playSound == false
+                                          ? ''
+                                          : Vibration.vibrate();
                                       Navigator.pop(context);
                                     },
                                     child: Container(
@@ -625,6 +638,9 @@ class DialogUtils {
                                   ),
                                   InkWell(
                                     onTap: () {
+                                      playSound == false
+                                          ? ''
+                                          : Vibration.vibrate();
                                       onBet;
                                       Navigator.pop(context);
                                     },
@@ -655,6 +671,7 @@ class DialogUtils {
                 ),
                 InkWell(
                   onTap: () {
+                    playSound == false ? '' : Vibration.vibrate();
                     Navigator.pop(context);
                   },
                   child: Container(
@@ -685,7 +702,8 @@ class DialogUtils {
       double height,
       double width,
       double heightClick,
-      double widthClick) {
+      double widthClick,
+      bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -742,6 +760,7 @@ class DialogUtils {
                             ),
                             InkWell(
                               onTap: () {
+                                playSound == false ? '' : Vibration.vibrate();
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               },
@@ -763,6 +782,7 @@ class DialogUtils {
                 ),
                 InkWell(
                   onTap: () {
+                    playSound == false ? '' : Vibration.vibrate();
                     Navigator.pop(context);
                   },
                   child: Container(
@@ -787,18 +807,18 @@ class DialogUtils {
   }
 
   static void showResult(
-    BuildContext context,
-    String titleText,
-    cardImage1,
-    cardImage2,
-    cardImage3,
-    cardImage4,
-    cardImage5,
-    cardImage6,
-    winner,
-    roundId,
-    showPopUp,
-  ) {
+      BuildContext context,
+      String titleText,
+      cardImage1,
+      cardImage2,
+      cardImage3,
+      cardImage4,
+      cardImage5,
+      cardImage6,
+      winner,
+      roundId,
+      showPopUp,
+      bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -948,23 +968,20 @@ class DialogUtils {
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
@@ -972,17 +989,17 @@ class DialogUtils {
   }
 
   static void showResultPortrait(
-    BuildContext context,
-    String titleText,
-    cardImage1,
-    cardImage2,
-    cardImage3,
-    cardImage4,
-    cardImage5,
-    cardImage6,
-    winner,
-    roundId,
-  ) {
+      BuildContext context,
+      String titleText,
+      cardImage1,
+      cardImage2,
+      cardImage3,
+      cardImage4,
+      cardImage5,
+      cardImage6,
+      winner,
+      roundId,
+      bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1125,23 +1142,20 @@ class DialogUtils {
                       ],
                     ),
                   ),
-                 
                   Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
+                    right: MediaQuery.of(context).size.width * 0.005,
+                    top: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        playSound == false ? '' : Vibration.vibrate();
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
                       ),
                     ),
-                
+                  ),
                 ],
               ),
             ),
@@ -1149,12 +1163,8 @@ class DialogUtils {
         });
   }
 
-   static void showResultAmar(
-    BuildContext context,
-    String titleText,
-    cardImage1,
-    roundId,
-  ) {
+  static void showResultAmar(BuildContext context, String titleText, cardImage1,
+      roundId, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1219,31 +1229,28 @@ class DialogUtils {
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
         });
   }
 
-  static void showResultAmarPortrait(
-      BuildContext context, String titleText, cardImage1, roundId) {
+  static void showResultAmarPortrait(BuildContext context, String titleText,
+      cardImage1, roundId, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1252,85 +1259,75 @@ class DialogUtils {
             content: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 22),
                   height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width,
-                  child: Stack(
+                  width: MediaQuery.of(context).size.width * 0.99,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(
+                              "assets/User-interface/amarResultBackground.png"),
+                          fit: BoxFit.fitHeight)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Image.network(
+                        "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                        height: 50,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        "Round Id : $roundId",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        width: MediaQuery.of(context).size.width * 0.99,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        height: 80,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                                 image: AssetImage(
-                                    "assets/User-interface/amarResultBackground.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                              height: 50,
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              "Round Id : $roundId",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              height: 80,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/User-interface/amar-result-type.png"))),
-                              child: Text(
-                                titleText.replaceAll("||", "  |  "),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
+                                    "assets/User-interface/amar-result-type.png"))),
+                        child: Text(
+                          titleText.replaceAll("||", "  |  "),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
         });
   }
-static void showBetHistory(BuildContext context) {
+
+  static void showBetHistory(BuildContext context, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1558,30 +1555,27 @@ static void showBetHistory(BuildContext context) {
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
         });
   }
 
-  static void showBetHistoryPotrait(BuildContext context) {
+  static void showBetHistoryPotrait(BuildContext context, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -1809,23 +1803,20 @@ static void showBetHistory(BuildContext context) {
                     ],
                   ),
                 ),
-                
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right: MediaQuery.of(context).size.width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
@@ -1858,173 +1849,253 @@ static void showBetHistory(BuildContext context) {
   }
 
   static void showResultDTL(
-    BuildContext context,
-    String titleText,
-    cardImage1,
-    cardImage2,
-    cardImage3,
-    winner,
-    roundId,
-    detail2,
-    detail3,
-  ) {
+      BuildContext context,
+      String titleText,
+      cardImage1,
+      cardImage2,
+      cardImage3,
+      winner,
+      roundId,
+      detail2,
+      detail3,
+      bool playSound) {
+                var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
     showDialog(
+
         context: context,
         builder: (_) {
+         
           return AlertDialog(
             backgroundColor: Colors.transparent,
+                   alignment: Alignment.center,
             content: Stack(
               alignment: Alignment.center,
               children: [
                 Container(
-                  alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Stack(
+                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    height: height * 0.58,
+                width: width*0.46,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(
+                              "assets/dragonTigerLion/tableImges/result-backgroud.png"),
+                          fit: BoxFit.fitWidth)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                   
+                      Text(
+                        "RESULT",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: height*0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                            height: 50,
+                          ),
+                          SizedBox(
+                            width:width*0.05,
+                          ),
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                            height: 50,
+                          ),
+                          SizedBox(
+                                   width:width*0.05,
+                          ),
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
+                            height: 50,
+                          ),
+                       
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        "RoundId : $roundId",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        width: MediaQuery.of(context).size.width * 0.6,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                        ),
+                        height:height*0.15,
+                        width: width*0.5,
+                 
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/dragonTigerLion/tableImges/result-backgroud.png"),
-                                fit: BoxFit.fitWidth)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            border: Border.all(
+                              color: Color(0xaa45B8E8),
+                            )),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    "RESULT",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                ),
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                ),
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "RoundId : $roundId",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              height: 70,
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Color(0xaa45B8E8),
-                                  )),
+                              SizedBox(
+                              width: width * 0.05,
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "  WINNER  |     DRAGON      |      TIGER      |        LION  ",
+                                    "WINNER",
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 15,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    height: 40,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                    child: Text(
-                                      "$winner        |    ${titleText.replaceAll('||', ',')}     |   ${detail2.replaceAll('||', ',')}   |   ${detail3.replaceAll('||', ',')}  ",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                  Text(
+                                    "$winner",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                             ),
+                            Text(
+                              "|",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             SizedBox(
-                              height: 8,
+                              width: width * 0.1,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "DRAGON",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    titleText.replaceAll('||', ','),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              "|",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: width * 0.1,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "TIGER",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    "${detail2.replaceAll('||', ',')}",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              "|",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: width * 0.1,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "LION",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    "${detail3.replaceAll('||', ',')}  ",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
+                    
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right:width * 0.005,
+                  top: 0,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
@@ -2032,121 +2103,113 @@ static void showBetHistory(BuildContext context) {
   }
 
   static void showResultDTLPortrait(
-    BuildContext context,
-    String titleText,
-    cardImage1,
-    cardImage2,
-    cardImage3,
-    winner,
-    roundId,
-    detail2,
-    detail3,
-  ) {
+      BuildContext context,
+      String titleText,
+      cardImage1,
+      cardImage2,
+      cardImage3,
+      winner,
+      roundId,
+      detail2,
+      detail3,
+      bool playSound) {
+            var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
     showDialog(
         context: context,
         builder: (_) {
+      
           return AlertDialog(
             backgroundColor: Colors.transparent,
+            alignment: Alignment.center,
             content: Stack(
               alignment: Alignment.center,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width * 0.93,
-                  child: Stack(
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  height:height * 0.3,
+                  width:width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                          image: AssetImage(
+                              "assets/dragonTigerLion/tableImges/result-backgroud.png"),
+                          fit: BoxFit.fitHeight)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                    
+                      Text(
+                        "RESULT",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: height*0.01
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                            height: 50,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                            height: 50,
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Image.network(
+                            "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
+                            height: 50,
+                          ),
+                     
+                        ],
+                      ),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        "winner : $winner",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
                       Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        width: MediaQuery.of(context).size.width * 0.65,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                        ),
+                        height: 60,
+                        width:width,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/dragonTigerLion/tableImges/result-backgroud.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            border: Border.all(
+                              color: Color(0xaa45B8E8),
+                            )),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    "RESULT",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
                             SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
-                                  height: 50,
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text(
-                              "winner : $winner",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              height: 60,
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Color(0xaa45B8E8),
-                                  )),
+                              width: width * 0.2,
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "   DRAGON   |  TIGER  |  LION  ",
+                                    "   DRAGON  ",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 15,
@@ -2155,49 +2218,103 @@ static void showBetHistory(BuildContext context) {
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    height: 20,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                    child: Text(
-                                      "   ${titleText.replaceAll('||', ',')}  |   ${detail2.replaceAll('||', ',')} |   ${detail3.replaceAll('||', ',')}  ",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 7,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                  Text(
+                                    "   ${titleText.replaceAll('||', ',')}",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
                             ),
+                            Text(
+                              "|",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             SizedBox(
-                              height: 8,
+                              width: width * 0.2,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "TIGER",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    "${detail2.replaceAll('||', ',')}",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              "|",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: width * 0.2,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "LION",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    "${detail3.replaceAll('||', ',')}  ",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 7,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
+                     
                     ],
                   ),
                 ),
-               
                 Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
-                      ),
+                  right:width * 0.005,
+                  top: 2,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      playSound == false ? '' : Vibration.vibrate();
+                    },
+                    child: Image.asset(
+                      "assets/User-interface/close-button.png",
+                      scale: 4,
                     ),
-                
+                  ),
+                ),
               ],
             ),
           );
@@ -2205,271 +2322,200 @@ static void showBetHistory(BuildContext context) {
   }
 
   static void showResultBollyWood(
-    BuildContext context,
-    cardImage1,
-    roundId,
-    details,
-  ) {
+      BuildContext context, cardImage1, roundId, details, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/bollywoodTable/current-result-background.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    "RESULT",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                                  height: 50,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: height * 0.5,
+                    width: width * 0.4,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: AssetImage(
+                                "assets/bollywoodTable/current-result-background.png"),
+                            fit: BoxFit.fitHeight)),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          Text(
+                            'RESULT',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: height * 0.04,
+                                color: Colors.white),
+                          ),
+                          SizedBox(height: height * 0.03),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                height: height * 0.15,
+                                width: width * 0.15,
                               ),
-                              child: Text(
-                                "Round Id : $roundId",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.03),
+                          Text(
+                            "Round Id : $roundId",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: height * 0.02),
+                          Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 10,
                             ),
-                            SizedBox(
-                              height: 10,
+                            width: width * 0.28,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Color(0xaa89560C),
+                                )),
+                            child: Text(
+                              details.replaceAll("||", "  |  "),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Color(0xaa89560C),
-                                  )),
-                              child: Text(
-                                details.replaceAll("||", "  |  "),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                
-              ],
-            ),
-          );
+                  ),
+                  Positioned(
+                    right: 2,
+                    top: 1,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        playSound == false ? '' : Vibration.vibrate();
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
         });
   }
 
   static void showResultBollyWoodPortrait(
-    BuildContext context,
-    cardImage1,
-    roundId,
-    details,
-  ) {
+      BuildContext context, cardImage1, roundId, details, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 22),
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        width: MediaQuery.of(context).size.width * 0.62,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/bollywoodTable/current-result-background.png"),
-                                fit: BoxFit.fitHeight)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Text(
-                                    "RESULT",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                                  height: 50,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
+          var height = MediaQuery.of(context).size.height;
+          var width = MediaQuery.of(context).size.width;
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
+              content: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: height * 0.23,
+                    width: width,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                            image: AssetImage(
+                                "assets/bollywoodTable/current-result-background.png"),
+                            fit: BoxFit.cover)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "RESULT",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.network(
+                                "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                height: height * 0.06,
                               ),
-                              child: Text(
-                                "Round Id : $roundId",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                            ],
+                          ),
+                          Text(
+                            "Round Id : $roundId",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 20,
                             ),
-                            SizedBox(
-                              height: 10,
+                            height: height * 0.05,
+                            width: width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Color(0xaa89560C),
+                                )),
+                            child: Text(
+                              details.replaceAll("||", "  |  "),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              height: 50,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Color(0xaa89560C),
-                                  )),
-                              child: Text(
-                                details.replaceAll("||", "  |  "),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-               
-                Positioned(
-                      right:  MediaQuery.of(context).size.width  * 0.005,
-                      top: 2,
-                      child: InkWell(
-                         onTap: () {
-                     Navigator.pop(context);
-                    HapticFeedback.vibrate();
-                      
-                  },
-                        child: Image.asset(
-                          "assets/User-interface/close-button.png",
-                          scale: 4,
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                
-              ],
-            ),
-          );
+                  ),
+                  Positioned(
+                    right: width * 0.005,
+                    top: height * 0.0,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        playSound == false ? '' : Vibration.vibrate();
+                      },
+                      child: Image.asset(
+                        "assets/User-interface/close-button.png",
+                        scale: 4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
         });
   }
-
 }
 
 class Appcolors {

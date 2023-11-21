@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/OneVirtualTeenPatti/Modal/matchIdModelOTP.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 import '../../../Widgets/customText.dart';
@@ -50,7 +51,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   int stack2 = 0;
   int stack3 = 0;
   int stack4 = 0;
-  int stack5 = 0;
+
   int stack6 = 0;
   List<MatchIdModelOPT> matchIdList = [];
   bool confirmButton = false;
@@ -64,12 +65,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   bool playBackgroundMusic = false;
   bool redCoinAnimation = false;
   bool lightGreenCoinAnimation = false;
-  bool blueCoinAnimation = false;
+
   bool greenCoinAnimation = false;
   bool lightBlueCoinAnimation = false;
   bool brownCoinAnimation = false;
   String autoTime = "";
-  bool menubar = false;
+ 
   int startTimes = 0;
   late Timer _clockTimer;
   late AnimationController _controller;
@@ -226,21 +227,23 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   final List _browncoinImages = [
     'assets/lucky7/images/coins/ten.png',
   ];
-
+       int startTimeSmall=0;
   ///initState
   @override
   void initState() {
+     startTimeSmall=startTimes*100;
+       Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        startTimeSmall =startTimeSmall-1;
+       });
     getStakeDetails();
-    getuserBalance();
+
     getDeviceIp();
-    getUserDetails();
-    setState(() {
+
+   
       checkInternet();
-    });
+ 
     AudioPlayer.clearAssetCache();
-        bgMusic();
-
-
+    bgMusic();
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -251,10 +254,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     ]);
 
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      getResult().then((value) => getCardData());
       stopBettingMusic();
       startBettingMusic();
-      getMatchIdDetails();
     });
 
     super.initState();
@@ -298,7 +299,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
     double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
 
-    startTimes > 3
+ startTimes>3
         ? _coins.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 600),
@@ -324,10 +325,10 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   height: 15,
                                   width: 15,
                                 )
-                              : blueCoinAnimation == true
+                              : lightBlueCoinAnimation == true
                                   ? Image.asset(
-                                      _bluecoinImages[_currentCoinIndex %
-                                          _bluecoinImages.length],
+                                      _skybluecoinImages[_currentCoinIndex %
+                                          _skybluecoinImages.length],
                                       height: 15,
                                       width: 15,
                                     )
@@ -338,31 +339,21 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                           height: 15,
                                           width: 15,
                                         )
-                                      : lightBlueCoinAnimation == true
+                                      : brownCoinAnimation == true
                                           ? Image.asset(
-                                              _skybluecoinImages[
+                                              _browncoinImages[
                                                   _currentCoinIndex %
-                                                      _skybluecoinImages
-                                                          .length],
+                                                      _browncoinImages.length],
                                               height: 15,
                                               width: 15,
                                             )
-                                          : brownCoinAnimation == true
-                                              ? Image.asset(
-                                                  _browncoinImages[
-                                                      _currentCoinIndex %
-                                                          _browncoinImages
-                                                              .length],
-                                                  height: 15,
-                                                  width: 15,
-                                                )
-                                              : SizedBox()
+                                          : SizedBox()
                       : SizedBox());
             },
           ))
         : _coins.clear();
 
-      startTimes>3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -380,7 +371,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     double _endY =
         _random.nextDouble() * (_maxYRytPort - _minYRytPort) + _minYRytPort;
 
-    startTimes > 3
+   startTimes>3
         ? _coinsRytPort.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 600),
@@ -391,7 +382,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               return Positioned(
                   right: currentX.clamp(_minXRytPort, _maxXRytPort),
                   bottom: currentY.clamp(_minYRytPort, _maxYRytPort),
-                  child:  startTimes > 3
+                  child: startTimes > 3
                       ? redCoinAnimation == true
                           ? Image.asset(
                               _redcoinImages[_currentCoinIndexRytPort %
@@ -407,10 +398,10 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   height: 15,
                                   width: 15,
                                 )
-                              : blueCoinAnimation == true
+                              : lightBlueCoinAnimation == true
                                   ? Image.asset(
-                                      _bluecoinImages[_currentCoinIndexRytPort %
-                                          _bluecoinImages.length],
+                                      _skybluecoinImages[_currentCoinIndex %
+                                          _skybluecoinImages.length],
                                       height: 15,
                                       width: 15,
                                     )
@@ -422,31 +413,21 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                           height: 15,
                                           width: 15,
                                         )
-                                      : lightBlueCoinAnimation == true
+                                      : brownCoinAnimation == true
                                           ? Image.asset(
-                                              _skybluecoinImages[
+                                              _browncoinImages[
                                                   _currentCoinIndexRytPort %
-                                                      _skybluecoinImages
-                                                          .length],
+                                                      _browncoinImages.length],
                                               height: 15,
                                               width: 15,
                                             )
-                                          : brownCoinAnimation == true
-                                              ? Image.asset(
-                                                  _browncoinImages[
-                                                      _currentCoinIndexRytPort %
-                                                          _browncoinImages
-                                                              .length],
-                                                  height: 15,
-                                                  width: 15,
-                                                )
-                                              : SizedBox()
+                                          : SizedBox()
                       : SizedBox());
             },
           ))
         : _coinsRytPort.reversed;
 
-      startTimes > 3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
   }
@@ -467,7 +448,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     // coin = int.parse(widget.autotime.toString());
     //   print("====>$coin");
 
-    cardNameImage1 == ''
+ startTimes>3
         ? _coins.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 1000),
@@ -478,16 +459,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               return Positioned(
                   left: currentX.clamp(_minXLeft, _maxXLeft),
                   top: currentY.clamp(_minYLeft, _maxYLeft),
-                  child:   startTimes > 3
-                      ? Image.asset(
+                  child: Image.asset(
                           _coinImages[_currentCoinIndex % _coinImages.length],
                           height: 15,
                           width: 15,
                         )
-                      : SizedBox());
+                );
             },
           ))
-        : _coins.clear();
+        :null;
     _currentCoinIndex++;
     if (startTimes > 15) {
       //_checkInternetConnection();
@@ -500,10 +480,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       Timer(Duration(seconds: 3), _startCoinAnimationLeftRandom);
     }
 
-      startTimes > 3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
-  
   }
 
   void _startCoinAnimationRightRandom() {
@@ -521,7 +500,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     double _endY =
         _random.nextDouble() * (_maxYRight - _minYRight) + _minYRight;
 
-    cardNameImage1 == ''
+    startTimes>3
         ? _coins.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 1000),
@@ -532,17 +511,16 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               return Positioned(
                   right: currentX.clamp(_minXRight, _maxXRight),
                   top: currentY.clamp(_minYRight, _maxYRight),
-                  child:   startTimes > 3
-                      ? Image.asset(
+                  child: Image.asset(
                           _coinImagesRyt[
                               _currentCoinIndex % _coinImagesRyt.length],
                           height: 15,
                           width: 15,
                         )
-                      : SizedBox());
+           );
             },
           ))
-        : _coins.clear();
+        : null;
 
     _currentCoinIndex++;
     if (startTimes > 15) {
@@ -567,7 +545,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     double _endY =
         _random.nextDouble() * (_maxYLeftPort - _minYLeftPort) + _minYLeftPort;
 
-    cardNameImage1 == ''
+    startTimes>3
         ? _coinsPort.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 600),
@@ -578,16 +556,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               return Positioned(
                   right: currentX.clamp(_minXLeftPort, _maxXLeftPort),
                   top: currentY.clamp(_minYLeftPort, _maxYLeftPort),
-                  child: startTimes > 3
-                      ? Image.asset(
+                  child: Image.asset(
                           _coinImages[_currentCoinIndex % _coinImages.length],
                           height: 15,
                           width: 15,
                         )
-                      : SizedBox());
+                   );
             },
           ))
-        : _coinsPort.clear();
+        : null;
 
     _currentCoinIndex++;
     if (startTimes > 15) {
@@ -596,10 +573,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       Timer(Duration(seconds: 3), _startCoinAnimationLeftRandomPort);
     }
 
-   startTimes > 3 && playBackgroundMusic == false
+    startTimes > 3 && playBackgroundMusic == false
         ? onPressedMusicForBet()
         : null;
-
   }
 
   void _startCoinAnimationRightRandomPort() {
@@ -617,7 +593,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     double _endY = _random.nextDouble() * (_maxYRightPort - _minYRightPort) +
         _minYRightPort;
 
-    cardNameImage1 == ""
+  startTimes>3
         ? _coinsRytPort.add(TweenAnimationBuilder(
             tween: Tween<double>(begin: 0, end: 1),
             duration: const Duration(milliseconds: 600),
@@ -628,16 +604,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               return Positioned(
                   left: currentX.clamp(_minXRightPort, _maxXRightPort),
                   top: currentY.clamp(_minYRightPort, _maxYRightPort),
-                  child:   startTimes > 3
-                      ? Image.asset(
+                  child: Image.asset(
                           _coinImages[_currentCoinIndex % _coinImages.length],
                           height: 15,
                           width: 15,
                         )
-                      : SizedBox());
+                    );
             },
           ))
-        : _coinsRytPort.clear();
+        : null;
 
     _currentCoinIndex++;
     if (startTimes > 15) {
@@ -675,7 +650,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     }
   }
 
- void bgMusic() async {
+  void bgMusic() async {
     await _player.setAsset(gameSound);
     playSound();
   }
@@ -686,7 +661,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     await _player.setLoopMode(LoopMode.one);
   }
 
-   Future<void> cardPlay() async {
+  Future<void> cardPlay() async {
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
       print('A stream error occurred: $e');
@@ -713,7 +688,11 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0' && playBackgroundMusic == false
+    autoTime == '3' &&
+            autoTime != '2' &&
+            autoTime != '1' &&
+            autoTime != '0' &&
+            playBackgroundMusic == false
         ? stopBettingmusic.play()
         : stopBettingmusic.stop();
     stopBettingmusic.setVolume(1);
@@ -755,7 +734,6 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     winnerBettingmusic.setVolume(1);
   }
 
-
   Future<void> onPressedMusic() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
@@ -773,7 +751,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     });
   }
 
-   Future<void> onPressedMusicForBet() async {
+  Future<void> onPressedMusicForBet() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
       print('A stream error occurred: $e');
@@ -785,25 +763,26 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    startTimes>3  && playBackgroundMusic == false
+    startTimes > 3 || playBackgroundMusic == false
         ? onPressedmusic.play()
         : onPressedmusic.stop();
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     getuserBalance();
     getUserDetails();
     getMatchIdDetails();
+    getResult().then((value) => getCardData());
     final oreintation = MediaQuery.of(context).orientation;
     print(oreintation);
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    _minXLeft = 180;
+    _minXLeft = 150;
     _maxXLeft = width - 220;
     _minYLeft = 180;
     _maxYLeft = height - 100;
-    _minXRight = 180;
+    _minXRight = 150;
     _maxXRight = width - 220;
     _minYRight = 180;
     _maxYRight = height - 100;
@@ -847,6 +826,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   ///portrait mode
   Widget protraitWidget() {
     return Scaffold(
+               backgroundColor: Colors.transparent,
         key: _globalKey,
         drawerEnableOpenDragGesture: false,
         drawer: SizedBox(
@@ -929,7 +909,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
                                 });
                                 _globalKey.currentState!.openDrawer();
                               },
@@ -947,7 +927,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                       setState(() {
                                         playBackgroundMusic == false
                                             ? onPressedMusic()
-                                            : HapticFeedback.vibrate();
+                                            : Vibration.vibrate();
                                       });
                                       _player.stop();
                                       setState(() {
@@ -964,7 +944,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                       setState(() {
                                         playBackgroundMusic == false
                                             ? onPressedMusic()
-                                            : HapticFeedback.vibrate();
+                                            : Vibration.vibrate();
                                       });
                                       _player.play();
                                       setState(() {
@@ -1011,7 +991,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 setState(() {
                                   playBackgroundMusic == false
                                       ? onPressedMusic()
-                                      : HapticFeedback.vibrate();
+                                      : Vibration.vibrate();
                                 });
 
                                 Navigator.push(
@@ -1073,10 +1053,10 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 return InkWell(
                                   onTap: () {
                                     setState(() {
-                              playBackgroundMusic == false
-                                  ? onPressedMusic()
-                                  :         HapticFeedback.vibrate();
-                            });
+                                      playBackgroundMusic == false
+                                          ? onPressedMusic()
+                                          : Vibration.vibrate();
+                                    });
                                     print("=========>show dialog");
                                     pastResultPortrait(
                                         context,
@@ -1116,8 +1096,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         winnerList[6],
                                         winnerList[7]);
                                   },
-                                  child: _bettButtonPort(
-                                      'A' ,Color(0xffffb41e88) ),
+                                  child:
+                                      _bettButtonPort('A', Color(0xffffb41e88)),
                                 );
                               })),
                       Padding(
@@ -1154,44 +1134,18 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                           width: width,
                         ),
                         Positioned(
-                          top: 13,
-                          left: 15,
-                          child: startTimes >= 1
-                              ? AnimatedBuilder(
-                                  animation: _animation,
-                                  builder: (context, child) {
-                                    return Transform.translate(
-                                      offset: Offset(0, -30 * _animation.value),
-                                      child: Image.asset(
-                                        'assets/vertual_teen_patti/user.png',
-                                        fit: BoxFit.cover,
-                                        height: height * 0.05,
-                                      ),
-                                    );
-                                  })
-                              : Image.asset(
+                             top: 15,
+                      right: 25,
+                          child:  Image.asset(
                                   'assets/vertual_teen_patti/user.png',
                                   fit: BoxFit.cover,
                                   height: height * 0.05,
                                 ),
                         ),
                         Positioned(
-                          top: 13,
-                          right: 15,
-                          child: startTimes >= 1
-                              ? AnimatedBuilder(
-                                  animation: _animation,
-                                  builder: (context, child) {
-                                    return Transform.translate(
-                                      offset: Offset(0, -30 * _animation.value),
-                                      child: Image.asset(
-                                        'assets/vertual_teen_patti/user2.png',
-                                        fit: BoxFit.cover,
-                                        height: height * 0.05,
-                                      ),
-                                    );
-                                  })
-                              : Image.asset(
+                           top: 15,
+                    left: 30,
+                          child:  Image.asset(
                                   'assets/vertual_teen_patti/user2.png',
                                   fit: BoxFit.cover,
                                   height: height * 0.05,
@@ -1206,56 +1160,54 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             ),
                           ),
                         ),
-                                  startTimes >= 1
-                              ?  Positioned(
-                       left: width * 0.35,
-                    top: height * 0.02,
-                        child: CustomText(
-                                        text: "Starting in ",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: 09.0,
-                                        textAlign: TextAlign.end,
-                                      ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                           left: width * 0.49,
-                    top: height * 0.02,
-                        child: SizedBox(
-                          width: width*0.055,
-                          child: Center(
-                            child: CustomText(
-                                            text: "$autoTime s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                          ),
-                        ),
-                      ):SizedBox()
-                      ,
+                        startTimes >= 1
+                            ? Positioned(
+                                left: width * 0.40,
+                                top: height * 0.013,
+                                child: CustomText(
+                                  text: "Starting in ",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 09.0,
+                                  textAlign: TextAlign.end,
+                                ),
+                              )
+                            : SizedBox(),
+                        startTimes >= 1
+                            ? Positioned(
+                                 left: width * 0.54,
+                                top: height * 0.013,
+                                child: SizedBox(
+                                  width: width * 0.055,
+                                  child: Center(
+                                    child: CustomText(
+                                      text: "$autoTime s",
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 09.0,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : SizedBox(),
                         Positioned(
-                          left: width * 0.35,
-                          top: height * 0.045,
+                       left: width * 0.39,
+                          top: height * 0.036,
                           child: startTimes >= 1
                               ? Column(
                                   children: [
-                                
                                     SizedBox(
                                       height: 5,
                                       width: width * 0.25,
                                       child: LinearProgressIndicator(
-                                        value:startTimes /
-                                            60, // Calculate the progress
-                                        backgroundColor: Colors.grey,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          Color.fromARGB(170, 26, 223, 174),
-                                        ),
-                                      ),
+                                  value:
+                                     startTimeSmall/6000, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
                                     ),
                                   ],
                                 )
@@ -1278,6 +1230,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             ),
                           ),
                         ),
+                           startTimes <= 3 && autoTime != '0'
+                            ? gameStopBettingPortrait(autoTime)
+                            : SizedBox(),
                         autoTime == "60"
                             ? placeyourbetWidgetPortrait(autoTime)
                             : autoTime == "3" ||
@@ -1285,12 +1240,10 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     autoTime == "1"
                                 ? goWidgetPort()
                                 : SizedBox(),
-                        autoTime == "3"
-                            ? gameStopBettingPortrait(autoTime)
-                            : SizedBox(),
+                     
                       ]),
                       Transform.translate(
-                        offset: Offset(0, -22),
+                        offset: Offset(0, -24),
                         child: Container(
                           height: 65,
                           alignment: Alignment.center,
@@ -1305,15 +1258,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             children: [
                               InkWell(
                                 onTap: () {
-                                      setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? ''
+                                        : Vibration.vibrate();
+                                  });
                                   setState(() {
                                     redCoinAnimation = !redCoinAnimation;
                                     lightGreenCoinAnimation = false;
-                                    blueCoinAnimation = false;
+
                                     greenCoinAnimation = false;
                                     lightBlueCoinAnimation = false;
                                     brownCoinAnimation = false;
@@ -1343,20 +1296,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                               ),
                               SizedBox(
-                                width: width * 0.045,
+                                width: width * 0.05,
                               ),
                               InkWell(
                                 onTap: () {
-                                      setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? ''
+                                        : Vibration.vibrate();
+                                  });
                                   setState(() {
                                     redCoinAnimation = false;
                                     lightGreenCoinAnimation =
                                         !lightGreenCoinAnimation;
-                                    blueCoinAnimation = false;
+
                                     greenCoinAnimation = false;
                                     lightBlueCoinAnimation = false;
                                     brownCoinAnimation = false;
@@ -1378,7 +1331,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     fit: BoxFit.fill,
                                   )),
                                   child: Text(
-                                    stack2 != 0 ? "1K" : stack2.toString(),
+                                    stack1 != 0 ? "1K" : stack1.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: height * 0.01),
@@ -1386,19 +1339,19 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                               ),
                               SizedBox(
-                                width: width * 0.045,
+                                width: width * 0.05,
                               ),
                               InkWell(
                                 onTap: () {
-                                      setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? ''
+                                        : Vibration.vibrate();
+                                  });
                                   setState(() {
                                     redCoinAnimation = false;
                                     lightGreenCoinAnimation = false;
-                                    blueCoinAnimation = false;
+
                                     greenCoinAnimation = false;
                                     lightBlueCoinAnimation =
                                         !lightBlueCoinAnimation;
@@ -1421,7 +1374,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     fit: BoxFit.fill,
                                   )),
                                   child: Text(
-                                    stack3 != 0 ? "2K" : stack3.toString(),
+                                    stack2 != 0 ? "2K" : stack3.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: height * 0.01),
@@ -1429,19 +1382,19 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                               ),
                               SizedBox(
-                                width: width * 0.045,
+                                width: width * 0.05,
                               ),
                               InkWell(
                                 onTap: () {
-                                      setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? ''
+                                        : Vibration.vibrate();
+                                  });
                                   setState(() {
                                     redCoinAnimation = false;
                                     lightGreenCoinAnimation = false;
-                                    blueCoinAnimation = false;
+
                                     greenCoinAnimation = !greenCoinAnimation;
                                     lightBlueCoinAnimation = false;
                                     brownCoinAnimation = false;
@@ -1463,7 +1416,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     fit: BoxFit.fill,
                                   )),
                                   child: Text(
-                                    stack4 != 0 ? "5K" : stack4.toString(),
+                                    stack3 != 0 ? "5K" : stack4.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: height * 0.01),
@@ -1471,19 +1424,19 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                               ),
                               SizedBox(
-                                width: width * 0.045,
+                                width: width * 0.055,
                               ),
                               InkWell(
                                 onTap: () {
-                                      setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? ''
+                                        : Vibration.vibrate();
+                                  });
                                   setState(() {
                                     redCoinAnimation = false;
                                     lightGreenCoinAnimation = false;
-                                    blueCoinAnimation = false;
+
                                     greenCoinAnimation = false;
                                     lightBlueCoinAnimation = false;
                                     brownCoinAnimation = !brownCoinAnimation;
@@ -1505,7 +1458,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     fit: BoxFit.fill,
                                   )),
                                   child: Text(
-                                    stack6 != 0 ? "20K" : stack6.toString(),
+                                    stack4 != 0 ? "20K" : stack6.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: height * 0.01),
@@ -1525,15 +1478,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1556,17 +1509,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1595,15 +1544,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1626,17 +1575,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1665,15 +1610,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1696,17 +1641,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1735,15 +1676,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1766,17 +1707,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1805,15 +1742,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1836,17 +1773,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1875,15 +1808,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1906,17 +1839,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -1945,15 +1874,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -1976,17 +1905,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -2015,15 +1940,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
-                                    : HapticFeedback.vibrate();
+                                    : Vibration.vibrate();
                               });
 
                               if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                      lightBlueCoinAnimation == true ||
+                                      lightGreenCoinAnimation == true ||
+                                      brownCoinAnimation == true ||
+                                      greenCoinAnimation == true) &&
+                                  startTimes > 1) {
                                 player1Button = !player1Button;
                               }
                               if (player1Button == true) {
@@ -2046,17 +1971,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
                               }
                             },
                             child: _betButtons(
@@ -2106,14 +2027,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                 height: height * 1,
                 width: width,
                 decoration: BoxDecoration(
-                    // color: Color(0xFFFF142025),
+                   
 
                     image: DecorationImage(
                         image: AssetImage(
                           "assets/vertual_teen_patti/bg_landscape.png",
                         ),
                         fit: BoxFit.fill,
-                        opacity: 0.5)),
+                  )),
                 child: autoTime == '0' && cardNameImage1 != ""
                     ? Padding(
                         padding: EdgeInsets.symmetric(
@@ -2138,14 +2059,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          menubar = true;
-                                        });
-                                        setState(() {
-                                          playBackgroundMusic == false
-                                              ? onPressedMusic()
-                                              : HapticFeedback.vibrate();
-                                        });
-                                        _globalKey.currentState!.openDrawer();
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+
+                                  _globalKey.currentState!.openDrawer();
+                              
                                       },
                                       child: Image.asset(
                                           'assets/vertual_teen_patti/menu.png',
@@ -2192,7 +2112,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     setState(() {
                                       playBackgroundMusic == false
                                           ? onPressedMusic()
-                                          : HapticFeedback.vibrate();
+                                          : Vibration.vibrate();
                                     });
 
                                     Navigator.push(
@@ -2231,48 +2151,46 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               ],
                             ),
                           ),
-                             startTimes <= 1
-                    ? Positioned(
-                        top: height * 0.08,
-                        child: Image.asset(
-                          'assets/lucky7/images/tableGirl.png',
-                          fit: BoxFit.cover,
-                          height: height * 0.28,
-                        ),
-                      )
-                    : SizedBox(),
-                            startTimes >= 1
-                              ?  Positioned(
-                            top: height * 0.025,
-                  right: width * 0.18,
-                        child: CustomText(
-                                        text: "Starting in ",
+                         Positioned(
+                                  top: height * 0.05,
+                                  child: Image.asset(
+                                    'assets/lucky7/images/tableGirl.png',
+                                    fit: BoxFit.cover,
+                                    height: height * 0.28,
+                                  ),
+                                )
+                              ,
+                          startTimes >= 1
+                              ? Positioned(
+                                  top: height * 0.025,
+                                  right: width * 0.18,
+                                  child: CustomText(
+                                    text: "Starting in ",
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 09.0,
+                                    textAlign: TextAlign.end,
+                                  ),
+                                )
+                              : SizedBox(),
+                          startTimes >= 1
+                              ? Positioned(
+                                  top: height * 0.025,
+                                  right: width * 0.14,
+                                  child: SizedBox(
+                                    width: width * 0.04,
+                                    child: Center(
+                                      child: CustomText(
+                                        text: "$autoTime  s",
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         fontSize: 09.0,
-                                        textAlign: TextAlign.end,
+                                        textAlign: TextAlign.start,
                                       ),
-                      ):SizedBox(),
-                     
-                     startTimes >= 1
-                              ?   Positioned(
-                            top: height * 0.025,
-                  right: width * 0.14,
-                        child: SizedBox(
-                          width: width*0.04,
-                          child: Center(
-                            child: CustomText(
-                                            text: "$autoTime  s",
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 09.0,
-                                            textAlign: TextAlign.start,
-                                          ),
-                          ),
-                        ),
-                      ):SizedBox()
-                      ,
-              
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(),
                           Positioned(
                             top: height * 0.05,
                             right: width * 0.03,
@@ -2287,19 +2205,17 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     startTimes >= 1
                                         ? Column(
                                             children: [
-                                             
                                               SizedBox(
                                                 height: 5,
                                                 width: width * 0.15,
                                                 child: LinearProgressIndicator(
-                                                  value: startTimes /
-                                                      60, // Calculate the progress
-                                                  backgroundColor: Colors.grey,
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          Color(0xaaFFB546)),
-                                                ),
+                                  value:
+                                     startTimeSmall/6000, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
                                               ),
                                               SizedBox(
                                                 height: 4,
@@ -2323,7 +2239,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               setState(() {
                                                 playBackgroundMusic == false
                                                     ? onPressedMusic()
-                                                    : HapticFeedback.vibrate();
+                                                    : Vibration.vibrate();
                                               });
                                               _player.stop();
                                               setState(() {
@@ -2340,7 +2256,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               setState(() {
                                                 playBackgroundMusic == false
                                                     ? onPressedMusic()
-                                                    : HapticFeedback.vibrate();
+                                                    : Vibration.vibrate();
                                               });
                                               _player.play();
                                               setState(() {
@@ -2370,46 +2286,18 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             ),
                           ),
                           Positioned(
-                            top: height * 0.45,
+                            top: height * 0.4,
                             left: width * 0.17,
-                            child: startTimes >= 3
-                                ? AnimatedBuilder(
-                                    animation: _animation,
-                                    builder: (context, child) {
-                                      return Transform.translate(
-                                        offset:
-                                            Offset(0, -23 * _animation.value),
-                                        child: Image.asset(
-                                          'assets/vertual_teen_patti/user.png',
-                                          fit: BoxFit.cover,
-                                          height: height * 0.10,
-                                        ),
-                                      );
-                                    })
-                                : Image.asset(
+                            child: Image.asset(
                                     'assets/vertual_teen_patti/user.png',
                                     fit: BoxFit.cover,
                                     height: height * 0.10,
                                   ),
                           ),
                           Positioned(
-                            top: height * 0.45,
+                            top: height * 0.4,
                             right: width * 0.17,
-                            child: startTimes >= 3
-                                ? AnimatedBuilder(
-                                    animation: _animation,
-                                    builder: (context, child) {
-                                      return Transform.translate(
-                                        offset:
-                                            Offset(0, -23 * _animation.value),
-                                        child: Image.asset(
-                                          'assets/vertual_teen_patti/user.png',
-                                          fit: BoxFit.cover,
-                                          height: height * 0.10,
-                                        ),
-                                      );
-                                    })
-                                : Image.asset(
+                            child:  Image.asset(
                                     'assets/vertual_teen_patti/user.png',
                                     fit: BoxFit.cover,
                                     height: height * 0.10,
@@ -2433,6 +2321,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               children: _coins,
                             ),
                           ),
+                            startTimes <= 3 && autoTime != '0'
+                              ? gameStopBetting(autoTime)
+                              : SizedBox(),
                           autoTime == "60"
                               ? placeyourbetWidget(autoTime)
                               : autoTime == "3" ||
@@ -2440,9 +2331,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                       autoTime == "1"
                                   ? goWidget()
                                   : SizedBox(),
-                          autoTime == "3"
-                              ? gameStopBetting(autoTime)
-                              : SizedBox(),
+                        
                           Positioned(
                             bottom: height * 0.01,
                             left: width * 0.28,
@@ -2450,15 +2339,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               children: [
                                 InkWell(
                                   onTap: () {
-                                        setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? ''
+                                          : Vibration.vibrate();
+                                    });
                                     setState(() {
                                       redCoinAnimation = !redCoinAnimation;
                                       lightGreenCoinAnimation = false;
-                                      blueCoinAnimation = false;
+
                                       greenCoinAnimation = false;
                                       lightBlueCoinAnimation = false;
                                       brownCoinAnimation = false;
@@ -2492,16 +2381,16 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                                 InkWell(
                                   onTap: () {
-                                        setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? ''
+                                          : Vibration.vibrate();
+                                    });
                                     setState(() {
                                       lightGreenCoinAnimation =
                                           !lightBlueCoinAnimation;
                                       redCoinAnimation = false;
-                                      blueCoinAnimation = false;
+
                                       greenCoinAnimation = false;
                                       lightBlueCoinAnimation = false;
                                       brownCoinAnimation = false;
@@ -2534,27 +2423,28 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                                 InkWell(
                                   onTap: () {
-                                        setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? ''
+                                          : Vibration.vibrate();
+                                    });
                                     setState(() {
                                       redCoinAnimation = false;
                                       lightGreenCoinAnimation = false;
-                                      blueCoinAnimation = !blueCoinAnimation;
+                                      lightBlueCoinAnimation =
+                                          !lightBlueCoinAnimation;
                                       greenCoinAnimation = false;
-                                      lightBlueCoinAnimation = false;
+
                                       brownCoinAnimation = false;
                                     });
                                   },
                                   child: AnimatedContainer(
                                     duration: Duration(milliseconds: 700),
                                     alignment: Alignment.center,
-                                    height: blueCoinAnimation == true
+                                    height: lightBlueCoinAnimation == true
                                         ? height * 0.19
                                         : height * 0.13,
-                                    width: blueCoinAnimation == true
+                                    width: lightBlueCoinAnimation == true
                                         ? width * 0.09
                                         : width * 0.06,
                                     decoration: BoxDecoration(
@@ -2576,15 +2466,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 ),
                                 InkWell(
                                   onTap: () {
-                                        setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? ''
+                                          : Vibration.vibrate();
+                                    });
                                     setState(() {
                                       redCoinAnimation = false;
                                       lightGreenCoinAnimation = false;
-                                      blueCoinAnimation = false;
+
                                       greenCoinAnimation = !greenCoinAnimation;
                                       lightBlueCoinAnimation = false;
                                       brownCoinAnimation = false;
@@ -2660,15 +2550,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
                                 InkWell(
                                   onTap: () {
-                                        setState(() {
-                              playBackgroundMusic == false
-                                  ? ''
-                                  :         HapticFeedback.vibrate();
-                            });
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? ''
+                                          : Vibration.vibrate();
+                                    });
                                     setState(() {
                                       redCoinAnimation = false;
                                       lightGreenCoinAnimation = false;
-                                      blueCoinAnimation = false;
+
                                       greenCoinAnimation = false;
                                       lightBlueCoinAnimation = false;
                                       brownCoinAnimation = !brownCoinAnimation;
@@ -2690,7 +2580,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                       fit: BoxFit.fill,
                                     )),
                                     child: Text(
-                                      stack5 != 0 ? "20K" : stack6.toString(),
+                                      stack4 != 0 ? "20K" : stack6.toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: height * 0.02),
@@ -2739,7 +2629,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         Color(0xffff000000)
                                       ]),
                                 ),
-                                child: Container(
+                                child: SizedBox(
                                   height: height * 0.7,
                                   width: width * 0.04,
                                   child: ListView.builder(
@@ -2754,6 +2644,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
                                         return InkWell(
                                           onTap: () {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusic()
+                                                : Vibration.vibrate();
                                             print("=========>show dialog");
                                             pastResultLand(
                                                 context,
@@ -2799,14 +2692,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                       }),
                                 )),
                           ),
-                          Positioned(
-                            top: height * 0.05,
-                            child: Image.asset(
-                              'assets/Teen-patti/images/tableGirl.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.28,
-                            ),
-                          ),
+                        
                         ],
                       ),
               ),
@@ -2836,15 +2722,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player1Button = !player1Button;
                                   }
                                   if (player1Button == true) {
@@ -2867,17 +2753,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -2910,15 +2793,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player2Button = !player2Button;
                                   }
                                   if (player2Button == true) {
@@ -2941,17 +2824,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -2990,15 +2870,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player3Button = !player3Button;
                                   }
                                   if (player3Button == true) {
@@ -3021,17 +2901,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3064,15 +2941,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player4Button = !player4Button;
                                   }
                                   if (player4Button == true) {
@@ -3095,17 +2972,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3144,15 +3018,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player5Button = !player5Button;
                                   }
                                   if (player5Button == true) {
@@ -3175,17 +3049,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3218,15 +3089,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
 
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player6Button = !player6Button;
                                   }
                                   if (player6Button == true) {
@@ -3249,17 +3120,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3298,14 +3166,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player7Button = !player7Button;
                                   }
                                   if (player7Button == true) {
@@ -3328,17 +3196,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3371,14 +3236,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                   setState(() {
                                     playBackgroundMusic == false
                                         ? onPressedMusic()
-                                        : HapticFeedback.vibrate();
+                                        : Vibration.vibrate();
                                   });
                                   if ((redCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  brownCoinAnimation == true ||
-                                  greenCoinAnimation == true)&& startTimes>1) {
+                                          lightBlueCoinAnimation == true ||
+                                          lightGreenCoinAnimation == true ||
+                                          brownCoinAnimation == true ||
+                                          greenCoinAnimation == true) &&
+                                      startTimes > 1) {
                                     player8Button = !player8Button;
                                   }
                                   if (player8Button == true) {
@@ -3401,17 +3266,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                             ? stack1
                                             : lightGreenCoinAnimation == true
                                                 ? stack2
-                                                : blueCoinAnimation == true
+                                                : lightBlueCoinAnimation == true
                                                     ? stack3
                                                     : greenCoinAnimation == true
                                                         ? stack4
-                                                        : lightBlueCoinAnimation ==
+                                                        : brownCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : brownCoinAnimation ==
-                                                                    true
-                                                                ? stack6
-                                                                : 0);
+                                                            ? stack6
+                                                            : 0);
                                   }
                                 },
                                 child: _betButtons(
@@ -3515,7 +3377,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       double heightClick,
       double widthClick,
       int stake) {
-        showDialog(
+    showDialog(
         context: context,
         builder: (_) {
           return AlertDialog(
@@ -3541,7 +3403,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                      //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Amount",
@@ -3549,70 +3411,69 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
-                           SizedBox(
+                          SizedBox(
                             height: height * 0.05,
                           ),
                           Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 5),
-                                  // alignment: Alignment.center,
-                                  child: Image.asset(
-                                    "assets/User-interface/minus-image.png",
-                                    scale: 3,
-                                  ),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                // alignment: Alignment.center,
+                                child: Image.asset(
+                                  "assets/User-interface/minus-image.png",
+                                  scale: 3,
                                 ),
-                           
-                            SizedBox(
-                              height: height * 0.12,
-                              width: width * 0.5,
-                              child: Center(
-                                child: TextField(
-                                  textAlign: TextAlign.center,
-                                  controller: stakeController,
-                                  onChanged: (String value) async {
-                                    manualAmount = true;
-                                  },
-                                  maxLength: 5,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    counterText: "",
-                                    hintText: '$stake',
-                                    hintStyle: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(1),
-                                      borderSide: BorderSide(
-                                        width: 0,
-                                        style: BorderStyle.none,
-                                      ),
+                              ),
+                              SizedBox(
+                                   height: height * 0.125,
+                                width: width * 0.5,
+                                child: Center(
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    controller: stakeController,
+                                    onChanged: (String value) async {
+                                      manualAmount = true;
+                                    },
+                                    maxLength: 5,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                         fontSize: 10,
                                     ),
-                                    filled: true,
-                                    // contentPadding:  EdgeInsets.only(top: height*0.1),
-                                    fillColor: Colors.black,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      counterText: "",
+                                      hintText: '$stake',
+                                      hintStyle: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(1),
+                                        borderSide: BorderSide(
+                                          width: 0,
+                                          style: BorderStyle.none,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                      fillColor: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                                   Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 5),
-                              // alignment: Alignment.center,
-                              child: Image.asset(
-                                "assets/User-interface/plus-image.png",
-                                scale: 3,
+                              Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                // alignment: Alignment.center,
+                                child: Image.asset(
+                                  "assets/User-interface/plus-image.png",
+                                  scale: 3,
+                                ),
                               ),
-                            ),
-                             ],
+                            ],
                           ),
                           SizedBox(
                             height: height * 0.04,
@@ -3624,54 +3485,120 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold),
                           ),
-                           SizedBox(
+                          SizedBox(
                             height: height * 0.04,
                           ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                playBackgroundMusic == false
-                                    ? ''
-                                    : HapticFeedback.vibrate();
-                              });
-                              setState(() {
-                                _currentCoinIndexRytPort++;
-                                _startCoinAnimationRightPort();
-                              });
+                          manualAmount == true &&
+                                  int.parse(stakeController.text) > 99 &&
+                                  int.parse(stakeController.text) < 25000
+                              ? InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      playBackgroundMusic == false
+                                          ? onPressedMusicForBet()
+                                          : Vibration.vibrate();
+                                    });
 
-                              if (player1Button == true ||
-                                  player2Button == true ||
-                                  player3Button == true ||
-                                  player4Button == true ||
-                                  player5Button == true ||
-                                  player6Button == true ||
-                                  player7Button == true ||
-                                  player8Button == true) {
-                                makeBetPortrait();
-                                Navigator.pop(context);
-                                onPressedMusicForBet();
-                                player1Button = false;
-                                player2Button = false;
-                                player3Button = false;
-                                player4Button = false;
-                                player5Button = false;
-                                player6Button = false;
-                                player7Button = false;
-                                player8Button = false;
-                                setState(() {
-                                  confirmButton = true;
-                                });
-                              }
-                            },
-                            child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 2),
-                                width: width * 0.6,
-                                height: height * 0.10,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/lucky7/images/button/comfirm.png")))),
-                          ),
+                                    if (player1Button == true ||
+                                        player2Button == true ||
+                                        player3Button == true ||
+                                        player4Button == true ||
+                                        player5Button == true ||
+                                        player6Button == true ||
+                                        player7Button == true ||
+                                        player8Button == true) {
+                                      makeBetPortrait();
+                                      Navigator.pop(context);
+
+                                      player1Button = false;
+                                      player2Button = false;
+                                      player3Button = false;
+                                      player4Button = false;
+                                      player5Button = false;
+                                      player6Button = false;
+                                      player7Button = false;
+                                      player8Button = false;
+                                      setState(() {
+                                        confirmButton = true;
+                                      });
+                                    }
+                                  },
+                                  child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      width: width * 0.6,
+                                      height: height * 0.10,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: AssetImage(
+                                                  "assets/lucky7/images/button/comfirm.png")))),
+                                )
+                              : manualAmount == false
+                                  ? InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
+                                        });
+
+                                        if (player1Button == true ||
+                                            player2Button == true ||
+                                            player3Button == true ||
+                                            player4Button == true ||
+                                            player5Button == true ||
+                                            player6Button == true ||
+                                            player7Button == true ||
+                                            player8Button == true) {
+                                          makeBetPortrait();
+                                          Navigator.pop(context);
+
+                                          player1Button = false;
+                                          player2Button = false;
+                                          player3Button = false;
+                                          player4Button = false;
+                                          player5Button = false;
+                                          player6Button = false;
+                                          player7Button = false;
+                                          player8Button = false;
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 2),
+                                          width: width * 0.6,
+                                          height: height * 0.10,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  image: AssetImage(
+                                                      "assets/lucky7/images/button/comfirm.png")))),
+                                    )
+                                  : InkWell(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? ""
+                                              : Vibration.vibrate();
+                                        });
+                                        DialogUtils.showOneBtn(
+                                          context,
+                                          "Please Select Existing amount",
+                                        );
+                                      },
+                                      child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 2),
+                                          width: width * 0.6,
+                                          height: height * 0.10,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  image: AssetImage(
+                                                      "assets/lucky7/images/button/comfirm.png")))),
+                                    ),
                         ],
                       ),
                     ),
@@ -3681,6 +3608,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     top: 2,
                     child: InkWell(
                       onTap: () {
+                        playBackgroundMusic == false
+                            ? onPressedMusic()
+                            : Vibration.vibrate();
                         Navigator.pop(context);
                       },
                       child: Image.asset(
@@ -3711,199 +3641,251 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         builder: (_) {
           return AlertDialog(
             backgroundColor: Colors.transparent,
-            content: SizedBox(
-              height: heightImage,
-              width: widthImage,
-              child: Stack(
-                children: [
-                  Container(
-                    // padding:
-                    //     EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    height: heightImage,
-                    width: widthImage,
-                    // width: width * 0.4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: const <Color>[
-                          Color(0xff01452B),
-                          Color(0xff002114),
-                        ],
+            content: SingleChildScrollView(
+              child: SizedBox(
+                height: heightImage,
+                width: widthImage,
+                child: Stack(
+                  children: [
+                    Container(
+                      // padding:
+                      //     EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      height: heightImage,
+                      width: widthImage,
+                      // width: width * 0.4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                          colors: const <Color>[
+                            Color(0xff01452B),
+                            Color(0xff002114),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Amount",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: height * 0.08,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Amount",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: height * 0.08,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
                                 Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/minus-image.png",
-                                      scale: 3,
-                                    ),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/minus-image.png",
+                                    scale: 3,
                                   ),
-                              Padding(
-                                padding: EdgeInsets.only(top: height * 0.0),
-                                child: SizedBox(
-                                  height: height * 0.2,
-                                  width: width * 0.25,
-                                  child: Center(
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      controller: stakeController,
-                                      onChanged: (String value) async {
-                                        manualAmount = true;
-                                      },
-                                      maxLength: 5,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        counterText: "",
-                                        hintText: '$stake',
-                                        hintStyle: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600),
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(2),
-                                            borderSide: BorderSide(
-                                              color: Color(0xff4E4E4E),
-                                              width: 3,
-                                            )),
-                                        filled: true,
-                                        // contentPadding:  EdgeInsets.only(top: height*0.1),
-                                        fillColor: Colors.black,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: height * 0.0),
+                                  child: SizedBox(
+                                                height: height * 0.26,
+                                    width: width * 0.25,
+                                    child: Center(
+                                      child: TextField(
+                                        textAlign: TextAlign.center,
+                                        controller: stakeController,
+                                        onChanged: (String value) async {
+                                          manualAmount = true;
+                                        },
+                                        maxLength: 5,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                                       fontSize: 10,
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          counterText: "",
+                                          hintText: '$stake',
+                                          hintStyle: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                              borderSide: BorderSide(
+                                                color: Color(0xff4E4E4E),
+                                                width: 3,
+                                              )),
+                                          filled: true,
+                                          // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                          fillColor: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                                   Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/plus-image.png",
-                                      scale: 3,
-                                    ),
+                                Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/plus-image.png",
+                                    scale: 3,
                                   ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: height * 0.07,
-                          ),
-                          Text(
-                            "Are you sure you want to continue?",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          //    SizedBox(
-                          //   height: height * 0.03,
-                          // ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // InkWell(
-                              //   onTap: () {
-                              //     Navigator.pop(context);
-                              //   },
-                              //   child: Container(
-                              //       // margin: const EdgeInsets.symmetric(
-                              //       //     vertical: 10),
-                              //       height: 37,
-                              //       width: 80,
-                              //       decoration: BoxDecoration(
-                              //           image: DecorationImage(
-                              //               image: AssetImage(
-                              //                   "assets/lucky7/images/button/cancelL7.png")))),
-                              // ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    playBackgroundMusic == false
-                                        ? ''
-                                        : HapticFeedback.vibrate();
-                                  });
-                                  setState(() {
-                                    _currentCoinIndex++;
-                                    _startCoinAnimation();
-                                  });
-                              
-                                  if (player1Button == true ||
-                                      player2Button == true ||
-                                      player3Button == true ||
-                                      player4Button == true ||
-                                      player5Button == true ||
-                                      player6Button == true ||
-                                      player7Button == true ||
-                                      player8Button == true) {
-                                    makeBet();
-                                    Navigator.pop(context);
-                                    onPressedMusicForBet();
-                                    player1Button = false;
-                                    player2Button = false;
-                                    player3Button = false;
-                                    player4Button = false;
-                                    player5Button = false;
-                                    player6Button = false;
-                                    player7Button = false;
-                                    player8Button = false;
-                                    setState(() {
-                                      confirmButton = true;
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                    // margin: const EdgeInsets.symmetric(
-                                    //     vertical: 10),
-                                    height: 60,
-                                    width: width * 0.25,
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                "assets/lucky7/images/button/comfirm.png")))),
-                              ),
-                            ],
-                          ),
-                        ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: height * 0.07,
+                            ),
+                            Text(
+                              "Are you sure you want to continue?",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            //    SizedBox(
+                            //   height: height * 0.03,
+                            // ),
+                            manualAmount == true &&
+                                    int.parse(stakeController.text) > 99 &&
+                                    int.parse(stakeController.text) < 25000
+                                ? InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        playBackgroundMusic == false
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
+                                      });
+            
+                                      if (player1Button == true ||
+                                          player2Button == true ||
+                                          player3Button == true ||
+                                          player4Button == true ||
+                                          player5Button == true ||
+                                          player6Button == true ||
+                                          player7Button == true ||
+                                          player8Button == true) {
+                                        makeBet();
+                                        Navigator.pop(context);
+            
+                                        player1Button = false;
+                                        player2Button = false;
+                                        player3Button = false;
+                                        player4Button = false;
+                                        player5Button = false;
+                                        player6Button = false;
+                                        player7Button = false;
+                                        player8Button = false;
+                                        setState(() {
+                                          confirmButton = true;
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                        // margin: const EdgeInsets.symmetric(
+                                        //     vertical: 10),
+                                        height: 60,
+                                        width: width * 0.25,
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/lucky7/images/button/comfirm.png")))),
+                                  )
+                                : manualAmount == false
+                                    ? InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+                                          });
+            
+                                          if (player1Button == true ||
+                                              player2Button == true ||
+                                              player3Button == true ||
+                                              player4Button == true ||
+                                              player5Button == true ||
+                                              player6Button == true ||
+                                              player7Button == true ||
+                                              player8Button == true) {
+                                            makeBet();
+                                            Navigator.pop(context);
+            
+                                            player1Button = false;
+                                            player2Button = false;
+                                            player3Button = false;
+                                            player4Button = false;
+                                            player5Button = false;
+                                            player6Button = false;
+                                            player7Button = false;
+                                            player8Button = false;
+                                            setState(() {
+                                              confirmButton = true;
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                            // margin: const EdgeInsets.symmetric(
+                                            //     vertical: 10),
+                                            height: 60,
+                                            width: width * 0.25,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png")))),
+                                      )
+                                    : InkWell(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? ''
+                                                : Vibration.vibrate();
+                                            ;
+                                          });
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
+                                        },
+                                        child: Container(
+                                            // margin: const EdgeInsets.symmetric(
+                                            //     vertical: 10),
+                                            height: 60,
+                                            width: width * 0.25,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/lucky7/images/button/comfirm.png")))),
+                                      ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    right: width * 0.01,
-                    top: 2,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset(
-                        "assets/User-interface/close-button.png",
-                        scale: 4,
+                    Positioned(
+                      right: width * 0.01,
+                      top: 2,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -4049,7 +4031,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                   setState(() {
                     playBackgroundMusic == false
                         ? onPressedMusic()
-                        : HapticFeedback.vibrate();
+                        : Vibration.vibrate();
                   });
                 },
                 child: Container(
@@ -4097,7 +4079,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             SizedBox(height: height * 0.02),
             Container(
               padding: EdgeInsets.only(left: width * 0.1),
-               height: height * 0.07,
+              height: height * 0.07,
               width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -4118,24 +4100,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 1',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                   SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array[0].isNotEmpty
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4144,8 +4126,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4155,13 +4137,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4170,8 +4152,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4181,13 +4163,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                            height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4197,7 +4179,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4226,24 +4208,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 2',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                         SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 1
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                            height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4252,8 +4234,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                        height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4263,13 +4245,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4279,7 +4261,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4289,13 +4271,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
                                 height: height * 0.05,
-                                        width: width * 0.07,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4305,7 +4287,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4313,7 +4295,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             SizedBox(height: height * 0.02),
             Container(
               padding: EdgeInsets.only(left: width * 0.1),
-                height: height * 0.07,
+              height: height * 0.07,
               width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -4334,24 +4316,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 3',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                        SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 2
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4361,7 +4343,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4371,13 +4353,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                            height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4386,8 +4368,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                       height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4398,12 +4380,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4412,8 +4394,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4421,7 +4403,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             SizedBox(height: height * 0.02),
             Container(
               padding: EdgeInsets.only(left: width * 0.1),
-           height: height * 0.07,
+              height: height * 0.07,
               width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -4442,24 +4424,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 4',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                     SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 3
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4468,8 +4450,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4479,13 +4461,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4495,7 +4477,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4506,12 +4488,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
                                 height: height * 0.05,
-                                        width: width * 0.07,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4521,7 +4503,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4550,24 +4532,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 5',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                         SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 4
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                        height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4576,8 +4558,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4588,12 +4570,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4602,8 +4584,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4613,13 +4595,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4628,8 +4610,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                        height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4637,7 +4619,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             SizedBox(height: height * 0.02),
             Container(
               padding: EdgeInsets.only(left: width * 0.1),
-                height: height * 0.07,
+              height: height * 0.07,
               width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -4658,24 +4640,24 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 6',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
-                 SizedBox(width: width * 0.24),
+                    SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 5
                         ? FlipCard(
                             flipOnTouch: false,
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4684,8 +4666,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4695,13 +4677,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                        height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4710,8 +4692,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4722,12 +4704,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                            height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4736,8 +4718,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4745,7 +4727,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             SizedBox(height: height * 0.02),
             Container(
               padding: EdgeInsets.only(left: width * 0.1),
-             height: height * 0.07,
+              height: height * 0.07,
               width: width,
               alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -4766,9 +4748,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 7',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
                     SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 6
@@ -4777,13 +4759,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
                                 height: height * 0.05,
-                                        width: width * 0.07,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4792,8 +4774,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4803,13 +4785,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4819,7 +4801,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4829,13 +4811,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                            height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
                                 height: height * 0.05,
-                                        width: width * 0.07,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4844,8 +4826,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -4874,9 +4856,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                     Text(
                       'PLAYER 8',
                       style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
                     SizedBox(width: width * 0.24),
                     cardNameImage1Array.length > 7
@@ -4885,13 +4867,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                         height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4900,8 +4882,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4911,13 +4893,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4927,7 +4909,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
                             height: height * 0.05,
-                                        width: width * 0.07,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -4938,12 +4920,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                              height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4952,15 +4934,15 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
             ),
             SizedBox(height: height * 0.02),
             Container(
-              padding: EdgeInsets.only(left: width * 0.45),
+              padding: EdgeInsets.only(left: width * 0.48),
               height: height * 0.07,
               width: width,
               alignment: Alignment.center,
@@ -4981,13 +4963,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                         height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -4996,8 +4978,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                          height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -5008,12 +4990,12 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
                               height: height * 0.05,
-                                        width: width * 0.07,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -5022,8 +5004,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                           height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                     SizedBox(width: width * 0.03),
@@ -5033,13 +5015,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                             autoFlipDuration: Duration(seconds: 1),
                             front: Image.asset(
                               'assets/lucky7/images/cardBg.png',
-                             height: height * 0.05,
-                                        width: width * 0.07,
+                              height: height * 0.05,
+                              width: width * 0.07,
                               fit: BoxFit.fill,
                             ),
                             back: SizedBox(
-                               height: height * 0.05,
-                                        width: width * 0.07,
+                                height: height * 0.05,
+                                width: width * 0.07,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2.5),
                                   child: Image.network(
@@ -5048,8 +5030,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 )))
                         : Image.asset(
                             'assets/lucky7/images/cardBg.png',
-                         height: height * 0.05,
-                                        width: width * 0.07,
+                            height: height * 0.05,
+                            width: width * 0.07,
                             fit: BoxFit.fill,
                           ),
                   ]),
@@ -5099,576 +5081,592 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     return showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-              backgroundColor: Colors.transparent,
-              content: Stack(
-                children: [
-                  Container(
-                      height: height * 1.5,
-                      //  width: width * 0.89,
-                      padding: EdgeInsets.all(10),
-                      alignment: Alignment.topCenter,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              colors: const [
-                            Color(0xffff01452b),
-                            Color(0xffff002114)
-                          ])),
-                      child: SingleChildScrollView(
-                        child: Column(children: [
-                          Text(
-                            'RESULT',
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 16,
-                                color: Colors.white),
-                          ),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[0] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('PLAYER 1',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                    SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                         height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                           padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return orientation==Orientation.portrait? AlertDialog(
+                backgroundColor: Colors.transparent,
+                content: Stack(
+                  children: [
+                    Container(
+                        height: height * 1.5,
+                        //  width: width * 0.89,
+                        padding: EdgeInsets.all(10),
+                        alignment: Alignment.topCenter,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                colors: const [
+                              Color(0xffff01452b),
+                              Color(0xffff002114)
+                            ])),
+                        child: SingleChildScrollView(
+                          child: Column(children: [
+                            Text(
+                              'RESULT',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 16,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: winnerArray[0] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
                                       fit: BoxFit.fill),
-                                  border:
-                                      Border.all(color: Color(0xffff14ffa8)),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                  Text('PLAYER 2',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                     SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                            height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                               padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[1] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                Text('PLAYER 3',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                     height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[3] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                   Text('PLAYER 4',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                            height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[4] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                 Text('PLAYER 5',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
-                                              fit: BoxFit.cover),
-                                        ))
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[5] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                             Text('PLAYER 6',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                            height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                         height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[0] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('PLAYER 7',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                            height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                            height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: winnerArray[7] == 'L'
-                                        ? AssetImage(
-                                            'assets/vertual_teen_patti/Group 1681.png')
-                                        : AssetImage(
-                                            'assets/vertual_teen_patti/Group 1682.png'),
-                                    fit: BoxFit.fill),
-                              ),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                     Text('PLAYER 8',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white)),
-                                       SizedBox(width: width * 0.17),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                             height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                          SizedBox(height: height * 0.02),
-                          Container(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              height: height * 0.07,
-                              width: width,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 1',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.16),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: winnerArray[0] == 'L'
+                                            ? AssetImage(
+                                                'assets/vertual_teen_patti/Group 1681.png')
+                                            : AssetImage(
+                                                'assets/vertual_teen_patti/Group 1682.png'),
+                                        fit: BoxFit.fill),
+                                    border:
+                                        Border.all(color: Color(0xffff14ffa8)),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 2',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
                                   image: DecorationImage(
-                                      image: AssetImage(
-                                          'assets/vertual_teen_patti/player_bg.png'),
+                                      image: winnerArray[1] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
                                       fit: BoxFit.fill),
-                                  border:
-                                      Border.all(color: Color(0xffff14ffa8)),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'DEALER',
-                                      style: text14w600,
-                                    ),
-                                    SizedBox(width: width * 0.2),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                           height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                    SizedBox(width: width * 0.02),
-                                    SizedBox(
-                                        height: height * 0.05,
-                                        width: width * 0.07,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(2.5),
-                                          child: Image.network(
-                                              'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
-                                              fit: BoxFit.cover),
-                                        )),
-                                  ])),
-                        ]),
-                      )),
-                  Positioned(
-                    right: 0,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        height: 24,
-                        width: 24,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Icon(
-                          Icons.close,
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 3',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: winnerArray[3] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 4',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: winnerArray[4] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 5',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
+                                                fit: BoxFit.cover),
+                                          ))
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: winnerArray[5] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 6',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: winnerArray[0] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 7',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: winnerArray[7] == 'L'
+                                          ? AssetImage(
+                                              'assets/vertual_teen_patti/Group 1681.png')
+                                          : AssetImage(
+                                              'assets/vertual_teen_patti/Group 1682.png'),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('PLAYER 8',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.15),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                            SizedBox(height: height * 0.02),
+                            Container(
+                                padding: EdgeInsets.only(left: width * 0.05),
+                                height: height * 0.07,
+                                width: width,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/vertual_teen_patti/player_bg.png'),
+                                        fit: BoxFit.fill),
+                                    border:
+                                        Border.all(color: Color(0xffff14ffa8)),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('DEALER',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                      SizedBox(width: width * 0.17),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                      SizedBox(width: width * 0.02),
+                                      SizedBox(
+                                          height: height * 0.05,
+                                          width: width * 0.07,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                            child: Image.network(
+                                                'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
+                                                fit: BoxFit.cover),
+                                          )),
+                                    ])),
+                          ]),
+                        )),
+                    Positioned(
+                      right: 0,
+                      child: InkWell(
+                        onTap: () {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 24,
+                          width: 24,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Icon(
+                            Icons.close,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ));
+                  ],
+                )):SizedBox.shrink();
+          });
         });
   }
 
@@ -5823,20 +5821,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               : Color(0xff008000)),
                                       child: Text(
                                         'PLAYER 1',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                                     )
                                   : Text(
                                       'PLAYER 1',
-                                      style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                      style: TextStyle(
+                                          // fontFamily: 'Inter',
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
                                     ),
                             ],
                           ),
@@ -5950,7 +5948,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               marketId == marketIdWinner
                                   ? Container(
                                       padding: EdgeInsets.symmetric(
-                                             horizontal: width * 0.073,
+                                          horizontal: width * 0.073,
                                           vertical: height * 0.0065),
                                       decoration: BoxDecoration(
                                           borderRadius:
@@ -5960,20 +5958,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               : Color(0xff008000)),
                                       child: Text(
                                         'PLAYER 2',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                                     )
                                   : Text(
                                       'PLAYER 2',
-                                      style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                      style: TextStyle(
+                                          // fontFamily: 'Inter',
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
                                     ),
                             ],
                           ),
@@ -6087,7 +6085,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               marketId == marketIdWinner
                                   ? Container(
                                       padding: EdgeInsets.symmetric(
-                                              horizontal: width * 0.073,
+                                          horizontal: width * 0.073,
                                           vertical: height * 0.0065),
                                       decoration: BoxDecoration(
                                           borderRadius:
@@ -6097,20 +6095,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               : Color(0xff008000)),
                                       child: Text(
                                         'PLAYER 3',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                                     )
                                   : Text(
                                       'PLAYER 3',
-                                      style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                      style: TextStyle(
+                                          // fontFamily: 'Inter',
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
                                     ),
                             ],
                           ),
@@ -6237,7 +6235,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                     ? Container(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: width * 0.073,
-                                          vertical: height * 0.0065),
+                                            vertical: height * 0.0065),
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(2),
@@ -6246,20 +6244,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                                 : Color(0xff008000)),
                                         child: Text(
                                           'PLAYER 4',
-                                          style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                          style: TextStyle(
+                                              // fontFamily: 'Inter',
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white),
                                         ),
                                       )
                                     : Text(
                                         'PLAYER 4',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                               ],
                             ),
@@ -6376,8 +6374,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 marketId == marketIdWinner
                                     ? Container(
                                         padding: EdgeInsets.symmetric(
-                                                 horizontal: width * 0.073,
-                                          vertical: height * 0.0065),
+                                            horizontal: width * 0.073,
+                                            vertical: height * 0.0065),
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(2),
@@ -6386,20 +6384,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                                 : Color(0xff008000)),
                                         child: Text(
                                           'PLAYER 5',
-                                          style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                          style: TextStyle(
+                                              // fontFamily: 'Inter',
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white),
                                         ),
                                       )
                                     : Text(
                                         'PLAYER 5',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                               ],
                             ),
@@ -6516,8 +6514,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                 marketId == marketIdWinner
                                     ? Container(
                                         padding: EdgeInsets.symmetric(
-                                                horizontal: width * 0.073,
-                                          vertical: height * 0.0065),
+                                            horizontal: width * 0.073,
+                                            vertical: height * 0.0065),
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(2),
@@ -6526,20 +6524,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                                 : Color(0xff008000)),
                                         child: Text(
                                           'PLAYER 6',
-                                          style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                          style: TextStyle(
+                                              // fontFamily: 'Inter',
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white),
                                         ),
                                       )
                                     : Text(
                                         'PLAYER 6',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                               ],
                             ),
@@ -6660,7 +6658,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               marketId == marketIdWinner
                                   ? Container(
                                       padding: EdgeInsets.symmetric(
-                                              horizontal: width * 0.073,
+                                          horizontal: width * 0.073,
                                           vertical: height * 0.0065),
                                       decoration: BoxDecoration(
                                           borderRadius:
@@ -6670,20 +6668,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               : Color(0xff008000)),
                                       child: Text(
                                         'PLAYER 7',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                                     )
                                   : Text(
                                       'PLAYER 7',
-                                      style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                      style: TextStyle(
+                                          // fontFamily: 'Inter',
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
                                     ),
                             ],
                           ),
@@ -6797,7 +6795,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                               marketId == marketIdWinner
                                   ? Container(
                                       padding: EdgeInsets.symmetric(
-                                              horizontal: width * 0.073,
+                                          horizontal: width * 0.073,
                                           vertical: height * 0.0065),
                                       decoration: BoxDecoration(
                                           borderRadius:
@@ -6807,20 +6805,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                               : Color(0xff008000)),
                                       child: Text(
                                         'PLAYER 8',
-                                        style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                        style: TextStyle(
+                                            // fontFamily: 'Inter',
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white),
                                       ),
                                     )
                                   : Text(
                                       'PLAYER 8',
-                                      style:  TextStyle(
-    // fontFamily: 'Inter',
-    fontSize: 9,
-    fontWeight: FontWeight.w500,
-    color: Colors.white),
+                                      style: TextStyle(
+                                          // fontFamily: 'Inter',
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white),
                                     ),
                             ],
                           ),
@@ -6946,6 +6944,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
         matchId: widget.matchId,
         gameCode: widget.gameCode,
+        playBackgroundMusic: playBackgroundMusic,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
@@ -7004,797 +7003,807 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     return showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-              backgroundColor: Colors.transparent,
-              content: Stack(children: [
-                Container(
-                  height: height * 0.9,
-                  width: width * 0.7,
-                  padding: EdgeInsets.all(10),
-                  alignment: Alignment.topCenter,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage(
-                              'assets/vertual_teen_patti/vector.png')),
-                      // color: Color(0xFFFF001A11),
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          colors: const [
-                            Color(0xffff01452b),
-                            Color(0xffff002114)
-                          ])),
-                  child: SingleChildScrollView(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                        Text(
-                          'RESULT',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: height * 0.04,
-                              color: Colors.white),
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return orientation==Orientation.landscape? 
+            AlertDialog(
+                backgroundColor: Colors.transparent,
+                content: Stack(children: [
+                  Container(
+                    height: height * 0.9,
+                    width: width * 0.7,
+                    padding: EdgeInsets.all(10),
+                    alignment: Alignment.topCenter,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: AssetImage(
+                                'assets/vertual_teen_patti/vector.png')),
+                        // color: Color(0xFFFF001A11),
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            colors: const [
+                              Color(0xffff01452b),
+                              Color(0xffff002114)
+                            ])),
+                    child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                          Text(
+                            'RESULT',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: height * 0.04,
+                                color: Colors.white),
+                          ),
+                          SizedBox(height: height * 0.03),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.075,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[0] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 1',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[1] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 2',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[2] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 3',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * 0.03,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[3] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 4',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
+                                                        fit: BoxFit.cover),
+                                                  ))
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[4] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 5',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[5] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 6',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * 0.03,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[6] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 7',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[7] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 8',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1708.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.02,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        ])),
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        playBackgroundMusic == false
+                            ? onPressedMusic()
+                            : Vibration.vibrate();
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 24,
+                        width: 24,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Icon(
+                          Icons.close,
                         ),
-                        SizedBox(height: height * 0.03),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            // SizedBox(width: 5),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: width * 0.075,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[0] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 1',
-                                              style: TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                            horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[1] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 2',
-                                              style:TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                            horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[2] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 3',
-                                              style:TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: height * 0.03,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            // SizedBox(width: 5),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                        horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[3] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 4',
-                                              style:TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
-                                                      fit: BoxFit.cover),
-                                                ))
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                             horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[4] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 5',
-                                              style: TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[5] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 6',
-                                              style: TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: height * 0.03,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            // SizedBox(width: 5),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[6] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 7',
-                                              style:TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1707.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.003,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                          SizedBox(height: height * 0.05),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                           horizontal: width * 0.073,
-                                                vertical: height * 0.0065),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
-                                                color: winnerArray[7] == 'L'
-                                                    ? Color(0xffFF0000)
-                                                    : Color(0xff008000)),
-                                            child: Text(
-                                              'PLAYER 8',
-                                              style: TextStyle(
-                                                  // fontFamily: 'Inter',
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: height * 0.3,
-                                      width: width * 0.2,
-                                      padding: EdgeInsets.all(10),
-                                      alignment: Alignment.topCenter,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                                'assets/vertual_teen_patti/Group 1708.png')),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: height * 0.04,
-                                      left: width * 0.02,
-                                      child: Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                            SizedBox(width: width * 0.01),
-                                            SizedBox(
-                                                height: height * 0.15,
-                                                width: width * 0.05,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          2.5),
-                                                  child: Image.network(
-                                                      'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
-                                                      fit: BoxFit.cover),
-                                                )),
-                                          ]),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
-                      ])),
-                ),
-                Positioned(
-                  right: 0,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 24,
-                      width: 24,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Icon(
-                        Icons.close,
                       ),
                     ),
                   ),
-                ),
-              ]));
+                ])):Container();
+          });
         });
   }
 
@@ -7808,7 +7817,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
       child: Text(
         text,
-        style: TextStyle(color: Colors.white,fontSize: 9),
+        style: TextStyle(color: Colors.white, fontSize: 9),
       ),
     );
   }
@@ -7822,14 +7831,14 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
       child: Text(
         text,
-        style: TextStyle(color: Colors.white,fontSize: 10),
+        style: TextStyle(color: Colors.white, fontSize: 10),
       ),
     );
   }
 
   ///place your bet widget in landscape mode
   Widget placeyourbetWidget(String time) {
-    return  autoTime == '59'
+    return autoTime == '59'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -7855,7 +7864,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   ///stop betting widget in landscape mode
   Widget gameStopBetting(String time) {
-    return autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -7893,8 +7902,16 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     var response = await GlobalFunction.apiGetRequestae(url);
     var result = jsonDecode(response);
     if (result['status'] == true) {
+       if (marketId != result['data']['t1'][0]['mid'].toString()) {
+        _coins.clear();
+        _coinsPort.clear();
+        _coinsRytPort.clear();
+      }
       setState(() {
         autoTime = result['data']['t1'][0]['autotime'].toString();
+         if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
 
         startTimes = int.parse(autoTime.toString());
@@ -7943,7 +7960,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
           ? setState(() {
               redCoinAnimation = false;
               lightGreenCoinAnimation = false;
-              blueCoinAnimation = false;
+
               greenCoinAnimation = false;
               lightBlueCoinAnimation = false;
               brownCoinAnimation = false;
@@ -7999,7 +8016,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         stack2 = result['data']['stack2'];
         stack3 = result['data']['stack3'];
         stack4 = result['data']['stack4'];
-        stack5 = result['data']['stack5'];
+
         stack6 = result['data']['stack6'];
       });
     }
@@ -8007,7 +8024,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   ///place your bet widget in protrait mode
   Widget placeyourbetWidgetPortrait(String time) {
-    return  autoTime == '59'
+    return autoTime == '59'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -8034,7 +8051,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   ///stop betting widget in protrait mode
   Widget gameStopBettingPortrait(String time) {
-    return  autoTime == '3' && autoTime != '2'&& autoTime != '1'&& autoTime != '0'
+    return startTimes <= 3 && autoTime != '0'
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -8105,6 +8122,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   ///make bet api in landscape mode
   Future makeBet() async {
+    getUserDetails();
     DateTime currentTime = DateTime.now();
     var url = "http://13.250.53.81/VirtualCasinoBetPlacer/vc/place-bet";
     var body = {
@@ -8133,17 +8151,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : lightBlueCoinAnimation == true &&
-                                  manualAmount == false
-                              ? stack5.toString()
-                              : brownCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                          : brownCoinAnimation == true && manualAmount == false
+                              ? stack6
+                              : "",
       "selectionId": player1Button == true
           ? player1Sid.toString()
           : player2Button == true
@@ -8176,13 +8190,32 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         "orientation": "landscape"
       }
     };
-    var response = await GlobalFunction.apiPostRequestToken(url, body);
+    var response = await GlobalFunction.apiPostRequestTokenForBet(
+      url,
+      body,
+      context,
+      stakeController,
+    );
+    setState(() {
+      manualAmount = false;
+    });
     var result = jsonDecode(response);
     print("betBody--->$body");
-    if (result['status'] == true) {
+     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
+
       setState(() {
+        _currentCoinIndex++;
+        _startCoinAnimation();
+      });
+     
+      setState(() {
+        manualAmount = false;
+        stakeController.clear();
         player1Button = false;
         player2Button = false;
         player3Button = false;
@@ -8192,11 +8225,20 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         player7Button = false;
         player8Button = false;
       });
-      getuserBalance();
+
       getVcLiablity();
-    } else {
-      DialogUtils.showOneBtn(context, result['message']);
+    }else {
+      manualAmount = false;
+      stakeController.clear();
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
     }
+
+    stakeController.clear();
+    manualAmount = false;
+  
   }
 
   Widget drawerWidget() {
@@ -8215,7 +8257,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             onTap: () {
               Navigator.pop(context);
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8239,7 +8281,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             onTap: () async {
               Navigator.push(context, _createRouteProfile());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8257,7 +8299,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             onTap: () async {
               Navigator.push(context, _createRoute());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8275,7 +8317,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             onTap: () async {
               Navigator.push(context, _createRouteCurrentBets());
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8292,7 +8334,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8309,7 +8351,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
           InkWell(
             onTap: () async {
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
               Navigator.push(context, _createRouteChangePassword());
             },
@@ -8334,7 +8376,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
             onTap: () async {
               getlogout();
               setState(() {
-                playBackgroundMusic == false ? '' : HapticFeedback.vibrate();
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
               });
             },
             child: Container(
@@ -8377,8 +8419,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -8397,8 +8440,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   Route _createRouteProfile() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -8418,7 +8462,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   Route _createRouteCurrentBets() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const CurrentBetsScreen(),
+          CurrentBetsScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -8438,7 +8484,9 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+          ChangePasswordScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -8534,6 +8582,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
 
   ///make bet api in protrait mode
   Future makeBetPortrait() async {
+    getUserDetails();
     DateTime currentTime = DateTime.now();
     var url = "http://13.250.53.81/VirtualCasinoBetPlacer/vc/place-bet";
     var body = {
@@ -8562,17 +8611,13 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
-                          : lightBlueCoinAnimation == true &&
-                                  manualAmount == false
-                              ? stack5.toString()
-                              : brownCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                          : brownCoinAnimation == true && manualAmount == false
+                              ? stack6
+                              : "",
       "selectionId": player1Button == true
           ? player1Sid.toString()
           : player2Button == true
@@ -8605,13 +8650,32 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         "orientation": "landscape"
       }
     };
-    var response = await GlobalFunction.apiPostRequestToken(url, body);
+    var response = await GlobalFunction.apiPostRequestTokenForBetPortrait(
+      url,
+      body,
+      context,
+      stakeController,
+    );
+    setState(() {
+      manualAmount = false;
+    });
     var result = jsonDecode(response);
     print("betBody--->$body");
     if (result['status'] == true) {
       print("response--->$result");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
+
       setState(() {
+        _currentCoinIndexRytPort++;
+        _startCoinAnimationRightPort();
+      });
+     
+      setState(() {
+        manualAmount = false;
+        stakeController.clear();
         player1Button = false;
         player2Button = false;
         player3Button = false;
@@ -8621,10 +8685,18 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         player7Button = false;
         player8Button = false;
       });
-      getuserBalance();
+
       getVcLiablity();
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      manualAmount = false;
+      stakeController.clear();
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
     }
+
+    stakeController.clear();
+    manualAmount = false;
   }
 }

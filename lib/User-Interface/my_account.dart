@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
 import 'package:virtual_casino/Utils/apis.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 import 'package:virtual_casino/data/model/statement_model.dart';
 
 class MyAccountPage extends StatefulWidget {
-  const MyAccountPage({super.key});
+  bool? playBackgroundMusic=false;
+   MyAccountPage({super.key,this.playBackgroundMusic});
 
   @override
   State<MyAccountPage> createState() => _MyAccountPageState();
@@ -25,6 +27,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
   int typess = 1;
   int recordss = 25;
   bool loading = false;
+  bool playBackgroundMusic=false;
   List<SatatementModel> statementList = [];
   List listName = [
     {"unit": "All", "action": true},
@@ -101,6 +104,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
               ),
               GestureDetector(
                 onTap: () {
+                        widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -141,6 +147,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
+                                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                             selectDate();
                           },
                           child: Container(
@@ -172,6 +181,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
+                                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                             selectEndDate();
                           },
                           child: Container(
@@ -279,11 +291,14 @@ class _MyAccountPageState extends State<MyAccountPage> {
               children: [
                 GestureDetector(
                   onTap: () {
+                          widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                     if (startDate != "" && endDate != "") {
                       getStatementDetails();
                     } else {
                       DialogUtils.showOneBtn(
-                          context, "Please select From & to Date");
+                          context, "Please select From & to Date",);
                     }
                   },
                   child: Container(
@@ -717,6 +732,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
               ),
               GestureDetector(
                 onTap: () {
+                        widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -791,6 +809,9 @@ class _MyAccountPageState extends State<MyAccountPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
+                                  widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                             selectEndDate();
                           },
                           child: Container(
@@ -893,11 +914,14 @@ class _MyAccountPageState extends State<MyAccountPage> {
           ),
           GestureDetector(
             onTap: () {
+                    widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
               if (startDate != "" && endDate != "") {
                 getStatementDetails();
               } else {
                 DialogUtils.showOneBtnPortrait(
-                    context, "Please select proper date !!");
+                    context, "Please select proper date !!",);
               }
             },
             child: Container(

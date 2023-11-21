@@ -1,17 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:blinking_text/blinking_text.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:virtual_casino/BollyWoodTable/animations/random_coin_left.dart';
-import 'package:virtual_casino/BollyWoodTable/animations/random_coin_left_p.dart';
-import 'package:virtual_casino/BollyWoodTable/animations/random_coin_right.dart';
-import 'package:virtual_casino/BollyWoodTable/animations/random_coin_right_p.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/DragonTigerLion/buttons_model.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 import 'package:http/http.dart' as http;
@@ -58,7 +58,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   double width = 0;
   bool redCoinAnimation = false;
   bool lightGreenCoinAnimation = false;
-  bool blueCoinAnimation = false;
+
   bool greenCoinAnimation = false;
   bool lightBlueCoinAnimation = false;
   bool brownCoinAnimation = false;
@@ -144,8 +144,91 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   double liablity13 = 0;
   double liablity14 = 0;
   double liablity15 = 0;
+  double _minX = 0;
+  double _maxX = 0;
+  double _minY = 0;
+  double _maxY = 0;
 
+  double _minXLeft = 0, _maxXLeft = 0, _minYLeft = 0, _maxYLeft = 0;
+  double _minXRight = 0;
+  double _maxXRight = 0;
+  double _minYRight = 0;
+  double _maxYRight = 0;
+  double _minXLeftPort = 0;
+  double _maxXLeftPort = 0;
+  double _minYLeftPort = 0;
+  double _maxYLeftPort = 0;
+  double _minXRightPort = 0;
+  double _maxXRightPort = 0;
+  double _minYRightPort = 0;
+  double _maxYRightPort = 0;
+  final int _totalCoins = 7000;
+  final Random _random = Random();
   bool showLiablity = false;
+  int _currentCoinIndex = 0;
+  String cardImage = "";
+
+  final List _redcoinImages = [
+    'assets/lucky7/images/coins/one.png',
+  ];
+
+  final List _lightGreencoinImages = [
+    'assets/lucky7/images/coins/five.png',
+  ];
+  final List _bluecoinImages = [
+    'assets/lucky7/images/coins/hundred.png',
+  ];
+  final List _greencoinImages = [
+    'assets/lucky7/images/coins/hundred1.png',
+  ];
+  final List _skybluecoinImages = [
+    'assets/lucky7/images/coins/fifty.png',
+  ];
+  final List _browncoinImages = [
+    'assets/lucky7/images/coins/ten.png',
+  ];
+  int _currentCoinIndexRytPort = 0;
+  double _minXRytPort = 0;
+  double _maxXRytPort = 0;
+  double _minYRytPort = 0;
+  double _maxYRytPort = 0;
+  final _player = AudioPlayer();
+  final _cardPlayer = AudioPlayer();
+
+  final winnerBettingmusic = AudioPlayer();
+
+  final List _coinImagesRyt = [
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/hundred1.png',
+    'assets/lucky7/images/coins/ten.png',
+    'assets/lucky7/images/coins/one.png',
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/fifty.png',
+    'assets/lucky7/images/coins/hundred1.png',
+    'assets/lucky7/images/coins/ten.png',
+    'assets/lucky7/images/coins/one.png',
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/fifty.png',
+    'assets/lucky7/images/coins/hundred1.png',
+  ];
+
+  final List _coinImages = [
+    'assets/lucky7/images/coins/one.png',
+    'assets/lucky7/images/coins/ten.png',
+    'assets/lucky7/images/coins/one.png',
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/fifty.png',
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/hundred1.png',
+    'assets/lucky7/images/coins/hundred.png',
+    'assets/lucky7/images/coins/hundred1.png',
+
+    // Add more image paths for each chip
+  ];
+  late Timer _clockTimer;
+
+  var gameSound = "assets/lucky7/audio/bgm.mp3";
+
   Future<void> onPressedMusicForBet() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
@@ -158,7 +241,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    onPressedmusic.play();
+    startTimes > 3 || playBackgroundMusic == false
+        ? onPressedmusic.play()
+        : onPressedmusic.stop();
   }
 
   Future<void> stopBettingMusic() async {
@@ -173,7 +258,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    autoTime == "1" && playBackgroundMusic == false
+    autoTime == "3" && playBackgroundMusic == false
         ? stopBettingmusic.play()
         : stopBettingmusic.stop();
     stopBettingmusic.setVolume(1);
@@ -197,9 +282,86 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     startBettingmusic.setVolume(1);
   }
 
+  void bgMusic() async {
+    await _player.setAsset(gameSound);
+    playSound();
+  }
+
+  void playSound() async {
+    await _player.setVolume(0.05);
+    await _player.play();
+    await _player.setLoopMode(LoopMode.one);
+  }
+
+  Future<void> cardPlay() async {
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
+    try {
+      await _cardPlayer.setAudioSource(AudioSource.asset(
+        "assets/Teen-patti/audio/flipcard.mp3",
+      ));
+    } catch (e) {
+      print("Error loading audio source: $e");
+    }
+    _player.play();
+  }
+
+  Future<void> winnerMusic() async {
+    winnerBettingmusic.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
+    try {
+      await winnerBettingmusic.setAudioSource(AudioSource.asset(
+        "assets/Teen-patti/audio/winsong.mp3",
+      ));
+    } catch (e) {
+      print("Error loading audio source: $e");
+    }
+    cardNameImage1 != ""
+        ? winnerBettingmusic.play()
+        : winnerBettingmusic.stop();
+    winnerBettingmusic.setVolume(1);
+  }
+
+  Future<void> onPressedMusic() async {
+    onPressedmusic.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
+    try {
+      await onPressedmusic.setAudioSource(AudioSource.asset(
+        "assets/Teen-patti/audio/flipcard.mp3",
+      ));
+    } catch (e) {
+      print("Error loading audio source: $e");
+    }
+    setState(() {
+      playBackgroundMusic == false ? null : onPressedmusic.play();
+    });
+  }
+
+       int startTimeSmall=0;
+
   @override
   void initState() {
+      startTimeSmall=startTimes*100;
+       Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        startTimeSmall =startTimeSmall-1;
+       });
     getStakeDetails();
+    checkInternet();
+
+    AudioPlayer.clearAssetCache();
+    WidgetsBinding.instance.addObserver(this);
+    bgMusic();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      stopBettingMusic();
+      startBettingMusic();
+    });
+
     controller1 = AnimationController(
       vsync: this,
       duration:
@@ -221,41 +383,427 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     super.initState();
   }
 
+  Future<void> checkInternet() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection
+
+      print('No internet connection');
+    } else {
+      // Internet connection is available
+      _startCoinAnimationLeftRandom();
+      _startCoinAnimationRightRandom();
+      _startCoinAnimationLeftRandomPort();
+      _startCoinAnimationRightRandomPort();
+    }
+  }
+
+  ///user chips animation -in protrait mode
+  void _startCoinAnimation() {
+    if (_currentCoinIndex >= _totalCoins) {
+      return;
+    }
+
+    double _startX = _minX;
+    double _startY = _minY;
+    double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
+    double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
+
+    startTimes > 3
+        ? _coins.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 600),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                  right: currentX.clamp(_minX, _maxX),
+                  bottom: currentY.clamp(_minY, _maxY),
+                  child: startTimes > 3
+                      ? redCoinAnimation == true
+                          ? Image.asset(
+                              _redcoinImages[
+                                  _currentCoinIndex % _redcoinImages.length],
+                              height: 15,
+                              width: 15,
+                            )
+                          : lightGreenCoinAnimation == true
+                              ? Image.asset(
+                                  _lightGreencoinImages[_currentCoinIndex %
+                                      _lightGreencoinImages.length],
+                                  height: 15,
+                                  width: 15,
+                                )
+                              : lightBlueCoinAnimation == true
+                                  ? Image.asset(
+                                      _skybluecoinImages[_currentCoinIndex %
+                                          _skybluecoinImages.length],
+                                      height: 15,
+                                      width: 15,
+                                    )
+                                  : greenCoinAnimation == true
+                                      ? Image.asset(
+                                          _greencoinImages[_currentCoinIndex %
+                                              _greencoinImages.length],
+                                          height: 15,
+                                          width: 15,
+                                        )
+                                      : brownCoinAnimation == true
+                                          ? Image.asset(
+                                              _browncoinImages[
+                                                  _currentCoinIndex %
+                                                      _browncoinImages.length],
+                                              height: 15,
+                                              width: 15,
+                                            )
+                                          : SizedBox()
+                      : SizedBox());
+            },
+          ))
+        : _coins.clear();
+    startTimes > 3 && playBackgroundMusic == false
+        ? onPressedMusicForBet()
+        : null;
+  }
+
+  ///user chips animation -in landscape mode
+  void _startCoinAnimationRightPort() {
+    if (_currentCoinIndexRytPort >= _totalCoins) {
+      return;
+    }
+
+    double _startX = _minYRytPort;
+    double _startY = _minXRytPort;
+    double _endX =
+        _random.nextDouble() * (_maxXRytPort - _minXRytPort) + _minXRytPort;
+    double _endY =
+        _random.nextDouble() * (_maxYRytPort - _minYRytPort) + _minYRytPort;
+
+    startTimes > 3
+        ? _coinsRytPort.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 600),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                  right: currentX.clamp(_minXRytPort, _maxXRytPort),
+                  bottom: currentY.clamp(_minYRytPort, _maxYRytPort),
+                  child: startTimes > 3
+                      ? redCoinAnimation == true
+                          ? Image.asset(
+                              _redcoinImages[_currentCoinIndexRytPort %
+                                  _redcoinImages.length],
+                              height: 15,
+                              width: 15,
+                            )
+                          : lightGreenCoinAnimation == true
+                              ? Image.asset(
+                                  _lightGreencoinImages[
+                                      _currentCoinIndexRytPort %
+                                          _lightGreencoinImages.length],
+                                  height: 15,
+                                  width: 15,
+                                )
+                              : lightBlueCoinAnimation == true
+                                  ? Image.asset(
+                                      _skybluecoinImages[_currentCoinIndex %
+                                          _skybluecoinImages.length],
+                                      height: 15,
+                                      width: 15,
+                                    )
+                                  : greenCoinAnimation == true
+                                      ? Image.asset(
+                                          _greencoinImages[
+                                              _currentCoinIndexRytPort %
+                                                  _greencoinImages.length],
+                                          height: 15,
+                                          width: 15,
+                                        )
+                                      : brownCoinAnimation == true
+                                          ? Image.asset(
+                                              _browncoinImages[
+                                                  _currentCoinIndexRytPort %
+                                                      _browncoinImages.length],
+                                              height: 15,
+                                              width: 15,
+                                            )
+                                          : SizedBox()
+                      : SizedBox());
+            },
+          ))
+        : _coinsRytPort.reversed;
+
+    startTimes > 3 && playBackgroundMusic == false
+        ? onPressedMusicForBet()
+        : null;
+  }
+
+  void _startCoinAnimationLeftRandom() {
+    if (_currentCoinIndex >= _totalCoins) {
+      return;
+    }
+
+    double radius = 200; // Radius of the circular path
+    double angle = _currentCoinIndex * (pi / _totalCoins);
+
+    double _startX = _minXLeft;
+    double _startY = _minYLeft;
+    double _endX = _random.nextDouble() * (_maxXLeft - _minXLeft) + _minXLeft;
+    double _endY = _random.nextDouble() * (_maxYLeft - _minYLeft) + _minYLeft;
+
+    // coin = int.parse(widget.autotime.toString());
+    //   print("====>$coin");
+
+    startTimes > 3
+        ? _coins.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 1000),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                  left: currentX.clamp(_minXLeft, _maxXLeft),
+                  top: currentY.clamp(_minYLeft, _maxYLeft),
+                  child: Image.asset(
+                    _coinImages[_currentCoinIndex % _coinImages.length],
+                    height: 15,
+                    width: 15,
+                  ));
+            },
+          ))
+        : null;
+    _currentCoinIndex++;
+    if (startTimes > 15) {
+      //_checkInternetConnection();
+      Timer(
+        Duration(seconds: 2),
+        _startCoinAnimationLeftRandom,
+      );
+    } else {
+      // _checkInternetConnection();
+      Timer(Duration(seconds: 3), _startCoinAnimationLeftRandom);
+    }
+
+    startTimes > 3 && playBackgroundMusic == false
+        ? onPressedMusicForBet()
+        : null;
+  }
+
+  void _startCoinAnimationRightRandom() {
+    if (_currentCoinIndex >= _totalCoins) {
+      return;
+    }
+    double _startX = _minXRight;
+    double _startY = _minYRight;
+    double _endX =
+        _random.nextDouble() * (_maxXRight - _minXRight) + _minXRight;
+    double _endY =
+        _random.nextDouble() * (_maxYRight - _minYRight) + _minYRight;
+
+    startTimes > 3
+        ? _coins.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 1000),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                  right: currentX.clamp(_minXRight, _maxXRight),
+                  top: currentY.clamp(_minYRight, _maxYRight),
+                  child: Image.asset(
+                    _coinImagesRyt[_currentCoinIndex % _coinImagesRyt.length],
+                    height: 15,
+                    width: 15,
+                  ));
+            },
+          ))
+        : null;
+
+    _currentCoinIndex++;
+
+    if (startTimes > 15) {
+      Timer(Duration(seconds: 3), _startCoinAnimationRightRandom);
+    } else {
+      Timer(Duration(seconds: 1), _startCoinAnimationRightRandom);
+    }
+  }
+
+  void _startCoinAnimationLeftRandomPort() {
+    if (_currentCoinIndex >= _totalCoins) {
+      return;
+    }
+    double _startX = _minYLeftPort;
+    double _startY = _minYLeftPort;
+    double _endX =
+        _random.nextDouble() * (_maxXLeftPort - _minXLeftPort) + _minXLeftPort;
+    double _endY =
+        _random.nextDouble() * (_maxYLeftPort - _minYLeftPort) + _minYLeftPort;
+
+    startTimes > 3
+        ? _coinsPort.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 600),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                  right: currentX.clamp(_minXLeftPort, _maxXLeftPort),
+                  top: currentY.clamp(_minYLeftPort, _maxYLeftPort),
+                  child: Image.asset(
+                    _coinImages[_currentCoinIndex % _coinImages.length],
+                    height: 15,
+                    width: 15,
+                  ));
+            },
+          ))
+        : null;
+
+    _currentCoinIndex++;
+
+    if (startTimes > 15) {
+      Timer(Duration(seconds: 2), _startCoinAnimationLeftRandomPort);
+    } else {
+      Timer(Duration(seconds: 3), _startCoinAnimationLeftRandomPort);
+    }
+
+    startTimes > 3 && playBackgroundMusic == false
+        ? onPressedMusicForBet()
+        : null;
+  }
+
+  void _startCoinAnimationRightRandomPort() {
+    if (_currentCoinIndex >= _totalCoins) {
+      return;
+    }
+
+    double radius = 200; // Radius of the circular path
+    double angle = _currentCoinIndex * (pi / _totalCoins);
+
+    double _startX = _minXRightPort;
+    double _startY = _minXRightPort;
+    double _endX = _random.nextDouble() * (_maxXRightPort - _minXRightPort) +
+        _minXRightPort;
+    double _endY = _random.nextDouble() * (_maxYRightPort - _minYRightPort) +
+        _minYRightPort;
+
+    startTimes > 3
+        ? _coinsRytPort.add(TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: 1),
+            duration: const Duration(milliseconds: 600),
+            builder: (BuildContext context, double value, Widget? child) {
+              double currentX = _startX + (_endX - _startX) * value;
+              double currentY = _startY + (_endY - _startY) * value;
+
+              return Positioned(
+                left: currentX.clamp(_minXRightPort, _maxXRightPort),
+                top: currentY.clamp(_minYRightPort, _maxYRightPort),
+                child: Image.asset(
+                  _coinImages[_currentCoinIndex % _coinImages.length],
+                  height: 15,
+                  width: 15,
+                ),
+              );
+            }))
+        : null;
+
+    _currentCoinIndex++;
+    if (startTimes > 15) {
+      Timer(Duration(seconds: 3), _startCoinAnimationRightRandomPort);
+    } else {
+      Timer(Duration(seconds: 1), _startCoinAnimationRightRandomPort);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      playBackgroundMusic = true;
+      _player.pause();
+
+      _player.stop();
+    } else if (state == AppLifecycleState.resumed) {
+      // _player.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    _clockTimer.cancel();
+    _player.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    startBettingmusic.dispose();
+    stopBettingmusic.dispose();
+
+    _cardPlayer.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+       getCardData();
     getResult();
     getuserBalance();
-    getCardData();
+ 
     getMatchIdDetails();
     getUserDetails();
 
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    autoTime == "0"
-        ? setState(
-            () {
-              _coinsRytPort.reversed;
-              _coinsRytPort.clear();
-              _coinsPort.reversed;
-              _coinsPort.clear();
-              _coins.reversed;
-              _coins.clear();
-              _coinsRyt.reversed;
-              _coinsRyt.clear();
-            },
-          )
-        : null;
+    _minXLeft = 160;
+    _maxXLeft = width - 220;
+    _minYLeft = 190;
+    _maxYLeft = height - 100;
+    _minXRight = 160;
+    _maxXRight = width - 220;
+    _minYRight = 190;
+    _maxYRight = height - 100;
+    _minXLeftPort = 40;
+    _maxXLeftPort = width - 100;
+    _minYLeftPort = 40;
+    _maxYLeftPort = height - 600;
+    _minXRightPort = 40;
+    _maxXRightPort = width - 100;
+    _minYRightPort = 40;
+    _maxYRightPort = height - 600;
+    _minXRytPort = 60;
+    _maxXRytPort = width - 100;
+    _minYRytPort = 60;
+    _maxYRytPort = height - 600;
+    _minX = 80;
+    _maxX = width - 220;
+    _minY = 80;
+    _maxY = height - 140;
 
-    return OrientationBuilder(builder: (context, oreintation) {
-      if (oreintation == Orientation.landscape) {
-        return landscapeWidget();
-      } else {
-        return protraitModeWidget();
-      }
-    });
+    return WillPopScope(
+      onWillPop: () {
+        _player.stop();
+        _clockTimer.cancel();
+        setState(() {
+          playBackgroundMusic = true;
+        });
+        return Future.value(true);
+      },
+      child: OrientationBuilder(builder: (context, orientation) {
+        print(orientation);
+
+        if (orientation == Orientation.landscape) {
+          return landscapeWidget();
+        } else {
+          return protraitModeWidget();
+        }
+      }),
+    );
   }
 
-  Widget drawerWidget() {
+   Widget drawerWidget() {
     return Container(
       height: height,
       width: width * 0.4,
@@ -270,6 +818,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           InkWell(
             onTap: () {
               Navigator.pop(context);
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
             },
             child: Container(
               alignment: Alignment.centerRight,
@@ -291,6 +843,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           InkWell(
             onTap: () async {
               Navigator.push(context, _createRouteProfile());
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -306,6 +862,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           InkWell(
             onTap: () async {
               Navigator.push(context, _createRoute());
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -321,6 +881,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           InkWell(
             onTap: () async {
               Navigator.push(context, _createRouteCurrentBets());
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -334,7 +898,12 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
             ),
           ),
           InkWell(
-            onTap: () async {},
+            onTap: () async {
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
+            },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: Text(
@@ -348,6 +917,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           ),
           InkWell(
             onTap: () async {
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
               Navigator.push(context, _createRouteChangePassword());
             },
             child: Container(
@@ -370,6 +943,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           InkWell(
             onTap: () async {
               getlogout();
+              setState(() {
+                playBackgroundMusic == false ? '' : Vibration.vibrate();
+                ;
+              });
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -387,139 +964,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     );
   }
 
-  Widget drawerWidgetPotrait() {
-    return Container(
-      height: height,
-      width: width * 0.6,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage("assets/User-interface/dashboard.png"),
-        fit: BoxFit.fitHeight,
-      )),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Container(
-              alignment: Alignment.centerRight,
-              height: height * 0.09,
-              width: width,
-              decoration: BoxDecoration(color: Colors.black),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: Image.asset(
-                  "assets/User-interface/Buttons/close-button.png",
-                  scale: 0.8,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteProfile());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Profile",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRoute());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Account Statement",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteCurrentBets());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Current Bets",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Activity Log",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.push(context, _createRouteChangePassword());
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Change Password",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          Divider(
-            color: Color.fromARGB(255, 184, 50, 50),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              getlogout();
-            },
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              child: Text(
-                "Logout",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future getVcLiablity() async {
+  
+ Future getVcLiablity() async {
     var url = Apis.vcLiablityApi;
     var body = {
       "roundId": marketId.toString(),
@@ -576,8 +1022,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const MyAccountPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => MyAccountPage(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -596,8 +1043,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
   Route _createRouteProfile() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const ProfileScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => ProfileScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -616,8 +1064,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
   Route _createRouteCurrentBets() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          CurrentUserBet(gameCode: widget.gameCode, matchId: widget.matchID),
+      pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
+        gameCode: widget.gameCode,
+        matchId: widget.matchID,
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -637,7 +1088,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   Route _createRouteChangePassword() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          const ChangePasswordScreen(),
+          ChangePasswordScreen(
+        playBackgroundMusic: playBackgroundMusic,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -657,8 +1110,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   Widget landscapeWidget() {
     return Scaffold(
       drawerEnableOpenDragGesture: false,
+      backgroundColor: Colors.transparent,
       key: _globalKey,
-      drawer: drawerWidget(),
+      drawer: SizedBox(
+                width: width * 0.3,
+        child: Drawer(child: drawerWidget())),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -683,8 +1139,12 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             children: [
                               InkWell(
                                 onTap: () {
-                                  setState(() {});
-                                  HapticFeedback.heavyImpact();
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+
                                   _globalKey.currentState!.openDrawer();
                                 },
                                 child: Image.asset(
@@ -693,27 +1153,34 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                     width: width * 0.05),
                               ),
                               SizedBox(
-                                width: width * 0.03,
+                                width: width * 0.02,
                               ),
                               Container(
                                 alignment: Alignment.center,
-                                width: width * 0.12,
-                                height: height * 0.09,
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         image: AssetImage(
                                             'assets/bollywoodTable/balance.png'),
-                                        fit: BoxFit.fitWidth)),
+                                        fit: BoxFit.fill)),
                                 child: Container(
-                                  width: width * 0.15,
-                                  margin: EdgeInsets.only(left: width * 0.05),
-                                  child: Text(
-                                    mainBalance.toStringAsFixed(2),
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 248, 244, 204),
-                                        fontSize: height * 0.03,
-                                        fontWeight: FontWeight.bold),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: width * 0.02,
+                                      vertical: height * 0.015),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        'assets/lucky7/images/Group 658.png',
+                                        height: height * 0.05,
+                                        width: width * 0.03,
+                                      ),
+                                      Text(
+                                        " ${mainBalance.toStringAsFixed(2)}",
+                                        style: TextStyle(
+                                            color: Color(0xffFFEFC1),
+                                            fontSize: height * 0.03,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -721,25 +1188,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ),
                           InkWell(
                             onTap: () {
-                              // HapticFeedback.vibrate();
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : Vibration.vibrate();
+                              });
                               Navigator.push(
                                   context, _createRouteCurrentBets());
                             },
                             child: Container(
-                              alignment: Alignment.centerLeft,
-                              height: height * 0.10,
-                              width: width * 0.15,
+                              padding: EdgeInsets.only(
+                                  left: width * 0.095, top: height * 0.001),
+                              height: height * 0.09,
+                              width: width * 0.14,
+                              alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
-                                          'assets/bollywoodTable/show-my-bet.png'),
-                                      fit: BoxFit.cover)),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 15.0),
-                                child: Text(
-                                  "MY-BET",
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                        'assets/bollywoodTable/show-my-bet.png',
+                                      ),
+                                      fit: BoxFit.fill)),
+                              child: CustomText(
+                                text: matchIdList.length.toString(),
+                                fontWeight: FontWeight.w500,
+                                color: Colors.yellow[50],
+                                fontSize: width * 0.014,
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
@@ -763,22 +1237,40 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         height: height * 0.28,
                       ),
                     ),
-
+                    startTimes >= 1
+                        ? Positioned(
+                            top: height * 0.025,
+                            right: width * 0.18,
+                            child: CustomText(
+                              text: "Starting in ",
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 09.0,
+                              textAlign: TextAlign.end,
+                            ),
+                          )
+                        : SizedBox(),
+                    startTimes >= 1
+                        ? Positioned(
+                            top: height * 0.025,
+                            right: width * 0.14,
+                            child: SizedBox(
+                              width: width * 0.04,
+                              child: Center(
+                                child: CustomText(
+                                  text: "$autoTime  s",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 09.0,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
                     Positioned(
-                      top: height * 0.173,
-                      left: width * 0.138,
-                      child: CustomText(
-                        text: matchIdList.length.toString(),
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 248, 244, 204),
-                        fontSize: 13,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    Positioned(
-                      top: height * 0.02,
-                      right: width * 0.05,
+                      top: height * 0.05,
+                      right: width * 0.03,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -787,131 +1279,92 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               //---------------Game Timer------------//
-                              startTimes >= 3
+                              startTimes >= 1
                                   ? Column(
                                       children: [
-                                        CustomText(
-                                          text: "Starting in $autoTime sec",
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                          fontSize: 12.0,
-                                          textAlign: TextAlign.center,
+                                        SizedBox(
+                                          height: 5,
+                                          width: width * 0.15,
+                                          child:  LinearProgressIndicator(
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
+                                ),
                                         ),
                                         SizedBox(
-                                          height: 3,
-                                          width: width * 0.20,
-                                          child: LinearProgressIndicator(
-                                            value: int.parse(autoTime) /
-                                                45, // Calculate the progress
-                                            backgroundColor: Colors.white,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Color(0xaaCD7B01)),
-                                          ),
+                                          height: 4,
                                         ),
                                         Text(
-                                          "(Min: 100 Max: 25000)",
+                                          "Min:100 Max: 250000",
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 10),
+                                              fontSize: 9),
                                         )
                                       ],
                                     )
                                   : SizedBox(),
                               SizedBox(
-                                width: width * 0.06,
+                                width: width * 0.035,
                               ),
+                              playBackgroundMusic == false
+                                  ? InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusic()
+                                              : Vibration.vibrate();
+                                        });
+
+                                        setState(() {
+                                          playBackgroundMusic = true;
+                                        });
+                                        _player.stop();
+                                      },
+                                      child: Image.asset(
+                                          'assets/bollywoodTable/sound-on-button.png',
+                                          fit: BoxFit.cover,
+                                          width: width * 0.045),
+                                    )
+                                  : InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusic()
+                                              : Vibration.vibrate();
+                                        });
+
+                                        setState(() {
+                                          playBackgroundMusic = false;
+                                        });
+                                        _player.play();
+                                      },
+                                      child: Image.asset(
+                                          'assets/bollywoodTable/mute.png',
+                                          fit: BoxFit.cover,
+                                          width: width * 0.045),
+                                    ),
                             ],
                           ),
                         ],
                       ),
                     ),
                     Positioned(
-                      top: height * 0.02,
-                      right: width * 0.05,
-                      child: playBackgroundMusic == false
-                          ? InkWell(
-                              onTap: () {
-                                HapticFeedback.vibrate();
-
-                                setState(() {
-                                  playBackgroundMusic = true;
-                                });
-                              },
-                              child: Image.asset(
-                                  'assets/bollywoodTable/sound-on-button.png',
-                                  fit: BoxFit.cover,
-                                  width: width * 0.04),
-                            )
-                          : InkWell(
-                              onTap: () {
-                                HapticFeedback.vibrate();
-
-                                setState(() {
-                                  playBackgroundMusic = false;
-                                });
-                              },
-                              child: Image.asset(
-                                  'assets/dragonTigerLion/buttonsImage/mute-button.png',
-                                  fit: BoxFit.cover,
-                                  width: width * 0.04),
-                            ),
-                    ),
-
-                    Positioned(
-                      bottom: 1,
-                      child: Image.asset(
-                        'assets/bollywoodTable/bollywood-table.png',
-                        fit: BoxFit.fill,
-                        height: height * 0.67,
+                      top: height * 0.33,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/bollywoodTable/bollywood-table.png',
+                            fit: BoxFit.fill,
+                            height: height * 0.67,
+                          ),
+                        ],
                       ),
                     ),
-                    Positioned(
-                      top: height * 0.37,
-                      left: width * 0.17,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
-                    ),
-                    Positioned(
-                      top: height * 0.37,
-                      right: width * 0.17,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -23 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.10,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
-                    ),
-                    AnimatedSwitcher(
+                      AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
                       child: Stack(
                         children: _coins,
@@ -923,10 +1376,37 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         children: _coinsRyt,
                       ),
                     ),
-                    LandscapeRandomCoinLeftSideBollWood(
-                        coinsSound: playBackgroundMusic),
-                    RandomCoinThroughRightSideBollyWood(),
+                    AnimatedSwitcher(
+                      duration: Duration(milliseconds: 500),
+                      child: Stack(
+                        children: _coins,
+                      ),
+                    ),
+
+                    Positioned(
+                      top: height * 0.42,
+                      left: width * 0.17,
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
+                    ),
+                    Positioned(
+                      top: height * 0.42,
+                      right: width * 0.17,
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
+                    ),
+                  
+
                     //------------------- RESULT IMAGE----------------//
+                    startTimes <= 3 && autoTime != '0'
+                        ? gameStopBetting(autoTime)
+                        : SizedBox(),
 
                     autoTime == "45"
                         ? placeyourbetWidget(autoTime)
@@ -939,19 +1419,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                     child: showCurrentCardLand())
                                 : SizedBox(),
 
-                    autoTime == "3" ? gameStopBetting(autoTime) : SizedBox(),
+                                
 
                     Positioned(
-                      bottom: height * 0.01,
-                      left: width * 0.29,
+                      bottom: height * 0.0,
+                      left: width * 0.28,
                       child: Row(
                         children: [
                           InkWell(
                             onTap: () {
                               setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
+                              setState(() {
                                 redCoinAnimation = !redCoinAnimation;
                                 lightGreenCoinAnimation = false;
-                                blueCoinAnimation = false;
+
                                 greenCoinAnimation = false;
                                 lightBlueCoinAnimation = false;
                                 brownCoinAnimation = false;
@@ -960,35 +1445,41 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 700),
                               alignment: Alignment.center,
-                              height: redCoinAnimation == true
-                                  ? height * 0.16
-                                  : height * 0.11,
-                              width: redCoinAnimation == true
-                                  ? width * 0.08
-                                  : width * 0.05,
+                              height: redCoinAnimation == true && startTimes > 1
+                                  ? height * 0.19
+                                  : height * 0.13,
+                              width: redCoinAnimation == true && startTimes > 1
+                                  ? width * 0.09
+                                  : width * 0.06,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    "assets/dragonTigerLion/stakes/stake1.png"),
-                                fit: BoxFit.cover,
+                                    "assets/lucky7/images/coins/red_coin.png"),
+                                fit: BoxFit.fill,
                               )),
                               child: Text(
                                 stack1.toString(),
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 10),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: height * 0.02),
                               ),
                             ),
                           ),
                           SizedBox(
-                            width: width * 0.04,
+                            width: width * 0.03,
                           ),
                           InkWell(
                             onTap: () {
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
                               setState(() {
                                 lightGreenCoinAnimation =
                                     !lightBlueCoinAnimation;
                                 redCoinAnimation = false;
-                                blueCoinAnimation = false;
+
                                 greenCoinAnimation = false;
                                 lightBlueCoinAnimation = false;
                                 brownCoinAnimation = false;
@@ -997,70 +1488,86 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 700),
                               alignment: Alignment.center,
-                              height: lightGreenCoinAnimation == true
-                                  ? height * 0.16
-                                  : height * 0.11,
-                              width: lightGreenCoinAnimation == true
-                                  ? width * 0.08
-                                  : width * 0.051,
+                              height: lightGreenCoinAnimation == true &&
+                                      startTimes > 1
+                                  ? height * 0.19
+                                  : height * 0.13,
+                              width: lightGreenCoinAnimation == true &&
+                                      startTimes > 1
+                                  ? width * 0.09
+                                  : width * 0.06,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/dragonTigerLion/stakes/stake2.png"),
-                                fit: BoxFit.cover,
-                              )),
+                                      image: AssetImage(
+                                          "assets/lucky7/images/coins/light_green_coin.png"),
+                                      fit: BoxFit.fill)),
                               child: Text(
                                 stack1 != 0 ? "1K" : stack1.toString(),
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 10),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: height * 0.02),
                               ),
                             ),
                           ),
                           SizedBox(
-                            width: width * 0.04,
+                            width: width * 0.03,
                           ),
                           InkWell(
                             onTap: () {
                               setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
+                              setState(() {
                                 redCoinAnimation = false;
                                 lightGreenCoinAnimation = false;
-                                blueCoinAnimation = !blueCoinAnimation;
+                                lightBlueCoinAnimation =
+                                    !lightBlueCoinAnimation;
                                 greenCoinAnimation = false;
-                                lightBlueCoinAnimation = false;
+
                                 brownCoinAnimation = false;
                               });
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 700),
                               alignment: Alignment.center,
-                              height: blueCoinAnimation == true
-                                  ? height * 0.16
-                                  : height * 0.11,
-                              width: blueCoinAnimation == true
-                                  ? width * 0.08
-                                  : width * 0.05,
+                              height: lightBlueCoinAnimation == true &&
+                                      startTimes > 1
+                                  ? height * 0.19
+                                  : height * 0.13,
+                              width: lightBlueCoinAnimation == true &&
+                                      startTimes > 1
+                                  ? width * 0.09
+                                  : width * 0.06,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    "assets/dragonTigerLion/stakes/stake4.png"),
-                                fit: BoxFit.cover,
+                                    "assets/lucky7/images/coins/skyblue.png"),
+                                fit: BoxFit.fill,
                               )),
                               child: Text(
                                 stack2 != 0 ? "2K" : stack3.toString(),
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 10),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: height * 0.02),
                               ),
                             ),
                           ),
                           SizedBox(
-                            width: width * 0.04,
+                            width: width * 0.03,
                           ),
                           InkWell(
                             onTap: () {
                               setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
+                              setState(() {
                                 redCoinAnimation = false;
                                 lightGreenCoinAnimation = false;
-                                blueCoinAnimation = false;
+
                                 greenCoinAnimation = !greenCoinAnimation;
                                 lightBlueCoinAnimation = false;
                                 brownCoinAnimation = false;
@@ -1069,17 +1576,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 700),
                               alignment: Alignment.center,
-                              height: greenCoinAnimation == true
-                                  ? height * 0.16
-                                  : height * 0.11,
-                              width: greenCoinAnimation == true
-                                  ? width * 0.08
-                                  : width * 0.051,
+                              height:
+                                  greenCoinAnimation == true && startTimes > 1
+                                      ? height * 0.19
+                                      : height * 0.13,
+                              width:
+                                  greenCoinAnimation == true && startTimes > 1
+                                      ? width * 0.09
+                                      : width * 0.06,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    "assets/dragonTigerLion/stakes/stake5.png"),
-                                fit: BoxFit.cover,
+                                    "assets/lucky7/images/coins/green_coin.png"),
+                                fit: BoxFit.fill,
                               )),
                               child: Text(
                                 stack3 != 0 ? "5K" : stack4.toString(),
@@ -1089,95 +1598,59 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             ),
                           ),
                           SizedBox(
-                            width: width * 0.04,
+                            width: width * 0.03,
                           ),
                           InkWell(
                             onTap: () {
                               setState(() {
+                                playBackgroundMusic == false
+                                    ? ''
+                                    : Vibration.vibrate();
+                              });
+                              setState(() {
                                 redCoinAnimation = false;
                                 lightGreenCoinAnimation = false;
-                                blueCoinAnimation = false;
+
                                 greenCoinAnimation = false;
-                                lightBlueCoinAnimation =
-                                    !lightBlueCoinAnimation;
-                                brownCoinAnimation = false;
+                                lightBlueCoinAnimation = false;
+                                brownCoinAnimation = !brownCoinAnimation;
                               });
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 700),
                               alignment: Alignment.center,
-                              height: lightBlueCoinAnimation == true
-                                  ? height * 0.16
-                                  : height * 0.13,
-                              width: lightBlueCoinAnimation == true
-                                  ? width * 0.08
-                                  : width * 0.06,
+                              height:
+                                  brownCoinAnimation == true && startTimes > 1
+                                      ? height * 0.19
+                                      : height * 0.15,
+                              width:
+                                  brownCoinAnimation == true && startTimes > 1
+                                      ? width * 0.09
+                                      : width * 0.07,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    "assets/dragonTigerLion/stakes/stake3.png"),
-                                fit: BoxFit.cover,
+                                    "assets/lucky7/images/coins/brown.png"),
+                                fit: BoxFit.fill,
                               )),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 3.0),
-                                child: Text(
-                                  stack4 != 0 ? "10K" : stack5.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10),
-                                ),
+                              child: Text(
+                                stack4 != 0 ? "20K" : stack6.toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: height * 0.02),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: width * 0.04,
-                          ),
-                          // InkWell(
-                          //   onTap: () {
-                          //     setState(() {
-                          //       redCoinAnimation = false;
-                          //       lightGreenCoinAnimation = false;
-                          //       blueCoinAnimation = false;
-                          //       greenCoinAnimation = false;
-                          //       lightBlueCoinAnimation = false;
-                          //       brownCoinAnimation = !brownCoinAnimation;
-                          //     });
-                          //   },
-                          //   child: AnimatedContainer(
-                          //     duration: Duration(milliseconds: 700),
-                          //     alignment: Alignment.center,
-                          //     height: brownCoinAnimation == true
-                          //         ? height * 0.18
-                          //         : height * 0.115,
-                          //     width: brownCoinAnimation == true
-                          //         ? width * 0.08
-                          //         : width * 0.054,
-                          //     decoration: BoxDecoration(
-                          //         image: DecorationImage(
-                          //       image: AssetImage(
-                          //           "assets/dragonTigerLion/stakes/stake6.png"),
-                          //       fit: BoxFit.cover,
-                          //     )),
-                          //     child: Text(
-                          //       stack5 != 0 ? "20K" : stack6.toString(),
-                          //       style: TextStyle(
-                          //           fontWeight: FontWeight.bold, fontSize: 10),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
-
                     Positioned(
-                      height: height * 0.82,
-                      width: width * 0.04,
-                      right: width * 0.05,
+                      top: height * 0.16,
+                      right: 25,
                       child: Container(
-                        height: height * 0.08,
-                        width: width * 0.3,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(1),
+                        padding: EdgeInsets.only(top: 15),
+                        height: height * 0.7,
+                        width: width * 0.04,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             image: DecorationImage(
@@ -1193,13 +1666,21 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               var items = cardResultList[index];
                               return InkWell(
                                 onTap: () {
-                                  HapticFeedback.vibrate();
-                                  DialogUtils.showResultBollyWood(context,
-                                      items.c1, items.mid, items.detail);
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+                                  DialogUtils.showResultBollyWood(
+                                      context,
+                                      items.c1,
+                                      items.mid,
+                                      items.detail,
+                                      playBackgroundMusic);
                                 },
                                 child: Container(
                                   margin: EdgeInsets.all(2),
-                                  padding: EdgeInsets.all(3),
+                                  padding: EdgeInsets.all(2),
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -1225,7 +1706,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: ColorConstants.whiteColor,
-                                      fontSize: 12.0,
+                                      fontSize: 10.0,
                                     ),
                                   ),
                                 ),
@@ -1234,27 +1715,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       ),
                     ),
                     Positioned(
-                      bottom: height * 0.05,
-                      left: width * 0.05,
+                      bottom: height * 0.1,
+                      left: width * 0.06,
                       child: Row(
                         children: [
                           Container(
-                            // padding: EdgeInsets.only(
-                            //     left: width * 0.04, right: width * 0.02),
+                            height: height * 0.07,
+                            padding: EdgeInsets.only(
+                                left: width * 0.02, right: width * 0.02),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: AssetImage(
                                         "assets/bollywoodTable/exposure-balance.png"))),
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            child: Text(
-                              "EXP : $liablity",
-                              style: TextStyle(
-                                  color: Colors.yellow[50],
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11),
-                            ),
+                            child: CustomText(
+                                text: 'EXP $liablity',
+                                color: Color(0xffFFEFC1),
+                                fontSize: height * 0.025,
+                                fontWeight: FontWeight.w500),
                           ),
                           SizedBox(
                             width: width * 0.57,
@@ -1287,7 +1765,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   Widget protraitModeWidget() {
     return Scaffold(
       key: _globalKey,
-      drawer: drawerWidgetPotrait(),
+      backgroundColor: Colors.transparent,
+      drawer: SizedBox(
+                width: width * 0.55,
+        child:Drawer(child: drawerWidget())),
       body: Container(
           height: height,
           width: width,
@@ -1305,345 +1786,284 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                     left: width * 0.02,
                     right: width * 0.02,
                     bottom: height * 0.02,
-                    top: height * 0.02),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    top: height * 0.01),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          width: width * 0.96,
+                        Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/bollywoodTable/balance.png'),
+                                  fit: BoxFit.fill)),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Stack(
-                                children: [
-                                  Image.asset(
-                                    'assets/bollywoodTable/balance.png',
-                                    height: height * 0.04,
-                                    width: width * 0.25,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  Positioned(
-                                    top: height * 0.01,
-                                    left: width * 0.1,
-                                    child: CustomText(
-                                      text: userBalance.toString(),
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.yellow[50],
-                                      fontSize: width * 0.03,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              playBackgroundMusic == false
-                                  ? Row(
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            HapticFeedback.heavyImpact();
-                                            _globalKey.currentState!
-                                                .openDrawer();
-                                          },
-                                          child: Image.asset(
-                                              'assets/bollywoodTable/menu-button.png',
-                                              fit: BoxFit.cover,
-                                              height: height * 0.05),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            HapticFeedback.vibrate();
-
-                                            setState(() {
-                                              playBackgroundMusic = true;
-                                            });
-                                          },
-                                          child: Image.asset(
-                                              'assets/bollywoodTable/sound-on-button.png',
-                                              fit: BoxFit.cover,
-                                              height: height * 0.05),
-                                        ),
-                                      ],
-                                    )
-                                  : InkWell(
-                                      onTap: () {
-                                        HapticFeedback.vibrate();
-
-                                        setState(() {
-                                          playBackgroundMusic = false;
-                                        });
-                                      },
-                                      child: Image.asset(
-                                          'assets/dragonTigerLion/buttonsImage/mute-button.png',
-                                          fit: BoxFit.cover,
-                                          height: height * 0.04),
-                                    ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: width * 0.96,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                child: Stack(
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.016),
+                                child: Row(
                                   children: [
-                                    Container(
-                                      alignment: Alignment.centerLeft,
+                                    Image.asset(
+                                      'assets/lucky7/images/Group 658.png',
                                       height: height * 0.04,
-                                      width: width * 0.3,
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/bollywoodTable/exposure-balance.png"),
-                                        fit: BoxFit.cover,
-                                      )),
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Text(
-                                          "EXP : $liablity ",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
+                                      width: width * 0.045,
+                                    ),
+                                    Text(
+                                      "  ${mainBalance.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                          color: Color(0xffFFEFC1),
+                                          fontSize: height * 0.015,
+                                          fontWeight: FontWeight.w500),
                                     ),
                                   ],
                                 ),
-                              ),
-                              SizedBox(
-                                child: Stack(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            // HapticFeedback.heavyImpact();
-                                            Navigator.push(context,
-                                                _createRouteCurrentBets());
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.centerLeft,
-                                            height: height * 0.05,
-                                            width: width * 0.3,
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                              image: AssetImage(
-                                                  "assets/bollywoodTable/show-my-bet.png"),
-                                              fit: BoxFit.cover,
-                                            )),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    "MY BET",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  Container(
-                                                      margin: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 12),
-                                                      child: Text(
-                                                        matchIdList.length
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ))
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              )
                             ],
                           ),
                         ),
+                        Expanded(
+                          child: SizedBox(),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            _globalKey.currentState!.openDrawer();
+                          },
+                          child: Image.asset(
+                              'assets/bollywoodTable/menu-button.png',
+                              fit: BoxFit.cover,
+                              height: height * 0.05),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        playBackgroundMusic == false
+                            ? InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+
+                                  setState(() {
+                                    playBackgroundMusic = true;
+                                  });
+                                  _player.stop();
+                                },
+                                child: Image.asset(
+                                    'assets/bollywoodTable/sound-on-button.png',
+                                    fit: BoxFit.cover,
+                                    height: height * 0.04),
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    playBackgroundMusic == false
+                                        ? onPressedMusic()
+                                        : Vibration.vibrate();
+                                  });
+
+                                  setState(() {
+                                    playBackgroundMusic = false;
+                                  });
+                                  _player.play();
+                                },
+                                child: Image.asset(
+                                    'assets/bollywoodTable/mute.png',
+                                    fit: BoxFit.cover,
+                                    height: height * 0.04),
+                              )
                       ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: width * 0.02,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                left: width * 0.015,
+                                right: width * 0.015,
+                                top: height * 0.001),
+                            height: height * 0.035,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      "assets/bollywoodTable/exposure-balance.png"),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(2)),
+                            child: CustomText(
+                                text: 'EXP $liablity',
+                                color: Color(0xffFFEFC1),
+                                fontSize: height * 0.0125,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : Vibration.vibrate();
+                              });
+                              Navigator.push(
+                                  context, _createRouteCurrentBets());
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  left: width * 0.167, top: height * 0.001),
+                              height: height * 0.040,
+                              width: width * 0.25,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                        'assets/bollywoodTable/show-my-bet.png',
+                                      ),
+                                      fit: BoxFit.fill)),
+                              child: CustomText(
+                                text: matchIdList.length.toString(),
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                fontSize: width * 0.026,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              BlinkText(
-                "Round Id : $marketId",
-                style: TextStyle(color: Colors.white),
+              Container(
+                height: height * 0.04,
+                width: width,
+                padding:
+                    EdgeInsets.only(left: width * 0.01, top: height * 0.002),
+                margin: EdgeInsets.symmetric(horizontal: width * 0.01),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("assets/bollywoodTable/past-result-p.png"),
+                  fit: BoxFit.fill,
+                )),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: cardResultList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      var items = cardResultList[index];
+                      return InkWell(
+                        onTap: () {
+                          setState(() {
+                            playBackgroundMusic == false
+                                ? onPressedMusic()
+                                : Vibration.vibrate();
+                          });
+                          DialogUtils.showResultBollyWoodPortrait(
+                              context,
+                              items.c1,
+                              items.mid,
+                              items.detail,
+                              playBackgroundMusic);
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: items.winner == "1" || items.winner == "4"
+                                  ? Color(0xaa028BA9)
+                                  : items.winner == "2" || items.winner == "5"
+                                      ? Color(0xaaA90270)
+                                      : ColorConstants.lightGreenColor),
+                          child: Text(
+                            items.winner == "1"
+                                ? "1"
+                                : items.winner == "2"
+                                    ? "2"
+                                    : items.winner == "3"
+                                        ? "3"
+                                        : items.winner == "4"
+                                            ? "4"
+                                            : items.winner == "5"
+                                                ? "5"
+                                                : "6",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: ColorConstants.whiteColor,
+                              fontSize: 10.0,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
               ),
-              Stack(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: height * 0.0,
-                        left: width * 0.02,
-                        right: width * 0.02,
-                        bottom: height * 0.028),
-                    child: Container(
-                      height: height * 0.04,
-                      width: double.infinity - 2,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                        image: AssetImage(
-                            "assets/bollywoodTable/past-result-p.png"),
-                        fit: BoxFit.fill,
-                      )),
-                      child: SizedBox(
-                        height: height * 0.04,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: cardResultList.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              var items = cardResultList[index];
-                              return InkWell(
-                                onTap: () {
-                                  HapticFeedback.heavyImpact();
-                                  DialogUtils.showResultBollyWoodPortrait(
-                                      context,
-                                      items.c1,
-                                      items.mid,
-                                      items.detail);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                    left: width * 0.025,
-                                    right: width * 0.01,
-                                  ),
-                                  padding: EdgeInsets.all(7),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: items.winner == "1" ||
-                                              items.winner == "4"
-                                          ? Color(0xaa028BA9)
-                                          : items.winner == "2" ||
-                                                  items.winner == "5"
-                                              ? Color(0xaaA90270)
-                                              : ColorConstants.lightGreenColor),
-                                  child: Text(
-                                    items.winner == "1"
-                                        ? "1"
-                                        : items.winner == "2"
-                                            ? "2"
-                                            : items.winner == "3"
-                                                ? "3"
-                                                : items.winner == "4"
-                                                    ? "4"
-                                                    : items.winner == "5"
-                                                        ? "5"
-                                                        : "6",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorConstants.whiteColor,
-                                      fontSize: 13.0,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                      ),
-                    ),
-                  ),
-                ],
+              SizedBox(
+                height: height * 0.01,
               ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "(Min: 100 Max: 25000)",
+                  "Min: 100 Max: 25000",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 10),
                 ),
               ),
+              BlinkText(
+                "Round Id : $marketId",
+                style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(
+                height: height * 0.02,
+              ),
               Image.asset(
-                'assets/dragonTigerLion/tableImges/table-girl.png',
-                fit: BoxFit.cover,
-                height: height * 0.17,
+                'assets/lucky7/images/tableGirl.png',
+                //  height: height * 0.3,
               ),
               Stack(
                 children: [
                   Image.asset(
                     'assets/bollywoodTable/table-p[.png',
                     fit: BoxFit.cover,
-                    height: height * 0.38,
+                    height: height * 0.36,
                     //width: width * 1.00,
                   ),
                   Positioned(
-                    top: 13,
-                    left: 30,
-                    child: startTimes >= 3
-                        ? AnimatedBuilder(
-                            animation: _animation,
-                            builder: (context, child) {
-                              return Transform.translate(
-                                offset: Offset(0, -25 * _animation.value),
-                                child: Image.asset(
-                                  'assets/lucky7/images/frame/logo.png',
-                                  fit: BoxFit.cover,
-                                  height: height * 0.05,
-                                ),
-                              );
-                            })
-                        : Image.asset(
-                            'assets/lucky7/images/frame/logo.png',
-                            fit: BoxFit.cover,
-                            height: height * 0.05,
-                          ),
-                  ),
-                  Positioned(
-                      top: 13,
-                      right: 15,
-                      child: startTimes >= 3
-                          ? AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, child) {
-                                return Transform.translate(
-                                  offset: Offset(0, -25 * _animation.value),
-                                  child: Image.asset(
-                                    'assets/lucky7/images/frame/logo.png',
-                                    fit: BoxFit.cover,
-                                    height: height * 0.05,
-                                  ),
-                                );
-                              })
-                          : Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.05,
-                            )),
-                  SizedBox(
-                      height: height * 0.36,
-                      child: PotraitRandomCoinLeftSideBollyWood(
-                        coinsSound: playBackgroundMusic,
-                      )),
-                  SizedBox(
-                    height: height * 0.36,
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 500),
-                      child: Stack(
-                        children: _coinsPort,
-                      ),
+                    top: 15,
+                    left: 35,
+                    child: Image.asset(
+                      'assets/lucky7/images/frame/logo.png',
+                      fit: BoxFit.cover,
+                      height: height * 0.05,
                     ),
                   ),
+                  Positioned(
+                      top: 15,
+                      right: 15,
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.05,
+                      )),
                   SizedBox(
                     height: height * 0.36,
                     child: AnimatedSwitcher(
@@ -1655,59 +2075,105 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                   ),
                   SizedBox(
                       height: height * 0.36,
-                      child: PotraitRandomCoinRightSideBollywood()),
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 900),
+                        child: Stack(
+                          children: _coinsPort,
+                        ),
+                      )),
+                  SizedBox(
+                    height: height * 0.36,
+                    child: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 500),
+                      child: Stack(
+                        children: _coinsPort,
+                      ),
+                    ),
+                  ),
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.40,
+                          top: height * 0.012,
+                          child: CustomText(
+                            text: "Starting in ",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 09.0,
+                            textAlign: TextAlign.end,
+                          ),
+                        )
+                      : SizedBox(),
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.54,
+                          top: height * 0.012,
+                          child: SizedBox(
+                            width: width * 0.055,
+                            child: Center(
+                              child: CustomText(
+                                text: "$autoTime s",
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 09.0,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   Positioned(
-                    left: width * 0.30,
-                    top: height * 0.02,
-                    child: startTimes >= 3
+                    left: width * 0.39,
+                    top: height * 0.035,
+                    child: startTimes >= 1
                         ? Column(
                             children: [
-                              CustomText(
-                                text: "Starting in ${autoTime} sec",
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                fontSize: 12.0,
-                                textAlign: TextAlign.center,
-                              ),
                               SizedBox(
-                                height: 2,
-                                width: width * 0.45,
+                                height: 5,
+                                width: width * 0.25,
                                 child: LinearProgressIndicator(
-                                  value: int.parse(autoTime) /
-                                      45, // Calculate the progress
-                                  backgroundColor: Colors.white,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xaaCD7B01)),
+                                  value:
+                                     startTimeSmall/4500, // Calculate the progress
+                                  backgroundColor: Colors.grey,
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                                  
                                 ),
                               ),
                             ],
                           )
                         : SizedBox(),
                   ),
+                  startTimes <= 3 && autoTime != '0'
+                      ? gameStopBettingPortrait(autoTime)
+                      : SizedBox(),
                   autoTime == "45"
                       ? placeyourbetWidgetPortrait(autoTime)
                       : autoTime == "3" || autoTime == "2" || autoTime == "1"
                           ? goWidgetPort()
                           : autoTime == '0'
                               ? Positioned(
-                                  top: height * 0.03,
-                                  left: width * 0.18,
+                                  top: height * 0.06,
+                                  left: width * 0.2,
                                   child: showCurrentCardPort())
                               : SizedBox(),
-                  autoTime == "3"
-                      ? gameStopBettingPortrait(autoTime)
-                      : SizedBox(),
                   Positioned(
                     bottom: height * 0.01,
-                    left: width * 0.13,
+                    left: width * 0.155,
                     child: Row(
                       children: [
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
                               redCoinAnimation = !redCoinAnimation;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1716,12 +2182,12 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: redCoinAnimation == true
+                            height: redCoinAnimation == true && startTimes > 1
                                 ? height * 0.07
                                 : height * 0.05,
-                            width: redCoinAnimation == true
+                            width: redCoinAnimation == true && startTimes > 1
                                 ? width * 0.15
-                                : width * 0.11,
+                                : width * 0.105,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
@@ -1737,15 +2203,22 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ),
                         ),
                         SizedBox(
-                          width: width * 0.05,
+                          width: width * 0.045,
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation =
                                   !lightGreenCoinAnimation;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1754,12 +2227,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: lightGreenCoinAnimation == true
+                            height: lightGreenCoinAnimation == true &&
+                                    startTimes > 1
                                 ? height * 0.07
                                 : height * 0.05,
-                            width: lightGreenCoinAnimation == true
+                            width: lightGreenCoinAnimation == true &&
+                                    startTimes > 1
                                 ? width * 0.15
-                                : width * 0.11,
+                                : width * 0.105,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
@@ -1767,7 +2242,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack2 != 0 ? "1K" : stack2.toString(),
+                              stack1 != 0 ? "1K" : stack2.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1775,14 +2250,17 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ),
                         ),
                         SizedBox(
-                          width: width * 0.05,
+                          width: width * 0.045,
                         ),
                         InkWell(
                           onTap: () {
+                            playBackgroundMusic == false
+                                ? ''
+                                : Vibration.vibrate();
                             setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = !lightBlueCoinAnimation;
                               brownCoinAnimation = false;
@@ -1791,12 +2269,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: lightBlueCoinAnimation == true
-                                ? height * 0.07
-                                : height * 0.05,
-                            width: lightBlueCoinAnimation == true
-                                ? width * 0.15
-                                : width * 0.11,
+                            height:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? height * 0.07
+                                    : height * 0.05,
+                            width:
+                                lightBlueCoinAnimation == true && startTimes > 1
+                                    ? width * 0.15
+                                    : width * 0.105,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
@@ -1804,7 +2284,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack3 != 0 ? "2K" : stack3.toString(),
+                              stack2 != 0 ? "2K" : stack3.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1812,14 +2292,20 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ),
                         ),
                         SizedBox(
-                          width: width * 0.05,
+                          width: width * 0.045,
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+                            setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = false;
+
                               greenCoinAnimation = !greenCoinAnimation;
                               lightBlueCoinAnimation = false;
                               brownCoinAnimation = false;
@@ -1828,12 +2314,12 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: greenCoinAnimation == true
+                            height: greenCoinAnimation == true && startTimes > 1
                                 ? height * 0.07
                                 : height * 0.05,
-                            width: greenCoinAnimation == true
+                            width: greenCoinAnimation == true && startTimes > 1
                                 ? width * 0.15
-                                : width * 0.11,
+                                : width * 0.105,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
@@ -1841,7 +2327,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack4 != 0 ? "5K" : stack4.toString(),
+                              stack3 != 0 ? "5K" : stack4.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
@@ -1849,52 +2335,53 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ),
                         ),
                         SizedBox(
-                          width: width * 0.05,
+                          width: width * 0.045,
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? ''
+                                  : Vibration.vibrate();
+                              ;
+                            });
+
+                            setState(() {
                               redCoinAnimation = false;
                               lightGreenCoinAnimation = false;
-                              blueCoinAnimation = !blueCoinAnimation;
+
                               greenCoinAnimation = false;
                               lightBlueCoinAnimation = false;
-                              brownCoinAnimation = false;
+                              brownCoinAnimation = !brownCoinAnimation;
                             });
                           },
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             alignment: Alignment.center,
-                            height: blueCoinAnimation == true
-                                ? height * 0.07
-                                : height * 0.05,
-                            width: blueCoinAnimation == true
-                                ? width * 0.15
-                                : width * 0.11,
+                            height: brownCoinAnimation == true && startTimes > 1
+                                ? height * 0.08
+                                : height * 0.06,
+                            width: brownCoinAnimation == true && startTimes > 1
+                                ? width * 0.17
+                                : width * 0.13,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                               image: AssetImage(
-                                  "assets/lucky7/images/coins/blue.png"),
+                                  "assets/lucky7/images/coins/brown.png"),
                               fit: BoxFit.fill,
                             )),
                             child: Text(
-                              stack5 != 0 ? "10K" : stack5.toString(),
+                              stack4 != 0 ? "20K" : stack6.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: height * 0.01),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          width: width * 0.02,
-                        ),
+                        )
                       ],
                     ),
                   ),
                 ],
-              ),
-              SizedBox(
-                height: 30,
               ),
               bollywoodButtonsPortrait(),
             ]),
@@ -1913,7 +2400,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -1924,7 +2411,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
-                              donButton = true;
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              donButton = !donButton;
+                            }
+                            if (donButton == true) {
                               donLayButton = false;
                               amarAkbarutton = false;
                               amarLayAkbarutton = false;
@@ -1942,38 +2441,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               donRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -1982,13 +2475,25 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              donLayButton = !donLayButton;
+                            }
+                            if (donLayButton == true) {
                               donButton = false;
-                              donLayButton = true;
                               amarAkbarutton = false;
                               amarLayAkbarutton = false;
                               sahibButton = false;
@@ -2005,38 +2510,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               donLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2056,7 +2555,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2067,9 +2566,21 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              amarAkbarutton = !amarAkbarutton;
+                            }
+                            if (amarAkbarutton == true) {
                               donButton = false;
                               donLayButton = false;
-                              amarAkbarutton = true;
                               amarLayAkbarutton = false;
                               sahibButton = false;
                               sahibLayButton = false;
@@ -2085,38 +2596,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               amarakbarRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2125,15 +2630,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              amarLayAkbarutton = !amarLayAkbarutton;
+                            }
+                            if (amarLayAkbarutton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
-                              amarLayAkbarutton = true;
                               sahibButton = false;
                               sahibLayButton = false;
                               dharamButton = false;
@@ -2148,38 +2665,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               amarAkbarLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2199,7 +2710,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2210,11 +2721,23 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              sahibButton = !sahibButton;
+                            }
+                            if (sahibButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
                               amarLayAkbarutton = false;
-                              sahibButton = true;
                               sahibLayButton = false;
                               dharamButton = false;
                               dharamLayButton = false;
@@ -2228,38 +2751,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               sahibRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2268,17 +2785,29 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              sahibLayButton = !sahibLayButton;
+                            }
+                            if (sahibLayButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
                               amarLayAkbarutton = false;
                               sahibButton = false;
-                              sahibLayButton = true;
                               dharamButton = false;
                               dharamLayButton = false;
                               kiskisButton = false;
@@ -2291,38 +2820,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               sahibLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2341,16 +2864,13 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ),
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2361,13 +2881,25 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              dharamButton = !dharamButton;
+                            }
+                            if (dharamButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
                               amarLayAkbarutton = false;
                               sahibButton = false;
                               sahibLayButton = false;
-                              dharamButton = true;
                               dharamLayButton = false;
                               kiskisButton = false;
                               kiskisLayButton = false;
@@ -2379,38 +2911,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               dharamRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2419,11 +2945,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              dharamLayButton = !dharamLayButton;
+                            }
+                            if (dharamLayButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2431,7 +2970,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               sahibButton = false;
                               sahibLayButton = false;
                               dharamButton = false;
-                              dharamLayButton = true;
                               kiskisButton = false;
                               kiskisLayButton = false;
                               ghulamButton = false;
@@ -2442,38 +2980,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               dharamLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2493,7 +3025,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2504,6 +3036,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              kiskisButton = !kiskisButton;
+                            }
+                            if (kiskisButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2512,7 +3057,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               sahibLayButton = false;
                               dharamButton = false;
                               dharamLayButton = false;
-                              kiskisButton = true;
                               kiskisLayButton = false;
                               ghulamButton = false;
                               ghulamLayButton = false;
@@ -2522,38 +3066,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               kiskisRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2562,11 +3100,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              kiskisLayButton = !kiskisLayButton;
+                            }
+                            if (kiskisLayButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2576,7 +3127,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               dharamButton = false;
                               dharamLayButton = false;
                               kiskisButton = false;
-                              kiskisLayButton = true;
                               ghulamButton = false;
                               ghulamLayButton = false;
                               oddButton = false;
@@ -2585,38 +3135,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               kiskisLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2636,7 +3180,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2647,6 +3191,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              ghulamButton = !ghulamButton;
+                            }
+                            if (ghulamButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2657,7 +3214,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               dharamLayButton = false;
                               kiskisButton = false;
                               kiskisLayButton = false;
-                              ghulamButton = true;
                               ghulamLayButton = false;
                               oddButton = false;
                               oddLayButton = false;
@@ -2665,38 +3221,32 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               ghulamRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2705,11 +3255,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              ghulamLayButton = !ghulamLayButton;
+                            }
+                            if (ghulamLayButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2721,45 +3284,38 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               kiskisButton = false;
                               kiskisLayButton = false;
                               ghulamButton = false;
-                              ghulamLayButton = true;
                               oddButton = false;
                               oddLayButton = false;
                               dulhaButton = false;
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               ghulamLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2779,9 +3335,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ),
             ],
           ),
-          SizedBox(
-            height: 10,
-          ),
           Container(
             height: 2,
             width: width,
@@ -2791,7 +3344,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                     fit: BoxFit.cover)),
           ),
           SizedBox(
-            height: 10,
+            height: height * 0.02,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -2799,7 +3352,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               Column(
                 children: [
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.3,
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
@@ -2810,6 +3363,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              oddButton = !oddButton;
+                            }
+                            if (oddButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2822,44 +3388,37 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               kiskisLayButton = false;
                               ghulamButton = false;
                               ghulamLayButton = false;
-                              oddButton = true;
                               oddLayButton = false;
                               dulhaButton = false;
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               oddRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2868,11 +3427,24 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 12),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              oddLayButton = !oddLayButton;
+                            }
+                            if (oddLayButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2886,43 +3458,36 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               ghulamButton = false;
                               ghulamLayButton = false;
                               oddButton = false;
-                              oddLayButton = true;
                               dulhaButton = false;
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Color(0xaaFAA9BA),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               oddLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -2941,7 +3506,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                 ],
               ),
               SizedBox(
-                width: 20,
+                width: width * 0.05,
               ),
               Container(
                 height: height * 0.3,
@@ -2953,30 +3518,46 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         fit: BoxFit.cover)),
               ),
               SizedBox(
-                width: 20,
+                width: width * 0.05,
               ),
               Column(
                 children: [
+                  SizedBox(
+                    height: height * 0.03,
+                  ),
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.2,
+                    padding: EdgeInsets.only(left: 10),
                     decoration: BoxDecoration(
                         border: Border.all(color: Color(0xaa873800), width: 2),
                         borderRadius: BorderRadius.circular(5)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(),
                         Text(
                           "DULHA DULHAN K-Q",
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 10),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              dulhaButton = !dulhaButton;
+                            }
+                            if (dulhaButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -2991,42 +3572,35 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               ghulamLayButton = false;
                               oddButton = false;
                               oddLayButton = false;
-                              dulhaButton = true;
                               baratiButton = false;
                               redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
-                                color: Color(0xaa0288A5),
+                                color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               dulhaDulhanRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -3041,11 +3615,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                   liablity3 >= 0.0 ? Colors.green : Colors.red),
                         )
                       : Text(""),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.2,
                     decoration: BoxDecoration(
                         border: Border.all(color: Color(0xaa873800), width: 2),
@@ -3053,10 +3624,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(),
                         Container(
-                          height: 35,
-                          width: width * 0.1,
+                          height: height * 0.05,
+                          width: width * 0.06,
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
@@ -3066,6 +3636,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              blackButton = !blackButton;
+                            }
+                            if (blackButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -3080,42 +3663,35 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               ghulamLayButton = false;
                               oddButton = false;
                               oddLayButton = false;
-                              dulhaButton = false;
                               baratiButton = false;
                               redButton = false;
-                              blackButton = true;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                // showMyDialog(redCoinAnimation == true
-                                //     ? stack1
-                                //     : lightGreenCoinAnimation == true
-                                //         ? stack2
-                                //         : blueCoinAnimation == true
-                                //             ? stack3
-                                //             : greenCoinAnimation == true
-                                //                 ? stack4
-                                //                 : lightBlueCoinAnimation == true
-                                //                     ? stack5
-                                //                     : brownCoinAnimation == true
-                                //                         ? stack6
-                                //                         : 0);
-                              }
-                            });
+                              dulhaButton = false;
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
-                                color: Color(0xaa0288A5),
+                                color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               blackRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -3134,30 +3710,46 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                 ],
               ),
               SizedBox(
-                width: 20,
+                width: width * 0.02,
               ),
               Column(
                 children: [
+                  SizedBox(
+                    height: height * 0.03,
+                  ),
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.2,
+                    padding: EdgeInsets.only(left: 10),
                     decoration: BoxDecoration(
                         border: Border.all(color: Color(0xaa873800), width: 2),
                         borderRadius: BorderRadius.circular(5)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(),
                         Text(
                           "BARATI J-A",
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
-                              fontSize: 10),
+                              fontSize: 9),
                         ),
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              baratiButton = !baratiButton;
+                            }
+                            if (baratiButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -3172,42 +3764,35 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               ghulamLayButton = false;
                               oddButton = false;
                               oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = true;
-                              redButton = false;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              redButton = false;
+                              dulhaButton = false;
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
-                                color: Color(0xaa0288A5),
+                                color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               baratiRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -3222,11 +3807,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                   liablity4 >= 0.0 ? Colors.green : Colors.red),
                         )
                       : Text(""),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Container(
-                    height: height * 0.12,
+                    height: height * 0.1,
                     width: width * 0.2,
                     decoration: BoxDecoration(
                         border: Border.all(color: Color(0xaa873800), width: 2),
@@ -3234,10 +3816,9 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(),
                         Container(
-                          height: 35,
-                          width: width * 0.1,
+                          height: height * 0.05,
+                          width: width * 0.06,
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: AssetImage(
@@ -3247,6 +3828,19 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         InkWell(
                           onTap: () {
                             setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            if ((redCoinAnimation == true ||
+                                    lightBlueCoinAnimation == true ||
+                                    lightGreenCoinAnimation == true ||
+                                    brownCoinAnimation == true ||
+                                    greenCoinAnimation == true) &&
+                                startTimes > 1) {
+                              redButton = !redButton;
+                            }
+                            if (redButton == true) {
                               donButton = false;
                               donLayButton = false;
                               amarAkbarutton = false;
@@ -3261,42 +3855,35 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                               ghulamLayButton = false;
                               oddButton = false;
                               oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = true;
                               blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBet(redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
+                              baratiButton = false;
+                              dulhaButton = false;
+                              showMyDialogForBet(redCoinAnimation == true
+                                  ? stack1
+                                  : lightGreenCoinAnimation == true
+                                      ? stack2
+                                      : lightBlueCoinAnimation == true
+                                          ? stack3
+                                          : greenCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack6
+                                                  : 0);
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
                             decoration: BoxDecoration(
-                                color: Color(0xaa0288A5),
+                                color: Color(0xaa72BBEF),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text(
                               redRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 10),
                             ),
                           ),
                         ),
@@ -3328,7 +3915,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            height: height * 0.06,
+            height: height * 0.05,
             width: width * 0.9,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.white, width: 2),
@@ -3338,6 +3925,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               children: [
                 InkWell(
                   onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
                     setState(() {
                       donButton = true;
                       donLayButton = false;
@@ -3359,7 +3951,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       blackButton = false;
                       if (redCoinAnimation == true ||
                           lightGreenCoinAnimation == true ||
-                          blueCoinAnimation == true ||
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
@@ -3367,28 +3958,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                       }
                     });
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    height: height * 0.1,
-                    width: width * 0.15,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     decoration: BoxDecoration(
                         color: Color(0xaa72BBEF),
                         borderRadius: BorderRadius.circular(5)),
                     child: Text(
                       donRate,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                     ),
                   ),
                 ),
@@ -3397,10 +3987,15 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 12),
+                      fontSize: 9),
                 ),
                 InkWell(
                   onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
                     setState(() {
                       donButton = false;
                       donLayButton = true;
@@ -3422,7 +4017,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       blackButton = false;
                       if (redCoinAnimation == true ||
                           lightGreenCoinAnimation == true ||
-                          blueCoinAnimation == true ||
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
@@ -3430,28 +4024,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                       }
                     });
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    height: height * 0.1,
-                    width: width * 0.15,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     decoration: BoxDecoration(
                         color: Color(0xaaFAA9BA),
                         borderRadius: BorderRadius.circular(5)),
                     child: Text(
                       donLayRate,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                     ),
                   ),
                 ),
@@ -3465,11 +4058,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       color: liablity5 >= 0.0 ? Colors.green : Colors.red),
                 )
               : Text(""),
-          SizedBox(
-            height: 10,
-          ),
           Container(
-            height: height * 0.06,
+            height: height * 0.05,
             width: width * 0.9,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.white, width: 2),
@@ -3479,6 +4069,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               children: [
                 InkWell(
                   onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
                     setState(() {
                       donButton = false;
                       donLayButton = false;
@@ -3500,7 +4095,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       blackButton = false;
                       if (redCoinAnimation == true ||
                           lightGreenCoinAnimation == true ||
-                          blueCoinAnimation == true ||
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
@@ -3508,28 +4102,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                       }
                     });
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    height: height * 0.1,
-                    width: width * 0.15,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     decoration: BoxDecoration(
                         color: Color(0xaa72BBEF),
                         borderRadius: BorderRadius.circular(5)),
                     child: Text(
                       amarakbarRate,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                     ),
                   ),
                 ),
@@ -3538,10 +4131,15 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 12),
+                      fontSize: 9),
                 ),
                 InkWell(
                   onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
                     setState(() {
                       donButton = false;
                       donLayButton = false;
@@ -3563,7 +4161,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       blackButton = false;
                       if (redCoinAnimation == true ||
                           lightGreenCoinAnimation == true ||
-                          blueCoinAnimation == true ||
                           greenCoinAnimation == true ||
                           lightBlueCoinAnimation == true ||
                           brownCoinAnimation == true) {
@@ -3571,28 +4168,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                             ? stack1
                             : lightGreenCoinAnimation == true
                                 ? stack2
-                                : blueCoinAnimation == true
+                                : lightBlueCoinAnimation == true
                                     ? stack3
                                     : greenCoinAnimation == true
                                         ? stack4
-                                        : lightBlueCoinAnimation == true
-                                            ? stack5
-                                            : brownCoinAnimation == true
-                                                ? stack6
-                                                : 0);
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
                       }
                     });
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    height: height * 0.1,
-                    width: width * 0.15,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     decoration: BoxDecoration(
                         color: Color(0xaaFAA9BA),
                         borderRadius: BorderRadius.circular(5)),
                     child: Text(
                       amarAkbarLayRate,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                     ),
                   ),
                 ),
@@ -3606,13 +4202,595 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       color: liablity6 >= 0.0 ? Colors.green : Colors.red),
                 )
               : Text(""),
-          SizedBox(
-            height: 10,
+          Container(
+            height: height * 0.05,
+            width: width * 0.9,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = true;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaa72BBEF),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      sahibRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+                Text(
+                  "SHAHIB BIWI GULAM",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 9),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = true;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaaFAA9BA),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      sahibLayRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          showLiablity == true
+              ? Text(
+                  liablity7.toString(),
+                  style: TextStyle(
+                      color: liablity7 >= 0.0 ? Colors.green : Colors.red),
+                )
+              : Text(""),
+          Container(
+            height: height * 0.05,
+            width: width * 0.9,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = true;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaa72BBEF),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      dharamRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+                Text(
+                  "DHARAM VEER",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 9),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = true;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaaFAA9BA),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      dharamLayRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          showLiablity == true
+              ? Text(
+                  liablity8.toString(),
+                  style: TextStyle(
+                      color: liablity8 >= 0.0 ? Colors.green : Colors.red),
+                )
+              : Text(""),
+          Container(
+            height: height * 0.05,
+            width: width * 0.9,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = true;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaa72BBEF),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      kiskisRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+                Text(
+                  "KIS KIS KO PYAR KAROON",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 9),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = true;
+                      ghulamButton = false;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaaFAA9BA),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      kiskisLayRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          showLiablity == true
+              ? Text(
+                  liablity9.toString(),
+                  style: TextStyle(
+                      color: liablity9 >= 0.0 ? Colors.green : Colors.red),
+                )
+              : Text(""),
+          Container(
+            height: height * 0.05,
+            width: width * 0.9,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(5)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = true;
+                      ghulamLayButton = false;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaa72BBEF),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      ghulamRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+                Text(
+                  "GHULAM",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 9),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      playBackgroundMusic == false
+                          ? onPressedMusic()
+                          : Vibration.vibrate();
+                    });
+                    setState(() {
+                      donButton = false;
+                      donLayButton = false;
+                      amarAkbarutton = false;
+                      amarLayAkbarutton = false;
+                      sahibButton = false;
+                      sahibLayButton = false;
+                      dharamButton = false;
+                      dharamLayButton = false;
+                      kiskisButton = false;
+                      kiskisLayButton = false;
+                      ghulamButton = false;
+                      ghulamLayButton = true;
+                      oddButton = false;
+                      oddLayButton = false;
+                      dulhaButton = false;
+                      baratiButton = false;
+                      redButton = false;
+                      blackButton = false;
+                      if (redCoinAnimation == true ||
+                          lightGreenCoinAnimation == true ||
+                          greenCoinAnimation == true ||
+                          lightBlueCoinAnimation == true ||
+                          brownCoinAnimation == true) {
+                        showMyDialogForBetPortrait(redCoinAnimation == true
+                            ? stack1
+                            : lightGreenCoinAnimation == true
+                                ? stack2
+                                : lightBlueCoinAnimation == true
+                                    ? stack3
+                                    : greenCoinAnimation == true
+                                        ? stack4
+                                        : brownCoinAnimation == true
+                                            ? stack6
+                                            : 0);
+                      }
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    decoration: BoxDecoration(
+                        color: Color(0xaaFAA9BA),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      ghulamLayRate,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          showLiablity == true
+              ? Text(
+                  liablity10.toString(),
+                  style: TextStyle(
+                      color: liablity10 >= 0.0 ? Colors.green : Colors.red),
+                )
+              : Text(""),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: height * 0.01),
+            height: 2,
+            width: width,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/bollywoodTable/Line 42 (3).png"),
+                    fit: BoxFit.contain)),
           ),
           Column(
             children: [
               Container(
-                height: height * 0.06,
+                height: height * 0.05,
                 width: width * 0.9,
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.white, width: 2),
@@ -3623,11 +4801,84 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                     InkWell(
                       onTap: () {
                         setState(() {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                        });
+                        setState(() {
                           donButton = false;
                           donLayButton = false;
                           amarAkbarutton = false;
                           amarLayAkbarutton = false;
-                          sahibButton = true;
+                          sahibButton = false;
+                          sahibLayButton = false;
+                          dharamButton = false;
+                          dharamLayButton = false;
+                          kiskisButton = false;
+                          kiskisLayButton = false;
+                          ghulamButton = false;
+                          ghulamLayButton = false;
+                          oddButton = true;
+                          oddLayButton = false;
+                          dulhaButton = false;
+                          baratiButton = false;
+                          redButton = false;
+                          blackButton = false;
+                          if (redCoinAnimation == true ||
+                              lightGreenCoinAnimation == true ||
+                              greenCoinAnimation == true ||
+                              lightBlueCoinAnimation == true ||
+                              brownCoinAnimation == true) {
+                            showMyDialogForBetPortrait(redCoinAnimation == true
+                                ? stack1
+                                : lightGreenCoinAnimation == true
+                                    ? stack2
+                                    : lightBlueCoinAnimation == true
+                                        ? stack3
+                                        : greenCoinAnimation == true
+                                            ? stack4
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
+                          }
+                        });
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        decoration: BoxDecoration(
+                            color: Color(0xaa72BBEF),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          oddRate,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 10),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "ODD",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 9),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          playBackgroundMusic == false
+                              ? onPressedMusic()
+                              : Vibration.vibrate();
+                        });
+                        setState(() {
+                          donButton = false;
+                          donLayButton = false;
+                          amarAkbarutton = false;
+                          amarLayAkbarutton = false;
+                          sahibButton = false;
                           sahibLayButton = false;
                           dharamButton = false;
                           dharamLayButton = false;
@@ -3636,14 +4887,13 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                           ghulamButton = false;
                           ghulamLayButton = false;
                           oddButton = false;
-                          oddLayButton = false;
+                          oddLayButton = true;
                           dulhaButton = false;
                           baratiButton = false;
                           redButton = false;
                           blackButton = false;
                           if (redCoinAnimation == true ||
                               lightGreenCoinAnimation == true ||
-                              blueCoinAnimation == true ||
                               greenCoinAnimation == true ||
                               lightBlueCoinAnimation == true ||
                               brownCoinAnimation == true) {
@@ -3651,91 +4901,29 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                 ? stack1
                                 : lightGreenCoinAnimation == true
                                     ? stack2
-                                    : blueCoinAnimation == true
+                                    : lightBlueCoinAnimation == true
                                         ? stack3
                                         : greenCoinAnimation == true
                                             ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
+                                            : brownCoinAnimation == true
+                                                ? stack6
+                                                : 0);
                           }
                         });
                       },
                       child: Container(
                         alignment: Alignment.center,
-                        height: height * 0.1,
-                        width: width * 0.15,
-                        decoration: BoxDecoration(
-                            color: Color(0xaa72BBEF),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          sahibRate,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "SHAHIB BIWI GULAM",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          donButton = false;
-                          donLayButton = false;
-                          amarAkbarutton = false;
-                          amarLayAkbarutton = false;
-                          sahibButton = false;
-                          sahibLayButton = true;
-                          dharamButton = false;
-                          dharamLayButton = false;
-                          kiskisButton = false;
-                          kiskisLayButton = false;
-                          ghulamButton = false;
-                          ghulamLayButton = false;
-                          oddButton = false;
-                          oddLayButton = false;
-                          dulhaButton = false;
-                          baratiButton = false;
-                          redButton = false;
-                          blackButton = false;
-                          if (redCoinAnimation == true ||
-                              lightGreenCoinAnimation == true ||
-                              blueCoinAnimation == true ||
-                              greenCoinAnimation == true ||
-                              lightBlueCoinAnimation == true ||
-                              brownCoinAnimation == true) {
-                            showMyDialogForBetPortrait(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
-                          }
-                        });
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: height * 0.1,
-                        width: width * 0.15,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                         decoration: BoxDecoration(
                             color: Color(0xaaFAA9BA),
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
-                          sahibLayRate,
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          oddLayRate,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 10),
                         ),
                       ),
                     ),
@@ -3744,857 +4932,143 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ),
               showLiablity == true
                   ? Text(
-                      liablity7.toString(),
+                      liablity11.toString(),
                       style: TextStyle(
-                          color: liablity7 >= 0.0 ? Colors.green : Colors.red),
+                          color: liablity11 >= 0.0 ? Colors.green : Colors.red),
                     )
                   : Text(""),
             ],
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Container(
+            margin: EdgeInsets.symmetric(vertical: height * 0.01),
+            height: 2,
+            width: width,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/bollywoodTable/Line 42 (3).png"),
+                    fit: BoxFit.contain)),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                height: height * 0.06,
-                width: width * 0.9,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          donButton = false;
-                          donLayButton = false;
-                          amarAkbarutton = false;
-                          amarLayAkbarutton = false;
-                          sahibButton = false;
-                          sahibLayButton = false;
-                          dharamButton = true;
-                          dharamLayButton = false;
-                          kiskisButton = false;
-                          kiskisLayButton = false;
-                          ghulamButton = false;
-                          ghulamLayButton = false;
-                          oddButton = false;
-                          oddLayButton = false;
-                          dulhaButton = false;
-                          baratiButton = false;
-                          redButton = false;
-                          blackButton = false;
-                          if (redCoinAnimation == true ||
-                              lightGreenCoinAnimation == true ||
-                              blueCoinAnimation == true ||
-                              greenCoinAnimation == true ||
-                              lightBlueCoinAnimation == true ||
-                              brownCoinAnimation == true) {
-                            showMyDialogForBetPortrait(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
-                          }
-                        });
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: height * 0.1,
-                        width: width * 0.15,
-                        decoration: BoxDecoration(
-                            color: Color(0xaa72BBEF),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          dharamRate,
-                          style: TextStyle(fontWeight: FontWeight.w600),
+              Column(children: [
+                Container(
+                  height: height * 0.05,
+                  width: width * 0.4,
+                  padding: EdgeInsets.only(left: width * 0.02),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xaa873800), width: 2),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "DULHA DULHAN K-Q",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 9),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            playBackgroundMusic == false
+                                ? onPressedMusic()
+                                : Vibration.vibrate();
+                          });
+                          setState(() {
+                            donButton = false;
+                            donLayButton = false;
+                            amarAkbarutton = false;
+                            amarLayAkbarutton = false;
+                            sahibButton = false;
+                            sahibLayButton = false;
+                            dharamButton = false;
+                            dharamLayButton = false;
+                            kiskisButton = false;
+                            kiskisLayButton = false;
+                            ghulamButton = false;
+                            ghulamLayButton = false;
+                            oddButton = false;
+                            oddLayButton = false;
+                            dulhaButton = true;
+                            baratiButton = false;
+                            redButton = false;
+                            blackButton = false;
+                            if (redCoinAnimation == true ||
+                                lightGreenCoinAnimation == true ||
+                                greenCoinAnimation == true ||
+                                lightBlueCoinAnimation == true ||
+                                brownCoinAnimation == true) {
+                              showMyDialogForBetPortrait(
+                                  redCoinAnimation == true
+                                      ? stack1
+                                      : lightGreenCoinAnimation == true
+                                          ? stack2
+                                          : lightBlueCoinAnimation == true
+                                              ? stack3
+                                              : greenCoinAnimation == true
+                                                  ? stack4
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
+                            }
+                          });
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                          decoration: BoxDecoration(
+                              color: Color(0xaa0288A5),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            dulhaDulhanRate,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 10),
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      "DHARAM VEER",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          donButton = false;
-                          donLayButton = false;
-                          amarAkbarutton = false;
-                          amarLayAkbarutton = false;
-                          sahibButton = false;
-                          sahibLayButton = false;
-                          dharamButton = false;
-                          dharamLayButton = true;
-                          kiskisButton = false;
-                          kiskisLayButton = false;
-                          ghulamButton = false;
-                          ghulamLayButton = false;
-                          oddButton = false;
-                          oddLayButton = false;
-                          dulhaButton = false;
-                          baratiButton = false;
-                          redButton = false;
-                          blackButton = false;
-                          if (redCoinAnimation == true ||
-                              lightGreenCoinAnimation == true ||
-                              blueCoinAnimation == true ||
-                              greenCoinAnimation == true ||
-                              lightBlueCoinAnimation == true ||
-                              brownCoinAnimation == true) {
-                            showMyDialogForBetPortrait(redCoinAnimation == true
-                                ? stack1
-                                : lightGreenCoinAnimation == true
-                                    ? stack2
-                                    : blueCoinAnimation == true
-                                        ? stack3
-                                        : greenCoinAnimation == true
-                                            ? stack4
-                                            : lightBlueCoinAnimation == true
-                                                ? stack5
-                                                : brownCoinAnimation == true
-                                                    ? stack6
-                                                    : 0);
-                          }
-                        });
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: height * 0.1,
-                        width: width * 0.15,
-                        decoration: BoxDecoration(
-                            color: Color(0xaaFAA9BA),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          dharamLayRate,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              showLiablity == true
-                  ? Text(
-                      liablity8.toString(),
-                      style: TextStyle(
-                          color: liablity8 >= 0.0 ? Colors.green : Colors.red),
-                    )
-                  : Text(""),
-              SizedBox(
-                height: 10,
-              ),
+                showLiablity == true
+                    ? Text(
+                        liablity3.toString(),
+                        style: TextStyle(
+                            color:
+                                liablity3 >= 0.0 ? Colors.green : Colors.red),
+                      )
+                    : Text(""),
+              ]),
               Column(
                 children: [
                   Container(
-                    height: height * 0.06,
-                    width: width * 0.9,
+                    height: height * 0.05,
+                    width: width * 0.4,
+                    padding: EdgeInsets.only(left: width * 0.02),
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: Color(0xaa873800), width: 2),
                         borderRadius: BorderRadius.circular(5)),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = true;
-                              kiskisLayButton = false;
-                              ghulamButton = false;
-                              ghulamLayButton = false;
-                              oddButton = false;
-                              oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaa72BBEF),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              kiskisRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          "KIS KIS KO PYAR KAROON",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = false;
-                              kiskisLayButton = true;
-                              ghulamButton = false;
-                              ghulamLayButton = false;
-                              oddButton = false;
-                              oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaaFAA9BA),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              kiskisLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  showLiablity == true
-                      ? Text(
-                          liablity9.toString(),
-                          style: TextStyle(
-                              color:
-                                  liablity9 >= 0.0 ? Colors.green : Colors.red),
-                        )
-                      : Text(""),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Column(
-                children: [
-                  Container(
-                    height: height * 0.06,
-                    width: width * 0.9,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = false;
-                              kiskisLayButton = false;
-                              ghulamButton = true;
-                              ghulamLayButton = false;
-                              oddButton = false;
-                              oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaa72BBEF),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              ghulamRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          "GHULAM",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = false;
-                              kiskisLayButton = false;
-                              ghulamButton = false;
-                              ghulamLayButton = true;
-                              oddButton = false;
-                              oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaaFAA9BA),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              ghulamLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  showLiablity == true
-                      ? Text(
-                          liablity10.toString(),
-                          style: TextStyle(
-                              color: liablity10 >= 0.0
-                                  ? Colors.green
-                                  : Colors.red),
-                        )
-                      : Text(""),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 2,
-                width: width,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image:
-                            AssetImage("assets/bollywoodTable/Line 42 (3).png"),
-                        fit: BoxFit.contain)),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Column(
-                children: [
-                  Container(
-                    height: height * 0.06,
-                    width: width * 0.9,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = false;
-                              kiskisLayButton = false;
-                              ghulamButton = false;
-                              ghulamLayButton = false;
-                              oddButton = true;
-                              oddLayButton = false;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaa72BBEF),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              oddRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          "ODD",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              donButton = false;
-                              donLayButton = false;
-                              amarAkbarutton = false;
-                              amarLayAkbarutton = false;
-                              sahibButton = false;
-                              sahibLayButton = false;
-                              dharamButton = false;
-                              dharamLayButton = false;
-                              kiskisButton = false;
-                              kiskisLayButton = false;
-                              ghulamButton = false;
-                              ghulamLayButton = false;
-                              oddButton = false;
-                              oddLayButton = true;
-                              dulhaButton = false;
-                              baratiButton = false;
-                              redButton = false;
-                              blackButton = false;
-                              if (redCoinAnimation == true ||
-                                  lightGreenCoinAnimation == true ||
-                                  blueCoinAnimation == true ||
-                                  greenCoinAnimation == true ||
-                                  lightBlueCoinAnimation == true ||
-                                  brownCoinAnimation == true) {
-                                showMyDialogForBetPortrait(redCoinAnimation ==
-                                        true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: height * 0.1,
-                            width: width * 0.15,
-                            decoration: BoxDecoration(
-                                color: Color(0xaaFAA9BA),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              oddLayRate,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  showLiablity == true
-                      ? Text(
-                          liablity11.toString(),
-                          style: TextStyle(
-                              color: liablity11 >= 0.0
-                                  ? Colors.green
-                                  : Colors.red),
-                        )
-                      : Text(""),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 2,
-                width: width,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image:
-                            AssetImage("assets/bollywoodTable/Line 42 (3).png"),
-                        fit: BoxFit.contain)),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(children: [
-                    Container(
-                      height: height * 0.06,
-                      width: width * 0.4,
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Color(0xaa873800), width: 2),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(),
                           Text(
-                            "DULHA DULHAN K-Q",
+                            "BARATI J-A",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 10),
+                                fontSize: 9),
                           ),
                           InkWell(
                             onTap: () {
                               setState(() {
-                                donButton = false;
-                                donLayButton = false;
-                                amarAkbarutton = false;
-                                amarLayAkbarutton = false;
-                                sahibButton = false;
-                                sahibLayButton = false;
-                                dharamButton = false;
-                                dharamLayButton = false;
-                                kiskisButton = false;
-                                kiskisLayButton = false;
-                                ghulamButton = false;
-                                ghulamLayButton = false;
-                                oddButton = false;
-                                oddLayButton = false;
-                                dulhaButton = true;
-                                baratiButton = false;
-                                redButton = false;
-                                blackButton = false;
-                                if (redCoinAnimation == true ||
-                                    lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
-                                    greenCoinAnimation == true ||
-                                    lightBlueCoinAnimation == true ||
-                                    brownCoinAnimation == true) {
-                                  showMyDialogForBetPortrait(redCoinAnimation ==
-                                          true
-                                      ? stack1
-                                      : lightGreenCoinAnimation == true
-                                          ? stack2
-                                          : blueCoinAnimation == true
-                                              ? stack3
-                                              : greenCoinAnimation == true
-                                                  ? stack4
-                                                  : lightBlueCoinAnimation ==
-                                                          true
-                                                      ? stack5
-                                                      : brownCoinAnimation ==
-                                                              true
-                                                          ? stack6
-                                                          : 0);
-                                }
+                                playBackgroundMusic == false
+                                    ? onPressedMusic()
+                                    : Vibration.vibrate();
                               });
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: height * 0.1,
-                              width: width * 0.12,
-                              decoration: BoxDecoration(
-                                  color: Color(0xaa0288A5),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Text(
-                                dulhaDulhanRate,
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    showLiablity == true
-                        ? Text(
-                            liablity3.toString(),
-                            style: TextStyle(
-                                color: liablity3 >= 0.0
-                                    ? Colors.green
-                                    : Colors.red),
-                          )
-                        : Text(""),
-                  ]),
-                  Column(
-                    children: [
-                      Container(
-                        height: height * 0.06,
-                        width: width * 0.4,
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Color(0xaa873800), width: 2),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(),
-                              Text(
-                                "BARATI J-A",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 10),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    donButton = false;
-                                    donLayButton = false;
-                                    amarAkbarutton = false;
-                                    amarLayAkbarutton = false;
-                                    sahibButton = false;
-                                    sahibLayButton = false;
-                                    dharamButton = false;
-                                    dharamLayButton = false;
-                                    kiskisButton = false;
-                                    kiskisLayButton = false;
-                                    ghulamButton = false;
-                                    ghulamLayButton = false;
-                                    oddButton = false;
-                                    oddLayButton = false;
-                                    dulhaButton = false;
-                                    baratiButton = true;
-                                    redButton = false;
-                                    blackButton = false;
-                                    if (redCoinAnimation == true ||
-                                        lightGreenCoinAnimation == true ||
-                                        blueCoinAnimation == true ||
-                                        greenCoinAnimation == true ||
-                                        lightBlueCoinAnimation == true ||
-                                        brownCoinAnimation == true) {
-                                      showMyDialogForBetPortrait(redCoinAnimation ==
-                                              true
-                                          ? stack1
-                                          : lightGreenCoinAnimation == true
-                                              ? stack2
-                                              : blueCoinAnimation == true
-                                                  ? stack3
-                                                  : greenCoinAnimation == true
-                                                      ? stack4
-                                                      : lightBlueCoinAnimation ==
-                                                              true
-                                                          ? stack5
-                                                          : brownCoinAnimation ==
-                                                                  true
-                                                              ? stack6
-                                                              : 0);
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: height * 0.1,
-                                  width: width * 0.12,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xaa0288A5),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Text(
-                                    baratiRate,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                              ),
-                            ]),
-                      ),
-                      showLiablity == true
-                          ? Text(
-                              liablity4.toString(),
-                              style: TextStyle(
-                                  color: liablity4 >= 0.0
-                                      ? Colors.green
-                                      : Colors.red),
-                            )
-                          : Text(""),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(children: [
-                    Container(
-                      height: height * 0.06,
-                      width: width * 0.4,
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Color(0xaa873800), width: 2),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(),
-                          Container(
-                            height: 35,
-                            width: width * 0.1,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        "assets/bollywoodTable/black-image.png"),
-                                    fit: BoxFit.contain)),
-                          ),
-                          InkWell(
-                            onTap: () {
                               setState(() {
                                 donButton = false;
                                 donLayButton = false;
@@ -4611,12 +5085,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                 oddButton = false;
                                 oddLayButton = false;
                                 dulhaButton = false;
-                                baratiButton = false;
+                                baratiButton = true;
                                 redButton = false;
-                                blackButton = true;
+                                blackButton = false;
                                 if (redCoinAnimation == true ||
                                     lightGreenCoinAnimation == true ||
-                                    blueCoinAnimation == true ||
                                     greenCoinAnimation == true ||
                                     lightBlueCoinAnimation == true ||
                                     brownCoinAnimation == true) {
@@ -4625,144 +5098,238 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                       ? stack1
                                       : lightGreenCoinAnimation == true
                                           ? stack2
-                                          : blueCoinAnimation == true
+                                          : lightBlueCoinAnimation == true
                                               ? stack3
                                               : greenCoinAnimation == true
                                                   ? stack4
-                                                  : lightBlueCoinAnimation ==
-                                                          true
-                                                      ? stack5
-                                                      : brownCoinAnimation ==
-                                                              true
-                                                          ? stack6
-                                                          : 0);
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
                                 }
                               });
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              height: height * 0.1,
-                              width: width * 0.12,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
                               decoration: BoxDecoration(
                                   color: Color(0xaa0288A5),
                                   borderRadius: BorderRadius.circular(5)),
                               child: Text(
-                                blackRate,
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                baratiRate,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 10),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    showLiablity == true
-                        ? Text(
-                            liablity12.toString(),
-                            style: TextStyle(
-                                color: liablity12 >= 0.0
-                                    ? Colors.green
-                                    : Colors.red),
-                          )
-                        : Text(""),
-                  ]),
-                  SizedBox(
-                    height: 10,
+                        ]),
                   ),
-                  Column(
+                  showLiablity == true
+                      ? Text(
+                          liablity4.toString(),
+                          style: TextStyle(
+                              color:
+                                  liablity4 >= 0.0 ? Colors.green : Colors.red),
+                        )
+                      : Text(""),
+                ],
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(children: [
+                Container(
+                  height: height * 0.05,
+                  width: width * 0.4,
+                  padding: EdgeInsets.only(left: width * 0.02),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xaa873800), width: 2),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        height: height * 0.06,
-                        width: width * 0.4,
+                        height: 35,
+                        width: width * 0.1,
                         decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Color(0xaa873800), width: 2),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(),
-                            Container(
-                              height: 35,
-                              width: width * 0.1,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/bollywoodTable/red-image.png"),
-                                      fit: BoxFit.contain)),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  donButton = false;
-                                  donLayButton = false;
-                                  amarAkbarutton = false;
-                                  amarLayAkbarutton = false;
-                                  sahibButton = false;
-                                  sahibLayButton = false;
-                                  dharamButton = false;
-                                  dharamLayButton = false;
-                                  kiskisButton = false;
-                                  kiskisLayButton = false;
-                                  ghulamButton = false;
-                                  ghulamLayButton = false;
-                                  oddButton = false;
-                                  oddLayButton = false;
-                                  dulhaButton = false;
-                                  baratiButton = false;
-                                  redButton = true;
-                                  blackButton = false;
-                                  if (redCoinAnimation == true ||
-                                      lightGreenCoinAnimation == true ||
-                                      blueCoinAnimation == true ||
-                                      greenCoinAnimation == true ||
-                                      lightBlueCoinAnimation == true ||
-                                      brownCoinAnimation == true) {
-                                    showMyDialogForBetPortrait(redCoinAnimation ==
-                                            true
+                            image: DecorationImage(
+                                image: AssetImage(
+                                    "assets/bollywoodTable/black-image.png"),
+                                fit: BoxFit.contain)),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            playBackgroundMusic == false
+                                ? onPressedMusic()
+                                : Vibration.vibrate();
+                          });
+                          setState(() {
+                            donButton = false;
+                            donLayButton = false;
+                            amarAkbarutton = false;
+                            amarLayAkbarutton = false;
+                            sahibButton = false;
+                            sahibLayButton = false;
+                            dharamButton = false;
+                            dharamLayButton = false;
+                            kiskisButton = false;
+                            kiskisLayButton = false;
+                            ghulamButton = false;
+                            ghulamLayButton = false;
+                            oddButton = false;
+                            oddLayButton = false;
+                            dulhaButton = false;
+                            baratiButton = false;
+                            redButton = false;
+                            blackButton = true;
+                            if (redCoinAnimation == true ||
+                                lightGreenCoinAnimation == true ||
+                                greenCoinAnimation == true ||
+                                lightBlueCoinAnimation == true ||
+                                brownCoinAnimation == true) {
+                              showMyDialogForBetPortrait(
+                                  redCoinAnimation == true
+                                      ? stack1
+                                      : lightGreenCoinAnimation == true
+                                          ? stack2
+                                          : lightBlueCoinAnimation == true
+                                              ? stack3
+                                              : greenCoinAnimation == true
+                                                  ? stack4
+                                                  : brownCoinAnimation == true
+                                                      ? stack6
+                                                      : 0);
+                            }
+                          });
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                          decoration: BoxDecoration(
+                              color: Color(0xaa0288A5),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            blackRate,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                showLiablity == true
+                    ? Text(
+                        liablity12.toString(),
+                        style: TextStyle(
+                            color:
+                                liablity12 >= 0.0 ? Colors.green : Colors.red),
+                      )
+                    : Text(""),
+              ]),
+              Column(
+                children: [
+                  Container(
+                    height: height * 0.05,
+                    width: width * 0.4,
+                    padding: EdgeInsets.only(left: width * 0.02),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xaa873800), width: 2),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 35,
+                          width: width * 0.1,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      "assets/bollywoodTable/red-image.png"),
+                                  fit: BoxFit.contain)),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              playBackgroundMusic == false
+                                  ? onPressedMusic()
+                                  : Vibration.vibrate();
+                            });
+                            setState(() {
+                              donButton = false;
+                              donLayButton = false;
+                              amarAkbarutton = false;
+                              amarLayAkbarutton = false;
+                              sahibButton = false;
+                              sahibLayButton = false;
+                              dharamButton = false;
+                              dharamLayButton = false;
+                              kiskisButton = false;
+                              kiskisLayButton = false;
+                              ghulamButton = false;
+                              ghulamLayButton = false;
+                              oddButton = false;
+                              oddLayButton = false;
+                              dulhaButton = false;
+                              baratiButton = false;
+                              redButton = true;
+                              blackButton = false;
+                              if (redCoinAnimation == true ||
+                                  lightGreenCoinAnimation == true ||
+                                  greenCoinAnimation == true ||
+                                  lightBlueCoinAnimation == true ||
+                                  brownCoinAnimation == true) {
+                                showMyDialogForBetPortrait(
+                                    redCoinAnimation == true
                                         ? stack1
                                         : lightGreenCoinAnimation == true
                                             ? stack2
-                                            : blueCoinAnimation == true
+                                            : lightBlueCoinAnimation == true
                                                 ? stack3
                                                 : greenCoinAnimation == true
                                                     ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
-                                                                true
-                                                            ? stack6
-                                                            : 0);
-                                  }
-                                });
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: height * 0.1,
-                                width: width * 0.12,
-                                decoration: BoxDecoration(
-                                    color: Color(0xaa0288A5),
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Text(
-                                  redRate,
-                                  style: TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      showLiablity == true
-                          ? Text(
-                              liablity13.toString(),
+                                                    : brownCoinAnimation == true
+                                                        ? stack6
+                                                        : 0);
+                              }
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 5),
+                            decoration: BoxDecoration(
+                                color: Color(0xaa0288A5),
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text(
+                              redRate,
                               style: TextStyle(
-                                  color: liablity13 >= 0.0
-                                      ? Colors.green
-                                      : Colors.red),
-                            )
-                          : Text(""),
-                    ],
+                                  fontWeight: FontWeight.w600, fontSize: 10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  showLiablity == true
+                      ? Text(
+                          liablity13.toString(),
+                          style: TextStyle(
+                              color: liablity13 >= 0.0
+                                  ? Colors.green
+                                  : Colors.red),
+                        )
+                      : Text(""),
                 ],
               ),
             ],
@@ -4773,7 +5340,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   }
 
   Widget placeyourbetWidget(String time) {
-    return int.parse(autoTime) == 45
+    return startTimes == 45
         ? Positioned(
             top: height * 0.4,
             child: TweenAnimationBuilder(
@@ -4798,48 +5365,52 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   }
 
   Widget gameStopBettingPortrait(String time) {
-    return Positioned(
-        top: height * 0.06,
-        left: width * 0.2,
-        child: TweenAnimationBuilder(
-            duration: const Duration(milliseconds: 500),
-            tween: Tween<double>(begin: 0, end: 1),
-            builder: (BuildContext context, double opacity, Widget? child) {
-              return Opacity(
-                  opacity: opacity,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: opacity * 10),
-                    child: child,
-                  ));
-            },
-            child: Image.asset(
-              'assets/Teen-patti/images/stop-betting.png',
-              height: height * 0.08,
-              width: width * 0.6,
-              fit: BoxFit.fill,
-            )));
+    return startTimes <= 3 && autoTime != '0'
+        ? Positioned(
+            top: height * 0.06,
+            left: width * 0.2,
+            child: TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 500),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (BuildContext context, double opacity, Widget? child) {
+                  return Opacity(
+                      opacity: opacity,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: opacity * 10),
+                        child: child,
+                      ));
+                },
+                child: Image.asset(
+                  'assets/Teen-patti/images/stop-betting.png',
+                  height: height * 0.08,
+                  width: width * 0.6,
+                  fit: BoxFit.fill,
+                )))
+        : SizedBox();
   }
 
   Widget gameStopBetting(String time) {
-    return Positioned(
-        top: height * 0.4,
-        child: TweenAnimationBuilder(
-            duration: const Duration(milliseconds: 500),
-            tween: Tween<double>(begin: 0, end: 1),
-            builder: (BuildContext context, double opacity, Widget? child) {
-              return Opacity(
-                  opacity: opacity,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: opacity * 10),
-                    child: child,
-                  ));
-            },
-            child: Image.asset(
-              'assets/Teen-patti/images/stop-betting.png',
-              height: height * 0.2,
-              width: width * 0.5,
-              fit: BoxFit.fill,
-            )));
+    return startTimes <= 3 && autoTime != '0'
+        ? Positioned(
+            top: height * 0.42,
+            child: TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 500),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (BuildContext context, double opacity, Widget? child) {
+                  return Opacity(
+                      opacity: opacity,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: opacity * 10),
+                        child: child,
+                      ));
+                },
+                child: Image.asset(
+                  'assets/Teen-patti/images/stop-betting.png',
+                  height: height * 0.2,
+                  width: width * 0.4,
+                  fit: BoxFit.fill,
+                )))
+        : SizedBox();
   }
 
   goWidget() {
@@ -4859,81 +5430,74 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   }
 
   Widget showCurrentCardLand() {
-    return Column(
-      children: [
-        Container(
-          alignment: Alignment.center,
-          height: height * 0.50,
-          width: width * 0.4,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: AssetImage(
-                    "assets/bollywoodTable/current-result-background.png",
-                  ),
-                  fit: BoxFit.cover)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Text(
-                  "RESULT",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
+    return Container(
+      alignment: Alignment.center,
+      height: height * 0.5,
+      width: width * 0.3,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+              image: AssetImage(
+                "assets/bollywoodTable/current-result-background.png",
               ),
-              SizedBox(
-                height: 20,
+              fit: BoxFit.cover)),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 50),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    winnerResult != ""
-                        ? buildImageLand(cardNameImage1)
-                        : Image.asset(
-                            'assets/lucky7/images/cardBg.png',
-                            height: height * 0.19,
-                            width: width * 0.06,
-                            fit: BoxFit.fill,
-                          ),
-                  ],
-                ),
+              child: Text(
+                "RESULT",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
               ),
-              SizedBox(
-                height: 30,
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: height * 0.05),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  winnerResult != ""
+                      ? buildImageLand(cardNameImage1)
+                      : Image.asset(
+                          'assets/lucky7/images/cardBg.png',
+                          height: height * 0.19,
+                          width: width * 0.06,
+                          fit: BoxFit.fill,
+                        ),
+                ],
               ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                height: 40,
-                width: MediaQuery.of(context).size.width * 0.9,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Color(0xaa89560C),
-                    )),
-                child: Text(
-                  mid == marketId ? resultOfBT.replaceAll('||', '|') : "",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
               ),
-            ],
-          ),
+              height: height * 0.08,
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Color(0xaa89560C),
+                  )),
+              child: Text(
+                mid == marketId ? resultOfBT.replaceAll('||', '|') : "",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -4968,7 +5532,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   }
 
   Widget placeyourbetWidgetPortrait(String time) {
-    return int.parse(autoTime) == 45
+    return startTimes == 45
         ? Positioned(
             top: height * 0.06,
             left: width * 0.2,
@@ -4994,74 +5558,74 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
   }
 
   Widget showCurrentCardPort() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 30,
+    return Container(
+      // margin: EdgeInsets.only(left: width * 2),
+      alignment: Alignment.center,
+      height: height * 0.2,
+      width: width * 0.63,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+              image: AssetImage(
+                "assets/bollywoodTable/current-result-background.png",
+              ),
+              fit: BoxFit.fill)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Text(
+                "RESULT",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  winnerResult != ""
+                      ? buildImagePortrait(cardNameImage1)
+                      : Image.asset(
+                          'assets/lucky7/images/cardBg.png',
+                          height: height * 0.19,
+                          width: width * 0.06,
+                          fit: BoxFit.fill,
+                        ),
+                ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              height: 40,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Color(0xaa89560C),
+                  )),
+              child: Text(
+                mid == marketId ? resultOfBT.replaceAll('||', '|') : "",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
-        Container(
-          // margin: EdgeInsets.only(left: width * 2),
-          alignment: Alignment.center,
-          height: height * 0.18,
-          width: width * 0.65,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: AssetImage(
-                    "assets/bollywoodTable/current-result-background.png",
-                  ),
-                  fit: BoxFit.cover)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    winnerResult != ""
-                        ? buildImagePortrait(cardNameImage1)
-                        : Image.asset(
-                            'assets/lucky7/images/cardBg.png',
-                            height: height * 0.19,
-                            width: width * 0.06,
-                            fit: BoxFit.fill,
-                          ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                height: 40,
-                width: MediaQuery.of(context).size.width * 0.9,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Color(0xaa89560C),
-                    )),
-                child: Text(
-                  mid == marketId ? resultOfBT.replaceAll('||', '|') : "",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -5120,13 +5684,21 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     var result = jsonDecode(response);
 
     if (result['status'] == true) {
+      if (marketId != result['data']['t1'][0]['mid'].toString()) {
+        _coins.clear();
+        _coinsPort.clear();
+        _coinsRytPort.clear();
+      }
       var list = result['data']['t2'] as List;
       setState(() {
         autoTime = result['data']['t1'][0]['autotime'].toString();
+         autoTime = result['data']['t1'][0]['autotime'].toString();
+            if (startTimes != int.parse(autoTime.toString())) {
+        startTimeSmall = startTimes * 100;
+      }
         marketId = result['data']['t1'][0]['mid'].toString();
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
-        cardNameImage2 = result['data']['t1'][0]['C2'].toString();
-        cardNameImage3 = result['data']['t1'][0]['C3'].toString();
+
         startTimes = int.parse(autoTime.toString());
         donRate = result['data']['t2'][0]['rate'].toString();
         donLayRate = result['data']['t2'][0]['layrate'].toString();
@@ -5151,7 +5723,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           ? setState(() {
               redCoinAnimation = false;
               lightGreenCoinAnimation = false;
-              blueCoinAnimation = false;
+
               greenCoinAnimation = false;
               lightBlueCoinAnimation = false;
               brownCoinAnimation = false;
@@ -5223,11 +5795,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     var body = {"matchId": widget.matchID.toString()};
     var response = await GlobalFunction.apiPostRequestToken(url, body);
     var result = jsonDecode(response);
+    var list = result['data'][widget.gameCode] as List;
     if (result['status'] == true) {
-      var list = result['data'][widget.gameCode] as List;
-      matchIdList.clear();
-      var listdata = list.map((e) => MatchIdModel.fromJson(e)).toList();
-      matchIdList.addAll(listdata);
+      setState(() {
+        matchIdList.clear();
+
+        var listdata = list.map((e) => MatchIdModel.fromJson(e)).toList();
+        matchIdList.addAll(listdata);
+      });
     }
   }
 
@@ -5238,158 +5813,205 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
           return AlertDialog(
             backgroundColor: Colors.transparent,
             content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 22),
-                          height: MediaQuery.of(context).size.height * 0.6,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      "assets/User-interface/amar-show-amount.png"),
-                                  fit: BoxFit.fitHeight)),
-                          child: Column(
-                            children: [
-                              Column(
-                                children: const [
-                                  SizedBox(
-                                    height: 10,
+              child: SizedBox(
+                height: height * 0.45,
+                width: width * 0.35,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: height * 0.45,
+                      width: width * 0.35,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/User-interface/amar-show-amount.png"),
+                              fit: BoxFit.fill)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            CustomText(
+                              text: "Amount",
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            SizedBox(
+                              height: height * 0.04,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/minus-image.png",
+                                    scale: 3,
                                   ),
-                                  Text(
-                                    "Amount",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/minus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: SizedBox(
-                                      height: height * 0.18,
-                                      width: width * 0.24,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: height * 0.0),
+                                  child: SizedBox(
+                                    height: height * 0.1,
+                                    width: width * 0.17,
+                                    child: Center(
                                       child: TextField(
+                                        textAlign: TextAlign.center,
                                         controller: stakeController,
                                         onChanged: (String value) async {
                                           manualAmount = true;
                                         },
                                         maxLength: 5,
-                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w600),
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 9,
+                                        ),
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
+                                          counterText: "",
                                           hintText: '$stake',
                                           hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
+                                              fontSize: 9,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.w600),
                                           border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: BorderSide(
-                                              width: 0,
-                                              style: BorderStyle.none,
-                                            ),
-                                          ),
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                              borderSide: BorderSide(
+                                                color: Color(0xff4E4E4E),
+                                                width: 3,
+                                              )),
                                           filled: true,
-                                          contentPadding: EdgeInsets.all(16),
-                                          fillColor: Colors.white,
+                                          // contentPadding:  EdgeInsets.only(top: height*0.1),
+                                          fillColor: Colors.black,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    // alignment: Alignment.center,
-                                    child: Image.asset(
-                                      "assets/User-interface/plus-image.png",
-                                      scale: 2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "Are you sure want to continue !!",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.vibrate();
-                                  // setState(() {
-                                  //   _currentCoinIndex++;
-                                  //   _startCoinAnimation();
-                                  // });
-                                  // _currentCoinIndex++;
-                                  // _startCoinAnimation();
-                                  // _currentCoinIndex++;
-                                  // _startCoinAnimation();
-
-                                  makeBet();
-                                  Navigator.pop(context);
-                                  onPressedMusicForBet();
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.1,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/User-interface/confirm-button.png"),
-                                          fit: BoxFit.fitHeight)),
                                 ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          left: width * 0.48,
-                          top: 15,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Image.asset(
-                              "assets/User-interface/close-button.png",
-                              scale: 4,
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  // alignment: Alignment.center,
+                                  child: Image.asset(
+                                    "assets/User-interface/plus-image.png",
+                                    scale: 3,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(
+                              height: height * 0.02,
+                            ),
+                            Text(
+                              "Are you sure you want to continue?",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: height * 0.04,
+                            ),
+                            manualAmount == true &&
+                                    int.parse(stakeController.text) > 99 &&
+                                    int.parse(stakeController.text) < 25000
+                                ? GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        playBackgroundMusic == false
+                                            ? onPressedMusicForBet()
+                                            : Vibration.vibrate();
+                                      });
+
+                                      makeBet();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      height: height * 0.07,
+                                      width: width * 0.25,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                        image: AssetImage(
+                                            "assets/User-interface/confirm-button.png"),
+                                      )),
+                                    ),
+                                  )
+                                : manualAmount == false
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          HapticFeedback.vibrate();
+
+                                          makeBet();
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? onPressedMusicForBet()
+                                                : Vibration.vibrate();
+                                          });
+                                        },
+                                        child: Container(
+                                          height: height * 0.07,
+                                          width: width * 0.25,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                            image: AssetImage(
+                                                "assets/User-interface/confirm-button.png"),
+                                          )),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            playBackgroundMusic == false
+                                                ? ''
+                                                : HapticFeedback.vibrate();
+                                          });
+                                          DialogUtils.showOneBtn(
+                                            context,
+                                            "Please Select Existing amount",
+                                          );
+                                        },
+                                        child: Container(
+                                          height: height * 0.07,
+                                          width: width * 0.25,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                            image: AssetImage(
+                                                "assets/User-interface/confirm-button.png"),
+                                          )),
+                                        ),
+                                      )
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: 1,
+                      top: 1,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            playBackgroundMusic == false
+                                ? ''
+                                : Vibration.vibrate();
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(
+                          "assets/User-interface/close-button.png",
+                          scale: 4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -5408,8 +6030,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                   alignment: Alignment.center,
                   children: [
                     Container(
-                      height: height * 0.3,
-                      width: width * 99,
+                      height: height * 0.23,
+                      width: width,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         image: DecorationImage(
@@ -5429,7 +6051,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                 fontWeight: FontWeight.w500,
                               ),
                               SizedBox(
-                                height: height * 0.05,
+                                height: height * 0.02,
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -5454,6 +6076,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                         },
                                         maxLength: 5,
                                         style: TextStyle(
+                                          fontSize: 10,
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -5501,18 +6124,20 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                     fontWeight: FontWeight.w500),
                               ),
                               SizedBox(
-                                height: height * 0.05,
+                                height: height * 0.03,
                               ),
                               manualAmount == true &&
                                       int.parse(stakeController.text) > 99 &&
                                       int.parse(stakeController.text) < 25000
                                   ? GestureDetector(
                                       onTap: () {
-                                        HapticFeedback.vibrate();
-
+                                        setState(() {
+                                          playBackgroundMusic == false
+                                              ? onPressedMusicForBet()
+                                              : Vibration.vibrate();
+                                        });
                                         makeBetPortrait();
                                         Navigator.pop(context);
-                                        onPressedMusicForBet();
                                       },
                                       child: Container(
                                         alignment: Alignment.center,
@@ -5534,11 +6159,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                   : manualAmount == false
                                       ? GestureDetector(
                                           onTap: () {
-                                            HapticFeedback.vibrate();
+                                            setState(() {
+                                              playBackgroundMusic == false
+                                                  ? onPressedMusicForBet()
+                                                  : Vibration.vibrate();
+                                            });
 
                                             makeBetPortrait();
                                             Navigator.pop(context);
-                                            onPressedMusicForBet();
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -5567,8 +6195,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                                   ? ''
                                                   : HapticFeedback.vibrate();
                                             });
-                                            DialogUtils.showOneBtn(context,
-                                                "Please Select Existing amount");
+                                            DialogUtils.showOneBtn(
+                                              context,
+                                              "Please Select Existing amount",
+                                            );
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -5597,6 +6227,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                       top: 2,
                       child: InkWell(
                         onTap: () {
+                          setState(() {
+                            playBackgroundMusic == false
+                                ? ''
+                                : Vibration.vibrate();
+                          });
                           Navigator.pop(context);
                         },
                         child: Image.asset(
@@ -5610,166 +6245,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ));
         });
   }
-
-  // Future<void> showMyDialogForBetPortrait(int stake) async {
-  //   return showDialog<void>(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           backgroundColor: Colors.transparent,
-  //           content: SingleChildScrollView(
-  //             child: Column(
-  //               children: [
-  //                 SizedBox(
-  //                   height: MediaQuery.of(context).size.height * 0.4,
-  //                   width: MediaQuery.of(context).size.width,
-  //                   child: Stack(
-  //                     children: [
-  //                       Container(
-  //                         margin: const EdgeInsets.symmetric(vertical: 22),
-  //                         height: MediaQuery.of(context).size.height * 0.35,
-  //                         width: MediaQuery.of(context).size.width * 0.9,
-  //                         decoration: BoxDecoration(
-  //                             borderRadius: BorderRadius.circular(10),
-  //                             image: DecorationImage(
-  //                                 image: AssetImage(
-  //                                     "assets/User-interface/amar-show-amount.png"),
-  //                                 fit: BoxFit.fitHeight)),
-  //                         child: Column(
-  //                           children: [
-  //                             Column(
-  //                               children: const [
-  //                                 SizedBox(
-  //                                   height: 10,
-  //                                 ),
-  //                                 Text(
-  //                                   "Amount",
-  //                                   style: TextStyle(
-  //                                       color: Colors.white,
-  //                                       fontWeight: FontWeight.bold),
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                             SizedBox(
-  //                               height: 20,
-  //                             ),
-  //                             Row(
-  //                               mainAxisAlignment:
-  //                                   MainAxisAlignment.spaceBetween,
-  //                               children: [
-  //                                 Container(
-  //                                   margin: const EdgeInsets.symmetric(
-  //                                       horizontal: 10),
-  //                                   // alignment: Alignment.center,
-  //                                   child: Image.asset(
-  //                                     "assets/User-interface/minus-image.png",
-  //                                     scale: 2,
-  //                                   ),
-  //                                 ),
-  //                                 Padding(
-  //                                   padding: const EdgeInsets.only(top: 20.0),
-  //                                   child: SizedBox(
-  //                                     height: height * 0.08,
-  //                                     width: width * 0.36,
-  //                                     child: TextField(
-  //                                       controller: stakeController,
-  //                                       onChanged: (String value) async {
-  //                                         manualAmount = true;
-  //                                       },
-  //                                       maxLength: 5,
-  //                                       textAlign: TextAlign.center,
-  //                                       style: TextStyle(
-  //                                           color: Colors.black,
-  //                                           fontWeight: FontWeight.w600),
-  //                                       keyboardType: TextInputType.number,
-  //                                       decoration: InputDecoration(
-  //                                         hintText: '$stake',
-  //                                         hintStyle: TextStyle(
-  //                                             fontSize: 16,
-  //                                             color: Colors.black,
-  //                                             fontWeight: FontWeight.w600),
-  //                                         border: OutlineInputBorder(
-  //                                           borderRadius:
-  //                                               BorderRadius.circular(8),
-  //                                           borderSide: BorderSide(
-  //                                             width: 0,
-  //                                             style: BorderStyle.none,
-  //                                           ),
-  //                                         ),
-  //                                         filled: true,
-  //                                         contentPadding: EdgeInsets.all(16),
-  //                                         fillColor: Colors.white,
-  //                                       ),
-  //                                     ),
-  //                                   ),
-  //                                 ),
-  //                                 Container(
-  //                                   margin: const EdgeInsets.symmetric(
-  //                                       horizontal: 10),
-  //                                   // alignment: Alignment.center,
-  //                                   child: Image.asset(
-  //                                     "assets/User-interface/plus-image.png",
-  //                                     scale: 2,
-  //                                   ),
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                             Text(
-  //                               "Are you sure want to continue !!",
-  //                               style: TextStyle(
-  //                                   color: Colors.white,
-  //                                   fontWeight: FontWeight.w600),
-  //                             ),
-  //                             SizedBox(
-  //                               height: 20,
-  //                             ),
-  //                             GestureDetector(
-  //                               onTap: () {
-  //                                 HapticFeedback.vibrate();
-
-  //                                 makeBetPortrait();
-  //                                 Navigator.pop(context);
-  //                                 onPressedMusicForBet();
-  //                               },
-  //                               child: Container(
-  //                                 alignment: Alignment.center,
-  //                                 height:
-  //                                     MediaQuery.of(context).size.height * 0.06,
-  //                                 width:
-  //                                     MediaQuery.of(context).size.width * 0.7,
-  //                                 decoration: BoxDecoration(
-  //                                     borderRadius: BorderRadius.circular(10),
-  //                                     image: DecorationImage(
-  //                                         image: AssetImage(
-  //                                             "assets/User-interface/confirm-button.png"),
-  //                                         fit: BoxFit.fitHeight)),
-  //                               ),
-  //                             )
-  //                           ],
-  //                         ),
-  //                       ),
-  //                       Positioned(
-  //                         left: width * 0.61,
-  //                         top: 15,
-  //                         child: InkWell(
-  //                           onTap: () {
-  //                             Navigator.pop(context);
-  //                           },
-  //                           child: Image.asset(
-  //                             "assets/User-interface/close-button.png",
-  //                             scale: 4,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 
   Future makeBet() async {
     getUserDetails();
@@ -5835,16 +6310,13 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
                           : brownCoinAnimation == true && manualAmount == false
-                              ? stack5.toString()
-                              : lightBlueCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                              ? stack6.toString()
+                              : "",
       "selectionId": donButton == true || donLayButton == true
           ? "1"
           : amarAkbarutton == true || amarLayAkbarutton == true
@@ -5898,16 +6370,27 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     if (result['status'] == true) {
       getVcLiablity();
       print("response--->$result");
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
       setState(() {
         manualAmount = false;
         stakeController.clear();
+      });
+
+      setState(() {
+        _currentCoinIndex++;
+        _startCoinAnimation();
       });
       // getVcLiablity();
     } else {
       stakeController.clear();
 
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(
+        context,
+        result['message'],
+      );
     }
 
     stakeController.clear();
@@ -5978,16 +6461,13 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
               ? stack1.toString()
               : lightGreenCoinAnimation == true && manualAmount == false
                   ? stack2.toString()
-                  : blueCoinAnimation == true && manualAmount == false
+                  : lightBlueCoinAnimation == true && manualAmount == false
                       ? stack3.toString()
                       : greenCoinAnimation == true && manualAmount == false
                           ? stack4.toString()
                           : brownCoinAnimation == true && manualAmount == false
-                              ? stack5.toString()
-                              : lightBlueCoinAnimation == true &&
-                                      manualAmount == false
-                                  ? stack6
-                                  : "",
+                              ? stack6.toString()
+                              : "",
       "selectionId": donButton == true || donLayButton == true
           ? "1"
           : amarAkbarutton == true || amarLayAkbarutton == true
@@ -6027,7 +6507,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       }
     };
 
-    var response = await GlobalFunction.apiPostRequestTokenForBet(
+    var response = await GlobalFunction.apiPostRequestTokenForBetPortrait(
       url,
       body,
       context,
@@ -6041,8 +6521,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     if (result['status'] == true) {
       getVcLiablity();
       print("response--->$result");
-      DialogUtils.showOneBtnPortrait(context, result['message']);
-
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
+      setState(() {
+        _currentCoinIndexRytPort++;
+        _startCoinAnimationRightPort();
+      });
       setState(() {
         manualAmount = false;
         stakeController.clear();
@@ -6051,7 +6537,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       manualAmount = false;
       stakeController.clear();
 
-      DialogUtils.showOneBtnPortrait(context, result['message']);
+      DialogUtils.showOneBtnPortrait(
+        context,
+        result['message'],
+      );
     }
 
     stakeController.clear();

@@ -3,12 +3,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
 import 'package:virtual_casino/Utils/api_helper.dart';
 import 'package:virtual_casino/Utils/apis.dart';
 import 'package:virtual_casino/Utils/toast.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  bool? playBackgroundMusic=false;
+   ProfileScreen({super.key,this.playBackgroundMusic});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -25,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userBalance = "";
   String winingBalance = "";
   String dateOfJoining = "";
-
+bool playBackgroundMusic=false;
   bool loading = false;
 
   @override
@@ -68,6 +70,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         Navigator.pop(context);
                       },
                       child: Container(
@@ -232,6 +237,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
+                              widget.playBackgroundMusic == false
+                              ? ''
+                              :  Vibration.vibrate();
                         Navigator.pop(context);
                       },
                       child: Container(
@@ -397,7 +405,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         loading = false;
       });
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],);
       setState(() {
         loading = false;
       });
