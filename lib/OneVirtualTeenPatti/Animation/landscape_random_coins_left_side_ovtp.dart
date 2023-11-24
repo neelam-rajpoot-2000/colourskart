@@ -94,10 +94,10 @@ class _LandscapeRandomCoinLeftSideOVTPState
     double radius = 200; // Radius of the circular path
     double angle = _currentCoinIndex * (pi / _totalCoins);
 
-    double _startX = _minX;
-    double _startY = _minX;
-    double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
+    double startX = _minX;
+    double startY = _minX;
+    double endX = _random.nextDouble() * (_maxX - _minX) + _minX;
+    double endY = _random.nextDouble() * (_maxY - _minY) + _minY;
 
     // coin = int.parse(widget.autotime.toString());
     //   print("====>$coin");
@@ -108,8 +108,8 @@ class _LandscapeRandomCoinLeftSideOVTPState
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 600),
               builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
+                double currentX = startX + (endX - startX) * value;
+                double currentY = startY + (endY - startY) * value;
 
                 return Positioned(
                     left: currentX.clamp(_minX, _maxX),

@@ -287,14 +287,14 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   double _maxXRytLandRand = 0;
   double _minYRytLandRand = 0;
   double _maxYRytLandRand = 0;
-       int startTimeSmall=0;
+  int startTimeSmall = 0;
 
   @override
   void initState() {
-      startTimeSmall=startTimes*100;
-       Timer.periodic(const Duration(milliseconds: 10), (timer) {
-        startTimeSmall =startTimeSmall-1;
-       });
+    startTimeSmall = startTimes * 100;
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      startTimeSmall = startTimeSmall - 1;
+    });
     AudioPlayer.clearAssetCache();
     WidgetsBinding.instance.addObserver(this);
     bgMusic();
@@ -307,8 +307,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
       DeviceOrientation.landscapeRight,
       DeviceOrientation.portraitUp
     ]);
-    AudioPlayer.clearAssetCache();
-    WidgetsBinding.instance.addObserver(this);
+
     setState(() {
       checkInternet();
     });
@@ -1119,6 +1118,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
   }
 
   Widget landscapeWidget() {
+    Orientation orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       key: _globalKey,
       backgroundColor: Colors.transparent,
@@ -1166,32 +1166,31 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                 width: width * 0.03,
                               ),
                               Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: width * 0.02,
-                                      vertical: height * 0.015),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.02,
+                                    vertical: height * 0.015),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         image: AssetImage(
                                             DragonTigerImages.amountBg),
                                         fit: BoxFit.fill)),
-                                child:  Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/lucky7/images/Group 658.png',
-                                        height: height * 0.05,
-                                        width: width * 0.03,
-                                      ),
-                                      Text(
-                                        "  ${mainBalance.toStringAsFixed(2)}",
-                                        style: TextStyle(
-                                            color: Color(0xffFFEFC1),
-                                            fontSize: height * 0.03,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
-                                  ),
-                                
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/lucky7/images/Group 658.png',
+                                      height: height * 0.05,
+                                      width: width * 0.03,
+                                    ),
+                                    Text(
+                                      "  ${mainBalance.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                          color: Color(0xffFFEFC1),
+                                          fontSize: height * 0.03,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -1296,13 +1295,12 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           height: 6,
                                           width: width * 0.15,
                                           child: LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
-                                  backgroundColor: Colors.grey,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
-                                ),
+                                            value: startTimeSmall /
+                                                4500, // Calculate the progress
+                                            backgroundColor: Colors.grey,
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Color(0xaa9919D2)),
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 4,
@@ -1371,20 +1369,20 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                     Positioned(
                       top: height * 0.38,
                       left: width * 0.28,
-                      child:  Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
                     ),
                     Positioned(
                       top: height * 0.38,
                       right: width * 0.28,
                       child: Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.10,
-                            ),
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.10,
+                      ),
                     ),
                     AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
@@ -1392,18 +1390,30 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                         children: _coinsRytLand,
                       ),
                     ),
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 500),
-                      child: Stack(
-                        children: _coinsLeftLandRand,
-                      ),
-                    ),
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 500),
-                      child: Stack(
-                        children: _coinsRytLandRand,
-                      ),
-                    ),
+                   
+                     orientation==Orientation.landscape?   Container(
+                        height: 400,
+                        width: 400,
+                        child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 500),
+                          child: Stack(
+                            children: _coinsLeftLandRand,
+                          ),
+                             
+                        ),
+                      )
+                      :SizedBox(),
+                    orientation==Orientation.landscape?  Container(
+                        height: 400,
+                        width: 400,
+                        child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 500),
+                          child: Stack(
+                            children: _coinsRytLandRand,
+                          ),
+                        ),
+                      ):SizedBox()
+                  ,
                     autoTime == "45"
                         ? placeyourbetWidget(autoTime)
                         : autoTime == "3" || autoTime == "2" || autoTime == "1"
@@ -1819,27 +1829,28 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
                                     showMyDialog(
-                                      context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -1900,27 +1911,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -1991,27 +2004,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -2072,27 +2087,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -2309,27 +2326,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -2409,27 +2428,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomImage(
@@ -2513,27 +2534,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           lightBlueCoinAnimation == true ||
                                           brownCoinAnimation == true) &&
                                       startTimes > 1) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomButton(
@@ -2614,27 +2637,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       greenCoinAnimation == true ||
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) {
-                                    showMyDialog(context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation == true
-                                        ? stack1
-                                        : lightGreenCoinAnimation == true
-                                            ? stack2
-                                            : blueCoinAnimation == true
-                                                ? stack3
-                                                : greenCoinAnimation == true
-                                                    ? stack4
-                                                    : lightBlueCoinAnimation ==
-                                                            true
-                                                        ? stack5
-                                                        : brownCoinAnimation ==
+                                    showMyDialog(
+                                        context,
+                                        height * 0.45,
+                                        width * 0.33,
+                                        height * 0.4,
+                                        width * 0.7,
+                                        height * 0.64,
+                                        width * 0.55,
+                                        redCoinAnimation == true
+                                            ? stack1
+                                            : lightGreenCoinAnimation == true
+                                                ? stack2
+                                                : blueCoinAnimation == true
+                                                    ? stack3
+                                                    : greenCoinAnimation == true
+                                                        ? stack4
+                                                        : lightBlueCoinAnimation ==
                                                                 true
-                                                            ? stack6
-                                                            : 0);
+                                                            ? stack5
+                                                            : brownCoinAnimation ==
+                                                                    true
+                                                                ? stack6
+                                                                : 0);
                                   }
                                 },
                                 child: CustomButton(
@@ -2696,8 +2721,8 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     );
   }
 
-
-   Widget protraitModeWidget() {
+  Widget protraitModeWidget() {
+    Orientation orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       key: _globalKey,
       backgroundColor: Colors.transparent,
@@ -2987,45 +3012,50 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                   Positioned(
                     top: height * 0.07,
                     left: width * 0.13,
-                    child:  Image.asset(
-                            'assets/lucky7/images/frame/logo.png',
-                            fit: BoxFit.cover,
-                            height: height * 0.05,
-                          ),
+                    child: Image.asset(
+                      'assets/lucky7/images/frame/logo.png',
+                      fit: BoxFit.cover,
+                      height: height * 0.05,
+                    ),
                   ),
                   Positioned(
                       top: height * 0.07,
                       right: width * 0.05,
-                      child:  Image.asset(
-                              'assets/lucky7/images/frame/logo.png',
-                              fit: BoxFit.cover,
-                              height: height * 0.05,
-                            )),
-                  SizedBox(
+                      child: Image.asset(
+                        'assets/lucky7/images/frame/logo.png',
+                        fit: BoxFit.cover,
+                        height: height * 0.05,
+                      )),
+               
+                    SizedBox(
+                        height: height * 0.36,
+                        child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 900),
+                          child: Stack(
+                            children: _coinsRytPortRand,
+                          ),
+                        )),
+               
+                    SizedBox(
                       height: height * 0.36,
                       child: AnimatedSwitcher(
                         duration: Duration(milliseconds: 900),
                         child: Stack(
-                          children: _coinsRytPortRand,
+                          children: _coinsRytPort,
                         ),
-                      )),
-                  SizedBox(
-                    height: height * 0.36,
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 900),
-                      child: Stack(
-                        children: _coinsRytPort,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                      height: height * 0.36,
-                      child: AnimatedSwitcher(
-                        duration: Duration(milliseconds: 900),
-                        child: Stack(
-                          children: _coinsLeftPortRand,
-                        ),
-                      )),
+             
+          
+                    SizedBox(
+                        height: height * 0.36,
+                        child: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 900),
+                          child: Stack(
+                            children: _coinsLeftPortRand,
+                          ),
+                        )),
+              
                   startTimes >= 1
                       ? Positioned(
                           left: width * 0.35,
@@ -3067,12 +3097,11 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                 height: 5,
                                 width: width * 0.25,
                                 child: LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
+                                  value: startTimeSmall /
+                                      4500, // Calculate the progress
                                   backgroundColor: Colors.grey,
                                   valueColor:
                                       AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
                                 ),
                               ),
                             ],
@@ -3322,7 +3351,6 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     );
   }
 
- 
   showMyDialog(
       BuildContext context,
       double heightImage,
@@ -3346,7 +3374,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                     Container(
                       height: heightImage,
                       width: widthImage,
-                     decoration: BoxDecoration(
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         gradient: LinearGradient(
                           colors: const <Color>[
@@ -3452,39 +3480,39 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                             ? onPressedMusicForBet()
                                             : Vibration.vibrate();
                                       });
-                                   
-                                        if (evenDragonButton == true ||
-                                            oddDragonButton == true ||
-                                            blackDragonButton == true ||
-                                            redDragonButton == true ||
-                                            evenTigerButton == true ||
-                                            oddTigerButton == true ||
-                                            blackTigerButton == true ||
-                                            redTigerButton == true ||
-                                            dragonButton == true ||
-                                            pairButton == true ||
-                                            tieButton == true ||
-                                            tigerButton == true ||
-                                            selectCard == true) {
-                                          makeBet();
-                                          Navigator.pop(context);
 
-                                          evenDragonButton = false;
-                                          oddDragonButton = false;
-                                          blackDragonButton = false;
-                                          redDragonButton = false;
-                                          evenTigerButton = false;
-                                          oddTigerButton = false;
-                                          blackTigerButton = false;
-                                          redTigerButton = false;
-                                          dragonButton = false;
-                                          pairButton = false;
-                                          tieButton = false;
-                                          tigerButton = false;
-                                          setState(() {
-                                            confirmButton = true;
-                                          });
-                                        }
+                                      if (evenDragonButton == true ||
+                                          oddDragonButton == true ||
+                                          blackDragonButton == true ||
+                                          redDragonButton == true ||
+                                          evenTigerButton == true ||
+                                          oddTigerButton == true ||
+                                          blackTigerButton == true ||
+                                          redTigerButton == true ||
+                                          dragonButton == true ||
+                                          pairButton == true ||
+                                          tieButton == true ||
+                                          tigerButton == true ||
+                                          selectCard == true) {
+                                        makeBet();
+                                        Navigator.pop(context);
+
+                                        evenDragonButton = false;
+                                        oddDragonButton = false;
+                                        blackDragonButton = false;
+                                        redDragonButton = false;
+                                        evenTigerButton = false;
+                                        oddTigerButton = false;
+                                        blackTigerButton = false;
+                                        redTigerButton = false;
+                                        dragonButton = false;
+                                        pairButton = false;
+                                        tieButton = false;
+                                        tigerButton = false;
+                                        setState(() {
+                                          confirmButton = true;
+                                        });
+                                      }
                                     },
                                     child: Container(
                                         height: height * 0.22,
@@ -3503,39 +3531,38 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                                 : Vibration.vibrate();
                                           });
 
-                                         
-                                        if (evenDragonButton == true ||
-                                            oddDragonButton == true ||
-                                            blackDragonButton == true ||
-                                            redDragonButton == true ||
-                                            evenTigerButton == true ||
-                                            oddTigerButton == true ||
-                                            blackTigerButton == true ||
-                                            redTigerButton == true ||
-                                            dragonButton == true ||
-                                            pairButton == true ||
-                                            tieButton == true ||
-                                            tigerButton == true ||
-                                            selectCard == true) {
-                                          makeBet();
-                                          Navigator.pop(context);
+                                          if (evenDragonButton == true ||
+                                              oddDragonButton == true ||
+                                              blackDragonButton == true ||
+                                              redDragonButton == true ||
+                                              evenTigerButton == true ||
+                                              oddTigerButton == true ||
+                                              blackTigerButton == true ||
+                                              redTigerButton == true ||
+                                              dragonButton == true ||
+                                              pairButton == true ||
+                                              tieButton == true ||
+                                              tigerButton == true ||
+                                              selectCard == true) {
+                                            makeBet();
+                                            Navigator.pop(context);
 
-                                          evenDragonButton = false;
-                                          oddDragonButton = false;
-                                          blackDragonButton = false;
-                                          redDragonButton = false;
-                                          evenTigerButton = false;
-                                          oddTigerButton = false;
-                                          blackTigerButton = false;
-                                          redTigerButton = false;
-                                          dragonButton = false;
-                                          pairButton = false;
-                                          tieButton = false;
-                                          tigerButton = false;
-                                          setState(() {
-                                            confirmButton = true;
-                                          });
-                                        }
+                                            evenDragonButton = false;
+                                            oddDragonButton = false;
+                                            blackDragonButton = false;
+                                            redDragonButton = false;
+                                            evenTigerButton = false;
+                                            oddTigerButton = false;
+                                            blackTigerButton = false;
+                                            redTigerButton = false;
+                                            dragonButton = false;
+                                            pairButton = false;
+                                            tieButton = false;
+                                            tigerButton = false;
+                                            setState(() {
+                                              confirmButton = true;
+                                            });
+                                          }
                                         },
                                         child: Container(
                                             height: height * 0.22,
@@ -3556,7 +3583,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -3601,8 +3628,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
         });
   }
 
- 
- showMyDialogPortrait(
+  showMyDialogPortrait(
       BuildContext context,
       double heightImage,
       double widthImage,
@@ -3850,7 +3876,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
@@ -4227,25 +4253,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4305,25 +4335,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4387,25 +4421,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4465,25 +4503,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4593,7 +4635,6 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                     ),
                   ],
                 ),
-
                 SizedBox(
                   height: height * 0.02,
                 ),
@@ -4630,25 +4671,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4724,25 +4769,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomImage(
@@ -4826,25 +4875,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomButton(
@@ -4921,25 +4974,29 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
                                       lightBlueCoinAnimation == true ||
                                       brownCoinAnimation == true) &&
                                   startTimes > 1) {
-                                showMyDialogPortrait(    context,
-                            height * 0.23,
-                            width,
-                            height * 0.4,
-                            width * 0.7,
-                            height * 0.26,
-                            width * 0.98,redCoinAnimation == true
-                                    ? stack1
-                                    : lightGreenCoinAnimation == true
-                                        ? stack2
-                                        : blueCoinAnimation == true
-                                            ? stack3
-                                            : greenCoinAnimation == true
-                                                ? stack4
-                                                : lightBlueCoinAnimation == true
-                                                    ? stack5
-                                                    : brownCoinAnimation == true
-                                                        ? stack6
-                                                        : 0);
+                                showMyDialogPortrait(
+                                    context,
+                                    height * 0.23,
+                                    width,
+                                    height * 0.4,
+                                    width * 0.7,
+                                    height * 0.26,
+                                    width * 0.98,
+                                    redCoinAnimation == true
+                                        ? stack1
+                                        : lightGreenCoinAnimation == true
+                                            ? stack2
+                                            : blueCoinAnimation == true
+                                                ? stack3
+                                                : greenCoinAnimation == true
+                                                    ? stack4
+                                                    : lightBlueCoinAnimation ==
+                                                            true
+                                                        ? stack5
+                                                        : brownCoinAnimation ==
+                                                                true
+                                                            ? stack6
+                                                            : 0);
                               }
                             },
                             child: CustomButton(
@@ -5089,54 +5146,53 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     var response = await GlobalFunction.apiGetRequestae(url);
     var result = jsonDecode(response);
     if (result['status'] == true) {
- 
-        autoTime = result['data']['t1'][0]['autotime'].toString();
-          if (startTimes != int.parse(autoTime.toString())) {
+      autoTime = result['data']['t1'][0]['autotime'].toString();
+      if (startTimes != int.parse(autoTime.toString())) {
         startTimeSmall = startTimes * 100;
       }
-        cardNameImage1 = result['data']['t1'][0]['C1'].toString();
-        cardNameImage2 = result['data']['t1'][0]['C2'].toString();
-        dragonRate = result['data']['t2'][0]['rate'];
-        tigerRate = result['data']['t2'][1]['rate'];
-        tieRate = result['data']['t2'][2]['rate'];
-        pairRate = result['data']['t2'][3]['rate'];
-        evenDragonRate = result['data']['t2'][4]['rate'];
-        oddDragonRate = result['data']['t2'][5]['rate'];
-        redDragonRate = result['data']['t2'][6]['rate'];
-        blackDragonRate = result['data']['t2'][7]['rate'];
-        cardADragonRate = result['data']['t2'][8]['rate'];
-        card2DragonRate = result['data']['t2'][9]['rate'];
-        card3DragonRate = result['data']['t2'][10]['rate'];
-        card4DragonRate = result['data']['t2'][11]['rate'];
-        card5DragonRate = result['data']['t2'][12]['rate'];
-        card6DragonRate = result['data']['t2'][13]['rate'];
-        card7DragonRate = result['data']['t2'][14]['rate'];
-        card8DragonRate = result['data']['t2'][15]['rate'];
-        card9DragonRate = result['data']['t2'][16]['rate'];
-        card10DragonRate = result['data']['t2'][17]['rate'];
-        cardJDragonRate = result['data']['t2'][18]['rate'];
-        cardQDragonRate = result['data']['t2'][19]['rate'];
-        cardKDragonRate = result['data']['t2'][20]['rate'];
-        evenTigerRate = result['data']['t2'][21]['rate'];
-        oddTigerRate = result['data']['t2'][22]['rate'];
-        redTigerRate = result['data']['t2'][21]['rate'];
-        blackTigerRate = result['data']['t2'][21]['rate'];
-        cardATigerRate = result['data']['t2'][21]['rate'];
-        card2TigerRate = result['data']['t2'][22]['rate'];
-        card3TigerRate = result['data']['t2'][23]['rate'];
-        card4TigerRate = result['data']['t2'][24]['rate'];
-        card5TigerRate = result['data']['t2'][25]['rate'];
-        card6TigerRate = result['data']['t2'][26]['rate'];
-        card7TigerRate = result['data']['t2'][27]['rate'];
-        card8TigerRate = result['data']['t2'][28]['rate'];
-        card9TigerRate = result['data']['t2'][29]['rate'];
-        card10TigerRate = result['data']['t2'][30]['rate'];
-        cardJTigerRate = result['data']['t2'][31]['rate'];
-        cardQTigerRate = result['data']['t2'][32]['rate'];
-        cardKTigerRate = result['data']['t2'][33]['rate'];
-        startTimes = int.parse(autoTime.toString());
-        print("====>$startTimes");
-        marketId = result['data']['t1'][0]['mid'].toString();
+      cardNameImage1 = result['data']['t1'][0]['C1'].toString();
+      cardNameImage2 = result['data']['t1'][0]['C2'].toString();
+      dragonRate = result['data']['t2'][0]['rate'];
+      tigerRate = result['data']['t2'][1]['rate'];
+      tieRate = result['data']['t2'][2]['rate'];
+      pairRate = result['data']['t2'][3]['rate'];
+      evenDragonRate = result['data']['t2'][4]['rate'];
+      oddDragonRate = result['data']['t2'][5]['rate'];
+      redDragonRate = result['data']['t2'][6]['rate'];
+      blackDragonRate = result['data']['t2'][7]['rate'];
+      cardADragonRate = result['data']['t2'][8]['rate'];
+      card2DragonRate = result['data']['t2'][9]['rate'];
+      card3DragonRate = result['data']['t2'][10]['rate'];
+      card4DragonRate = result['data']['t2'][11]['rate'];
+      card5DragonRate = result['data']['t2'][12]['rate'];
+      card6DragonRate = result['data']['t2'][13]['rate'];
+      card7DragonRate = result['data']['t2'][14]['rate'];
+      card8DragonRate = result['data']['t2'][15]['rate'];
+      card9DragonRate = result['data']['t2'][16]['rate'];
+      card10DragonRate = result['data']['t2'][17]['rate'];
+      cardJDragonRate = result['data']['t2'][18]['rate'];
+      cardQDragonRate = result['data']['t2'][19]['rate'];
+      cardKDragonRate = result['data']['t2'][20]['rate'];
+      evenTigerRate = result['data']['t2'][21]['rate'];
+      oddTigerRate = result['data']['t2'][22]['rate'];
+      redTigerRate = result['data']['t2'][21]['rate'];
+      blackTigerRate = result['data']['t2'][21]['rate'];
+      cardATigerRate = result['data']['t2'][21]['rate'];
+      card2TigerRate = result['data']['t2'][22]['rate'];
+      card3TigerRate = result['data']['t2'][23]['rate'];
+      card4TigerRate = result['data']['t2'][24]['rate'];
+      card5TigerRate = result['data']['t2'][25]['rate'];
+      card6TigerRate = result['data']['t2'][26]['rate'];
+      card7TigerRate = result['data']['t2'][27]['rate'];
+      card8TigerRate = result['data']['t2'][28]['rate'];
+      card9TigerRate = result['data']['t2'][29]['rate'];
+      card10TigerRate = result['data']['t2'][30]['rate'];
+      cardJTigerRate = result['data']['t2'][31]['rate'];
+      cardQTigerRate = result['data']['t2'][32]['rate'];
+      cardKTigerRate = result['data']['t2'][33]['rate'];
+      startTimes = int.parse(autoTime.toString());
+      print("====>$startTimes");
+      marketId = result['data']['t1'][0]['mid'].toString();
 
       autoTime == "0"
           ? setState(() {
@@ -5877,7 +5933,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         evenDragonButton = false;
@@ -5898,7 +5954,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     } else {
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
   }
@@ -6123,7 +6179,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
       print("betBody--->$response");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         evenDragonButton = false;
@@ -6144,7 +6200,7 @@ class _DragonTigerPlayRoomState extends State<DragonTigerPlayRoom>
     } else {
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
   }

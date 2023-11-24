@@ -314,9 +314,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       oldPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
-      DialogUtils.showOneBtn(context, result['message'],);
+      DialogUtils.showOneBtn(context, result['message'],playBackgroundMusic);
     } else {
-      DialogUtils.showOneBtn(context, result['message'],);
+      DialogUtils.showOneBtn(context, result['message'],playBackgroundMusic);
     }
   }
 }

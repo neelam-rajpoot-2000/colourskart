@@ -7,6 +7,8 @@ import 'User-Interface/signin_screen.dart';
 import 'Utils/apis.dart';
 import 'package:http/http.dart' as http;
 
+import 'bar.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(fontFamily: 'Poppins'),
       debugShowCheckedModeBanner: false,
       title: 'Virtual Casino',
-      home: SplashScreen(),
+      home:SplashScreen(),
     );
   }
 

@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:blinking_text/blinking_text.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,6 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
   final startBettingmusic = AudioPlayer();
   final onPressedmusic = AudioPlayer();
   late AnimationController _controller;
-  late Animation<double> _animation;
   List<DragonTigerLionResult> cardResultList = [];
   final List<Widget> _coins = [];
   final List<Widget> _coinsRyt = [];
@@ -66,7 +66,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
   bool greenCoinAnimation = false;
   bool lightBlueCoinAnimation = false;
   bool brownCoinAnimation = false;
- bool  confirmButton = false;
+  bool confirmButton = false;
   int stack1 = 0;
   int stack2 = 0;
   int stack3 = 0;
@@ -99,16 +99,31 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
   bool blackDbutton = false;
   String redDRate = "";
   bool redDbutton = false;
+  
   final _player = AudioPlayer();
   final _cardPlayer = AudioPlayer();
+  List<Color> chipColors = List.generate(200, (index) => Colors.blue); // Generate 100 blue chips
+ List<Offset> chipPositions = List.generate(
+   200,
+   (index) => Offset(
+     Random().nextDouble(), // Random horizontal position
+     Random().nextDouble(), // Random vertical position
+   ),
+ );
+ int currentChipIndex = 0;
+
+
+ Offset targetBox = Offset(150, 100); // Target box position
+
 
   var gameSound = "assets/lucky7/audio/bgm.mp3";
 
-    void bgMusic() async {
+int startTimeSmall = 0;
+
+  void bgMusic() async {
     await _player.setAsset(gameSound);
     playSound();
   }
-
 
   void playSound() async {
     await _player.setVolume(0.05);
@@ -131,21 +146,6 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
     _player.play();
   }
 
-  Future<void> onPressedMusicForBet() async {
-    onPressedmusic.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
-    });
-    try {
-      await onPressedmusic.setAudioSource(AudioSource.asset(
-        "assets/lucky7/audio/coinsound.wav",
-      ));
-    } catch (e) {
-      print("Error loading audio source: $e");
-    }
-    onPressedmusic.play();
-  }
-
   Future<void> stopBettingMusic() async {
     stopBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
@@ -158,7 +158,11 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    autoTime == "1" && playBackgroundMusic == false
+    autoTime == '3' &&
+            autoTime != '2' &&
+            autoTime != '1' &&
+            autoTime != '0' &&
+            playBackgroundMusic == false
         ? stopBettingmusic.play()
         : stopBettingmusic.stop();
     stopBettingmusic.setVolume(1);
@@ -181,29 +185,51 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
         : startBettingmusic.stop();
     startBettingmusic.setVolume(1);
   }
- Future<void> onPressedMusic() async {
+
+  
+  Future<void> onPressedMusic() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
       print('A stream error occurred: $e');
     });
     try {
       await onPressedmusic.setAudioSource(AudioSource.asset(
-        "assets/lucky7/audio/flipcard.mp3",
+        "assets/Teen-patti/audio/flipcard.mp3",
       ));
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    onPressedmusic.play();
+    autoTime == "45" && playBackgroundMusic == false
+        ? onPressedmusic.play()
+        : onPressedmusic.stop();
   }
 
-         int startTimeSmall=0;
+  Future<void> onPressedMusicForBet() async {
+    onPressedmusic.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
+    try {
+      await onPressedmusic.setAudioSource(AudioSource.asset(
+        "assets/Teen-patti/audio/coinsound.wav",
+      ));
+    } catch (e) {
+      print("Error loading audio source: $e");
+    }
+    startTimes > 3 && playBackgroundMusic == false
+        ? onPressedmusic.play()
+        : onPressedmusic.stop();
+  }
+
   @override
   void initState() {
-        bgMusic();
-          startTimeSmall=startTimes*100;
-       Timer.periodic(const Duration(milliseconds: 10), (timer) {
-        startTimeSmall =startTimeSmall-1;
-       });
+    bgMusic();
+        AudioPlayer.clearAssetCache();
+    WidgetsBinding.instance.addObserver(this);
+    startTimeSmall = startTimes * 100;
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      startTimeSmall = startTimeSmall - 1;
+    });
     dragonButton = true;
     getStakeDetails();
     controller1 = AnimationController(
@@ -217,7 +243,6 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
       duration: Duration(milliseconds: 2000), // Adjust the duration as needed
     );
 
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.repeat(reverse: true);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -226,6 +251,8 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
     ]);
     super.initState();
   }
+
+ 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
@@ -235,12 +262,15 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
       //  _player.play();
     }
   }
+
   void dispose() {
     _controller.dispose();
-
+  _player.dispose();
     WidgetsBinding.instance.removeObserver(this);
     startBettingmusic.dispose();
     stopBettingmusic.dispose();
+
+    _cardPlayer.dispose();
 
     super.dispose();
   }
@@ -296,7 +326,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
           )),
           child: SingleChildScrollView(
             child: Column(children: [
-                Padding(
+              Padding(
                 padding: EdgeInsets.only(
                     left: width * 0.02,
                     right: width * 0.02,
@@ -309,7 +339,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(
-                                 'assets/dragonTigerLion/buttonsImage/balance-frma.png',
+                                'assets/dragonTigerLion/buttonsImage/balance-frma.png',
                               ),
                               fit: BoxFit.fill)),
                       child: Container(
@@ -345,8 +375,10 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                         });
                         _globalKey.currentState!.openDrawer();
                       },
-                      child: Image.asset(   'assets/dragonTigerLion/buttonsImage/menu-button.png',
-                          fit: BoxFit.cover, height: height * 0.05),
+                      child: Image.asset(
+                          'assets/dragonTigerLion/buttonsImage/menu-button.png',
+                          fit: BoxFit.cover,
+                          height: height * 0.05),
                     ),
                     SizedBox(
                       width: width * 0.001,
@@ -365,8 +397,10 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                 playBackgroundMusic = true;
                               });
                             },
-                            child: Image.asset(  'assets/dragonTigerLion/buttonsImage/sound-button.png',
-                                fit: BoxFit.fill, height: height * 0.055),
+                            child: Image.asset(
+                                'assets/dragonTigerLion/buttonsImage/sound-button.png',
+                                fit: BoxFit.fill,
+                                height: height * 0.045),
                           )
                         : InkWell(
                             onTap: () {
@@ -381,8 +415,10 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                 playBackgroundMusic = false;
                               });
                             },
-                            child: Image.asset( 'assets/dragonTigerLion/buttonsImage/mute-button.png',
-                                fit: BoxFit.fill, height: height * 0.055),
+                            child: Image.asset(
+                                'assets/dragonTigerLion/buttonsImage/mute-button.png',
+                                fit: BoxFit.fill,
+                                height: height * 0.045),
                           ),
                   ],
                 ),
@@ -404,11 +440,11 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(
-                                    "assets/dragonTigerLion/buttonsImage/exp-button.png",
+                                "assets/dragonTigerLion/buttonsImage/exp-button.png",
                               ),
                               fit: BoxFit.fill)),
                       child: CustomText(
-                          text:     "EXP : $liablity ",
+                          text: "EXP : $liablity ",
                           color: Color(0xffFFEFC1),
                           fontSize: height * 0.0125,
                           fontWeight: FontWeight.w500),
@@ -420,7 +456,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                               ? onPressedMusic()
                               : Vibration.vibrate();
                         });
-                     //   Navigator.push(context, _createRouteCurrentBetsList());
+                         Navigator.push(context, _createRouteCurrentBetsList());
                       },
                       child: Container(
                         padding: EdgeInsets.only(
@@ -431,7 +467,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: AssetImage(
-                                   "assets/dragonTigerLion/buttonsImage/my-bet-image.png",
+                                  "assets/dragonTigerLion/buttonsImage/my-bet-image.png",
                                 ),
                                 fit: BoxFit.fill)),
                         child: CustomText(
@@ -446,7 +482,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                   ],
                 ),
               ),
-           BlinkText(
+              BlinkText(
                 "Round Id : $marketId",
                 style: TextStyle(color: Colors.white),
               ),
@@ -479,20 +515,29 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                 onTap: () {
                                   HapticFeedback.heavyImpact();
                                   DialogUtils.showResultDTLPortrait(
-                                      context,
-                                      items.winner == "1"
-                                          ? items.dragonDetail
-                                          : items.winner == "2"
-                                              ? items.tigerDetail
-                                              : items.lionDetail,
-                                      items.card1,
-                                      items.card2,
-                                      items.card3,
-                                      items.winnerDetail,
-                                      items.mid,
-                                      items.tigerDetail,
-                                      items.lionDetail,
-                                      playBackgroundMusic);
+                                    context,
+                                    items.winner == "1"
+                                        ? items.dragonDetail
+                                        : items.winner == "2"
+                                            ? items.tigerDetail
+                                            : items.lionDetail,
+                                    items.card1,
+                                    items.card2,
+                                    items.card3,
+                                    items.winnerDetail,
+                                    items.mid,
+                                    items.tigerDetail,
+                                    items.lionDetail,
+                                    playBackgroundMusic,
+                                    height * 0.3,
+                                    width,
+                                    height * 0.1,
+                                    width,
+                                   width*0.1,
+                                    width * 0.2,
+                                    width * 0.2,
+                                    width * 0.2,
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(
@@ -582,6 +627,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                   ),
                   SizedBox(
                     height: height * 0.36,
+        
                     child: AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
                       child: Stack(
@@ -592,33 +638,53 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                   SizedBox(
                       height: height * 0.36,
                       child: PotraitRandomCoinRightSideDTL()),
-                  Positioned(
-                    left: width * 0.30,
-                    top: height * 0.02,
-                    child: startTimes >= 3
-                        ? Column(
-                            children: [
-                              CustomText(
-                                text: "Starting in ${autoTime} sec",
-                                fontWeight: FontWeight.w700,
+                         startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.40,
+                          top: height * 0.012,
+                          child: CustomText(
+                            text: "Starting in ",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 09.0,
+                            textAlign: TextAlign.end,
+                          ),
+                        )
+                      : SizedBox(),
+
+                  startTimes >= 1
+                      ? Positioned(
+                          left: width * 0.54,
+                          top: height * 0.012,
+                          child: SizedBox(
+                            width: width * 0.055,
+                            child: Center(
+                              child: CustomText(
+                                text: "$autoTime s",
+                                fontWeight: FontWeight.bold,
                                 color: Colors.white,
-                                fontSize: 12.0,
-                                textAlign: TextAlign.center,
+                                fontSize: 09.0,
+                                textAlign: TextAlign.start,
                               ),
-                              SizedBox(
-                                height: 3,
-                                width: width * 0.45,
-                                child: LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
-                                  backgroundColor: Colors.grey,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
-                                ),
-                              ),
-                            ],
-                          )
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
+                  Positioned(
+                    left: width * 0.37,
+                    top: height * 0.05,
+                    child: startTimes >= 3
+                        ? SizedBox(
+                          height: 5,
+                          width: width * 0.25,
+                          child: LinearProgressIndicator(
+                            value: startTimeSmall /
+                                4500, // Calculate the progress
+                            backgroundColor: Colors.grey,
+                            valueColor:
+                                AlwaysStoppedAnimation(Color(0xaa9919D2)),
+                          ),
+                        )
                         : SizedBox(),
                   ),
                   autoTime == "45"
@@ -1033,29 +1099,31 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                         oddsRates = items['rate'];
                                       });
                                       if (autoTime != "0") {
-                                        showMyDialogForBetPortrait(       context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation ==
-                                                true
-                                            ? stack1
-                                            : greenCoinAnimation == true
-                                                ? stack2
-                                                : lightGreenCoinAnimation ==
-                                                        true
-                                                    ? stack3
-                                                    : blueCoinAnimation == true
-                                                        ? stack4
-                                                        : brownCoinAnimation ==
+                                        showMyDialogForBetPortrait(
+                                            context,
+                                            height * 0.23,
+                                            width,
+                                            height * 0.4,
+                                            width * 0.7,
+                                            height * 0.26,
+                                            width * 0.98,
+                                            redCoinAnimation == true
+                                                ? stack1
+                                                : greenCoinAnimation == true
+                                                    ? stack2
+                                                    : lightGreenCoinAnimation ==
+                                                            true
+                                                        ? stack3
+                                                        : blueCoinAnimation ==
                                                                 true
-                                                            ? stack5
-                                                            : lightBlueCoinAnimation ==
+                                                            ? stack4
+                                                            : brownCoinAnimation ==
                                                                     true
-                                                                ? stack6
-                                                                : 0);
+                                                                ? stack5
+                                                                : lightBlueCoinAnimation ==
+                                                                        true
+                                                                    ? stack6
+                                                                    : 0);
                                       }
                                     },
                                     child: Container(
@@ -1124,30 +1192,31 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                             oddsRates = items['rate'];
                                           });
                                           if (autoTime != "0") {
-                                            showMyDialogForBetPortrait(       context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation ==
-                                                    true
-                                                ? stack1
-                                                : greenCoinAnimation == true
-                                                    ? stack2
-                                                    : lightGreenCoinAnimation ==
-                                                            true
-                                                        ? stack3
-                                                        : blueCoinAnimation ==
+                                            showMyDialogForBetPortrait(
+                                                context,
+                                                height * 0.23,
+                                                width,
+                                                height * 0.4,
+                                                width * 0.7,
+                                                height * 0.26,
+                                                width * 0.98,
+                                                redCoinAnimation == true
+                                                    ? stack1
+                                                    : greenCoinAnimation == true
+                                                        ? stack2
+                                                        : lightGreenCoinAnimation ==
                                                                 true
-                                                            ? stack4
-                                                            : brownCoinAnimation ==
+                                                            ? stack3
+                                                            : blueCoinAnimation ==
                                                                     true
-                                                                ? stack5
-                                                                : lightBlueCoinAnimation ==
+                                                                ? stack4
+                                                                : brownCoinAnimation ==
                                                                         true
-                                                                    ? stack6
-                                                                    : 0);
+                                                                    ? stack5
+                                                                    : lightBlueCoinAnimation ==
+                                                                            true
+                                                                        ? stack6
+                                                                        : 0);
                                           }
                                         },
                                         child: Container(
@@ -1217,30 +1286,32 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                               oddsRates = items['rate'];
                                             });
                                             if (autoTime != "0") {
-                                              showMyDialogForBetPortrait(     context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation ==
-                                                      true
-                                                  ? stack1
-                                                  : greenCoinAnimation == true
-                                                      ? stack2
-                                                      : lightGreenCoinAnimation ==
+                                              showMyDialogForBetPortrait(
+                                                  context,
+                                                  height * 0.23,
+                                                  width,
+                                                  height * 0.4,
+                                                  width * 0.7,
+                                                  height * 0.26,
+                                                  width * 0.98,
+                                                  redCoinAnimation == true
+                                                      ? stack1
+                                                      : greenCoinAnimation ==
                                                               true
-                                                          ? stack3
-                                                          : blueCoinAnimation ==
+                                                          ? stack2
+                                                          : lightGreenCoinAnimation ==
                                                                   true
-                                                              ? stack4
-                                                              : brownCoinAnimation ==
+                                                              ? stack3
+                                                              : blueCoinAnimation ==
                                                                       true
-                                                                  ? stack5
-                                                                  : lightBlueCoinAnimation ==
+                                                                  ? stack4
+                                                                  : brownCoinAnimation ==
                                                                           true
-                                                                      ? stack6
-                                                                      : 0);
+                                                                      ? stack5
+                                                                      : lightBlueCoinAnimation ==
+                                                                              true
+                                                                          ? stack6
+                                                                          : 0);
                                             }
                                           },
                                           child: Container(
@@ -1310,52 +1381,51 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                   HapticFeedback.heavyImpact();
                                   _globalKey.currentState!.openDrawer();
                                 },
-                                child: Image.asset(  'assets/dragonTigerLion/buttonsImage/menu-button.png',
-                                    fit: BoxFit.fill, width: width * 0.045), 
+                                child: Image.asset(
+                                    'assets/dragonTigerLion/buttonsImage/menu-button.png',
+                                    fit: BoxFit.fill,
+                                    width: width * 0.045),
                               ),
                               SizedBox(
                                 width: width * 0.03,
                               ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: width * 0.02,
-                                      vertical: height * 0.015),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.02,
+                                    vertical: height * 0.015),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     image: DecorationImage(
                                         image: AssetImage(
-                                          'assets/dragonTigerLion/buttonsImage/balance-frma.png'),
+                                            'assets/dragonTigerLion/buttonsImage/balance-frma.png'),
                                         fit: BoxFit.fill)),
-                                child:  Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/lucky7/images/Group 658.png',
-                                        height: height * 0.05,
-                                        width: width * 0.03,
-                                      ),
-                                      Text(
-                                        "  ${mainBalance.toStringAsFixed(2)}",
-                                        style: TextStyle(
-                                            color: Color(0xffFFEFC1),
-                                            fontSize: height * 0.03,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
-                                  ),
-                                
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/lucky7/images/Group 658.png',
+                                      height: height * 0.05,
+                                      width: width * 0.03,
+                                    ),
+                                    Text(
+                                      "  ${mainBalance.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                          color: Color(0xffFFEFC1),
+                                          fontSize: height * 0.03,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
                               ),
-                           
                             ],
                           ),
-                           InkWell(
+                          InkWell(
                             onTap: () {
                               setState(() {
                                 playBackgroundMusic == false
                                     ? onPressedMusic()
                                     : Vibration.vibrate();
                               });
-
-                        
+                                  Navigator.push(context, _createRouteCurrentBetsList());
                             },
                             child: Container(
                               padding: EdgeInsets.only(
@@ -1366,7 +1436,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                       image: AssetImage(
-                                       'assets/dragonTigerLion/buttonsImage/my-bet-image.png',
+                                        'assets/dragonTigerLion/buttonsImage/my-bet-image.png',
                                       ),
                                       fit: BoxFit.fill)),
                               child: CustomText(
@@ -1378,7 +1448,6 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                               ),
                             ),
                           ),
-                        
                           BlinkText(
                             "Round ID : $marketId",
                             style: TextStyle(
@@ -1391,10 +1460,10 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                         ],
                       ),
                     ),
-                            Positioned(
+                    Positioned(
                       top: height * 0.1,
                       child: Image.asset(
-                 'assets/dragonTigerLion/tableImges/table-girl.png',
+                        'assets/dragonTigerLion/tableImges/table-girl.png',
                         fit: BoxFit.cover,
                         height: height * 0.28,
                       ),
@@ -1448,13 +1517,12 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                           height: 4,
                                           width: width * 0.15,
                                           child: LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
-                                  backgroundColor: Colors.grey,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
-                                ),
+                                            value: startTimeSmall /
+                                                4500, // Calculate the progress
+                                            backgroundColor: Colors.grey,
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Color(0xaa9919D2)),
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 4,
@@ -1486,7 +1554,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                         });
                                       },
                                       child: Image.asset(
-                                         "assets/dragonTigerLion/buttonsImage/sound-button.png",
+                                          "assets/dragonTigerLion/buttonsImage/sound-button.png",
                                           fit: BoxFit.fill,
                                           width: width * 0.045),
                                     )
@@ -1503,7 +1571,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                         });
                                       },
                                       child: Image.asset(
-                                        'assets/dragonTigerLion/buttonsImage/mute-button.png',
+                                          'assets/dragonTigerLion/buttonsImage/mute-button.png',
                                           fit: BoxFit.fill,
                                           width: width * 0.045),
                                     ),
@@ -1512,8 +1580,9 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                         ],
                       ),
                     ),
-                   ///
-               
+
+                    ///
+
                     Positioned(
                       bottom: 1,
                       child: Image.asset(
@@ -1847,21 +1916,19 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
 
                     Positioned(
                       top: height * 0.17,
-                
                       right: width * 0.018,
                       child: Container(
                         height: height * 0.75,
                         width: width * 0.05,
-                    
                         padding: EdgeInsets.symmetric(vertical: 10),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(5),
                             image: DecorationImage(
-                          image: AssetImage(
-                              "assets/dragonTigerLion/tableImges/small-result.png"),
-                          fit: BoxFit.cover,
-                        )),
+                              image: AssetImage(
+                                  "assets/dragonTigerLion/tableImges/small-result.png"),
+                              fit: BoxFit.cover,
+                            )),
                         child: ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: cardResultList.length,
@@ -1871,21 +1938,30 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                               return InkWell(
                                 onTap: () {
                                   HapticFeedback.heavyImpact();
-                                  DialogUtils.showResultDTL(
-                                      context,
-                                      items.winner == "1"
-                                          ? items.dragonDetail
-                                          : items.winner == "2"
-                                              ? items.tigerDetail
-                                              : items.lionDetail,
-                                      items.card1,
-                                      items.card2,
-                                      items.card3,
-                                      items.winnerDetail,
-                                      items.mid,
-                                      items.tigerDetail,
-                                      items.lionDetail,
-                                      playBackgroundMusic);
+                                  DialogUtils.showResultDTLPortrait(
+                                    context,
+                                    items.winner == "1"
+                                        ? items.dragonDetail
+                                        : items.winner == "2"
+                                            ? items.tigerDetail
+                                            : items.lionDetail,
+                                    items.card1,
+                                    items.card2,
+                                    items.card3,
+                                    items.winnerDetail,
+                                    items.mid,
+                                    items.tigerDetail,
+                                    items.lionDetail,
+                                    playBackgroundMusic,
+                                    height * 0.55,
+                                    width * 0.5,
+                                    height * 0.12,
+                                    width * 0.4,
+                                    width * 0.07,
+                                    width * 0.1,
+                                    width * 0.1,
+                                    width * 0.1,
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.all(2),
@@ -2139,14 +2215,15 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                   oddsRates = items['rate'];
                                                 });
                                                 if (autoTime != "0") {
-                                                  showMyDialogForBet(    context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation ==
-                                                              true
+                                                  showMyDialogForBet(
+                                                      context,
+                                                      height * 0.45,
+                                                      width * 0.33,
+                                                      height * 0.4,
+                                                      width * 0.7,
+                                                      height * 0.64,
+                                                      width * 0.55,
+                                                      redCoinAnimation == true
                                                           ? stack1
                                                           : greenCoinAnimation ==
                                                                   true
@@ -2163,7 +2240,6 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                                           : lightBlueCoinAnimation == true
                                                                               ? stack6
                                                                               : 0);
-                                              
                                                 }
                                               },
                                               child: Container(
@@ -2272,30 +2348,31 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                       oddsRates = items['rate'];
                                                     });
                                                     if (autoTime != "0") {
-                                                      showMyDialogForBet(    context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation ==
-                                                              true
-                                                          ? stack1
-                                                          : greenCoinAnimation ==
+                                                      showMyDialogForBet(
+                                                          context,
+                                                          height * 0.45,
+                                                          width * 0.33,
+                                                          height * 0.4,
+                                                          width * 0.7,
+                                                          height * 0.64,
+                                                          width * 0.55,
+                                                          redCoinAnimation ==
                                                                   true
-                                                              ? stack2
-                                                              : lightGreenCoinAnimation ==
+                                                              ? stack1
+                                                              : greenCoinAnimation ==
                                                                       true
-                                                                  ? stack3
-                                                                  : blueCoinAnimation ==
+                                                                  ? stack2
+                                                                  : lightGreenCoinAnimation ==
                                                                           true
-                                                                      ? stack4
-                                                                      : brownCoinAnimation ==
+                                                                      ? stack3
+                                                                      : blueCoinAnimation ==
                                                                               true
-                                                                          ? stack5
-                                                                          : lightBlueCoinAnimation == true
-                                                                              ? stack6
-                                                                              : 0);
+                                                                          ? stack4
+                                                                          : brownCoinAnimation == true
+                                                                              ? stack5
+                                                                              : lightBlueCoinAnimation == true
+                                                                                  ? stack6
+                                                                                  : 0);
                                                     }
                                                   },
                                                   child: Container(
@@ -2411,29 +2488,30 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                               items['rate'];
                                                         });
                                                         if (autoTime != "0") {
-                                                          showMyDialogForBet(    context,
-                              height * 0.45,
-                              width * 0.33,
-                              height * 0.4,
-                              width * 0.7,
-                              height * 0.64,
-                              width * 0.55,redCoinAnimation ==
-                                                                  true
-                                                              ? stack1
-                                                              : greenCoinAnimation ==
+                                                          showMyDialogForBet(
+                                                              context,
+                                                              height * 0.45,
+                                                              width * 0.33,
+                                                              height * 0.4,
+                                                              width * 0.7,
+                                                              height * 0.64,
+                                                              width * 0.55,
+                                                              redCoinAnimation ==
                                                                       true
-                                                                  ? stack2
-                                                                  : lightGreenCoinAnimation ==
+                                                                  ? stack1
+                                                                  : greenCoinAnimation ==
                                                                           true
-                                                                      ? stack3
-                                                                      : blueCoinAnimation ==
+                                                                      ? stack2
+                                                                      : lightGreenCoinAnimation ==
                                                                               true
-                                                                          ? stack4
-                                                                          : brownCoinAnimation == true
-                                                                              ? stack5
-                                                                              : lightBlueCoinAnimation == true
-                                                                                  ? stack6
-                                                                                  : 0);
+                                                                          ? stack3
+                                                                          : blueCoinAnimation == true
+                                                                              ? stack4
+                                                                              : brownCoinAnimation == true
+                                                                                  ? stack5
+                                                                                  : lightBlueCoinAnimation == true
+                                                                                      ? stack6
+                                                                                      : 0);
                                                         }
                                                       },
                                                       child: Container(
@@ -2506,6 +2584,30 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
       ),
     );
   }
+
+    Route _createRouteCurrentBetsList() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => CurrentUserBet(
+        matchId: widget.matchID,
+        gameCode: widget.gameCode,
+        playBackgroundMusic: playBackgroundMusic,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
 
   Widget drawerWidget() {
     return Container(
@@ -2807,25 +2909,28 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                           oddsRates = items.rate;
                         });
                         if (autoTime != "0") {
-                          showMyDialogForBetPortrait(    context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation == true
-                              ? stack1
-                              : greenCoinAnimation == true
-                                  ? stack2
-                                  : lightGreenCoinAnimation == true
-                                      ? stack3
-                                      : blueCoinAnimation == true
-                                          ? stack4
-                                          : brownCoinAnimation == true
-                                              ? stack5
-                                              : lightBlueCoinAnimation == true
-                                                  ? stack6
-                                                  : 0);
+                          showMyDialogForBetPortrait(
+                              context,
+                              height * 0.23,
+                              width,
+                              height * 0.4,
+                              width * 0.7,
+                              height * 0.26,
+                              width * 0.98,
+                              redCoinAnimation == true
+                                  ? stack1
+                                  : greenCoinAnimation == true
+                                      ? stack2
+                                      : lightGreenCoinAnimation == true
+                                          ? stack3
+                                          : blueCoinAnimation == true
+                                              ? stack4
+                                              : brownCoinAnimation == true
+                                                  ? stack5
+                                                  : lightBlueCoinAnimation ==
+                                                          true
+                                                      ? stack6
+                                                      : 0);
                         }
                       },
                       child: Container(
@@ -2872,27 +2977,28 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                               oddsRates = items.rate;
                             });
                             if (autoTime != "0") {
-                              showMyDialogForBetPortrait(    context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation ==
-                                      true
-                                  ? stack1
-                                  : greenCoinAnimation == true
-                                      ? stack2
-                                      : lightGreenCoinAnimation == true
-                                          ? stack3
-                                          : blueCoinAnimation == true
-                                              ? stack4
-                                              : brownCoinAnimation == true
-                                                  ? stack5
-                                                  : lightBlueCoinAnimation ==
-                                                          true
-                                                      ? stack6
-                                                      : 0);
+                              showMyDialogForBetPortrait(
+                                  context,
+                                  height * 0.23,
+                                  width,
+                                  height * 0.4,
+                                  width * 0.7,
+                                  height * 0.26,
+                                  width * 0.98,
+                                  redCoinAnimation == true
+                                      ? stack1
+                                      : greenCoinAnimation == true
+                                          ? stack2
+                                          : lightGreenCoinAnimation == true
+                                              ? stack3
+                                              : blueCoinAnimation == true
+                                                  ? stack4
+                                                  : brownCoinAnimation == true
+                                                      ? stack5
+                                                      : lightBlueCoinAnimation ==
+                                                              true
+                                                          ? stack6
+                                                          : 0);
                             }
                           },
                           child: Container(
@@ -2942,27 +3048,29 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                   oddsRates = items.rate;
                                 });
                                 if (autoTime != "0") {
-                                  showMyDialogForBetPortrait(    context,
-                        height * 0.23,
-                        width,
-                        height * 0.4,
-                        width * 0.7,
-                        height * 0.26,
-                        width * 0.98,redCoinAnimation ==
-                                          true
-                                      ? stack1
-                                      : greenCoinAnimation == true
-                                          ? stack2
-                                          : lightGreenCoinAnimation == true
-                                              ? stack3
-                                              : blueCoinAnimation == true
-                                                  ? stack4
-                                                  : brownCoinAnimation == true
-                                                      ? stack5
-                                                      : lightBlueCoinAnimation ==
+                                  showMyDialogForBetPortrait(
+                                      context,
+                                      height * 0.23,
+                                      width,
+                                      height * 0.4,
+                                      width * 0.7,
+                                      height * 0.26,
+                                      width * 0.98,
+                                      redCoinAnimation == true
+                                          ? stack1
+                                          : greenCoinAnimation == true
+                                              ? stack2
+                                              : lightGreenCoinAnimation == true
+                                                  ? stack3
+                                                  : blueCoinAnimation == true
+                                                      ? stack4
+                                                      : brownCoinAnimation ==
                                                               true
-                                                          ? stack6
-                                                          : 0);
+                                                          ? stack5
+                                                          : lightBlueCoinAnimation ==
+                                                                  true
+                                                              ? stack6
+                                                              : 0);
                                 }
                               },
                               child: Container(
@@ -3890,12 +3998,11 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
     var result = jsonDecode(response);
 
     if (result['status'] == true) {
-      var list = result['data']['t2'] as List;
       setState(() {
         autoTime = result['data']['t1'][0]['autotime'].toString();
-          if (startTimes != int.parse(autoTime.toString())) {
-        startTimeSmall = startTimes * 100;
-      }
+        if (startTimes != int.parse(autoTime.toString())) {
+          startTimeSmall = startTimes * 100;
+        }
         marketId = result['data']['t1'][0]['mid'].toString();
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
         cardNameImage2 = result['data']['t1'][0]['C2'].toString();
@@ -4027,12 +4134,12 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                     Container(
                       height: heightImage,
                       width: widthImage,
-                     decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      "assets/User-interface/place-bet-bg.png"),
-                                  fit: BoxFit.fitHeight)),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/User-interface/place-bet-bg.png"),
+                              fit: BoxFit.fitHeight)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -4055,7 +4162,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                   // alignment: Alignment.center,
                                   child: Image.asset(
                                     "assets/User-interface/minus-image.png",
-                                    scale: 3,
+                                    scale: 2.3,
                                   ),
                                 ),
                                 SizedBox(
@@ -4063,6 +4170,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                   width: width * 0.22,
                                   child: Center(
                                     child: TextField(
+                                        textAlignVertical: TextAlignVertical.center,
                                       textAlign: TextAlign.center,
                                       controller: stakeController,
                                       onChanged: (String value) async {
@@ -4102,7 +4210,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                   // alignment: Alignment.center,
                                   child: Image.asset(
                                     "assets/User-interface/plus-image.png",
-                                    scale: 3,
+                                    scale: 2.3,
                                   ),
                                 ),
                               ],
@@ -4130,15 +4238,13 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                             ? onPressedMusicForBet()
                                             : Vibration.vibrate();
                                       });
-                                     
-                                        makeBet();
-                                        Navigator.pop(context);
 
-                                   
-                                        setState(() {
-                                          confirmButton = true;
-                                        });
-                                    
+                                      makeBet();
+                                      Navigator.pop(context);
+
+                                      setState(() {
+                                        confirmButton = true;
+                                      });
                                     },
                                     child: Container(
                                         height: height * 0.22,
@@ -4157,14 +4263,12 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                 : Vibration.vibrate();
                                           });
 
-                                    
-                                            makeBet();
-                                            Navigator.pop(context);
+                                          makeBet();
+                                          Navigator.pop(context);
 
-                                            setState(() {
-                                              confirmButton = true;
-                                            });
-                                  
+                                          setState(() {
+                                            confirmButton = true;
+                                          });
                                         },
                                         child: Container(
                                             height: height * 0.22,
@@ -4185,7 +4289,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -4252,12 +4356,12 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                     Container(
                       height: heightImage,
                       width: widthImage,
-                       decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                      "assets/User-interface/place-bet-bg.png"),
-                                  fit: BoxFit.fitHeight)),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image: AssetImage(
+                                  "assets/User-interface/place-bet-bg.png"),
+                              fit: BoxFit.fitHeight)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -4280,7 +4384,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                     // alignment: Alignment.center,
                                     child: Image.asset(
                                       "assets/User-interface/minus-image.png",
-                                      scale: 3,
+                                      scale: 2.3,
                                     ),
                                   ),
                                   SizedBox(
@@ -4288,6 +4392,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                     width: width * 0.45,
                                     child: Center(
                                       child: TextField(
+                                          textAlignVertical: TextAlignVertical.center,
                                         textAlign: TextAlign.center,
                                         controller: stakeController,
                                         onChanged: (String value) async {
@@ -4327,7 +4432,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                     // alignment: Alignment.center,
                                     child: Image.asset(
                                       "assets/User-interface/plus-image.png",
-                                      scale: 3,
+                                      scale: 2.3,
                                     ),
                                   ),
                                 ],
@@ -4356,14 +4461,12 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                               : Vibration.vibrate();
                                         });
 
-                                       
-                                          makeBetPortrait();
-                                          Navigator.pop(context);
+                                        makeBetPortrait();
+                                        Navigator.pop(context);
 
-                                          setState(() {
-                                            confirmButton = true;
-                                          });
-                                    
+                                        setState(() {
+                                          confirmButton = true;
+                                        });
                                       },
                                       child: Container(
                                         alignment: Alignment.center,
@@ -4389,10 +4492,8 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                                 ? onPressedMusicForBet()
                                                 : Vibration.vibrate();
 
-                                              makeBetPortrait();
-                                              Navigator.pop(context);
-
-                                           
+                                            makeBetPortrait();
+                                            Navigator.pop(context);
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -4423,7 +4524,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
@@ -4470,7 +4571,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
         });
   }
 
- Future makeBet() async {
+  Future makeBet() async {
     getUserDetails();
     DateTime currentTime = DateTime.now();
     var url = "http://13.250.53.81/VirtualCasinoBetPlacer/vc/place-bet";
@@ -4526,7 +4627,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         manualAmount = false;
@@ -4537,7 +4638,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
 
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 
@@ -4600,7 +4701,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
 
       setState(() {
@@ -4614,7 +4715,7 @@ class _DragonTigerLionPlayRoomState extends State<DragonTigerLionPlayRoom>
 
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 

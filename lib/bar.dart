@@ -1,114 +1,130 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:math';
 
-class FlyingCoinsScreen extends StatefulWidget {
-  @override
-  _FlyingCoinsScreenState createState() => _FlyingCoinsScreenState();
+
+import 'package:flutter/material.dart';
+
+
+
+
+
+
+class MyGame extends StatefulWidget {
+ @override
+ _MyGameState createState() => _MyGameState();
 }
 
-class _FlyingCoinsScreenState extends State<FlyingCoinsScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  List<Widget> _coins = [];
-  Random _random = Random();
 
-  late double _minX;
-  late double _maxX;
-  late double _minY;
-  late double _maxY;
+class _MyGameState extends State<MyGame> {
+ List<Image> chipColors = List.generate(200, (index) => Image(image: AssetImage(  'assets/lucky7/images/coins/one.png'))); // Generate 100 blue chips
+ List<Offset> chipPositions = List.generate(
+   200,
+   (index) => Offset(
+     Random().nextDouble(), // Random horizontal position
+     Random().nextDouble(), // Random vertical position
+   ),
+ );
+ int currentChipIndex = 0;
 
-  List<String> _coinImages = [
-    'images/coin1.png',
-    'images/coin2.png',
-    'images/coin3.png',
-    // Add more image paths for each coin
-  ];
 
-  int _currentCoinIndex = 0;
-  late double _startX, _startY, _endX, _endY;
+ Offset targetBox = Offset(150, 100); // Target box position
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
 
-    // Set min and max coordinates based on screen size
-    _minX = 0;
-    _maxX = MediaQuery.of(context).size.width - 100; // Adjust as needed
-    _minY = 0;
-    _maxY = MediaQuery.of(context).size.height - 100; // Adjust as needed
-  }
+ @override
+ Widget build(BuildContext context) {
+   return Scaffold(
+     appBar: AppBar(
+       title: Text('Casino Game'),
+     ),
+     body: SingleChildScrollView(
+       child: Center(
+         child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           children: [
+             ElevatedButton(
+               onPressed: () {
+                 _throwChipFromRandomPosition();
+               },
+               child: Text('Throw Chip'),
+             ),
+             SizedBox(height: 20),
+             Container(
+               width: 200,
+                height: 200,
+               decoration: BoxDecoration(
+                 border: Border.all(color: Colors.black),
+               ),
+               child: Stack(
+                 children: List.generate(chipColors.length, (index) {
+                   return AnimatedPositioned(
+                     duration: Duration(seconds: 1), // Animation duration
+                     left: currentChipIndex > index
+                         ? chipPositions[index].dx *200 // Target box width
+                         : 0,
+                     top: currentChipIndex > index
+                         ? chipPositions[index].dy * 200 // Target box height
+                         : 0,
+                     child: currentChipIndex > index
+                         ? ChipWidget(chipColor: chipColors[index])
+                         : Container(),
+                   );
+                 }),
+               ),
+             ),
+             SizedBox(height: 20),
+             GestureDetector(
+               onTap: () {
+                 _throwChipFromRandomPosition();
+               },
+               child: Icon(
+                 Icons.star,
+                 size: 50,
+                 color: Colors.yellow,
+               ),
+             ),
+           ],
+         ),
+       ),
+     ),
+   );
+ }
 
-  void _startCoinAnimation() {
-    if (_currentCoinIndex >= _coinImages.length) {
-      return;
-    }
 
-    _startX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    _startY = _random.nextDouble() * (_maxY - _minY) + _minY;
-    _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
-
-    setState(() {
-      _coins.add(
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (BuildContext context, Widget? child) {
-            double value = _controller.value;
-            double currentX = _startX + (_endX - _startX) * value;
-            double currentY = _startY + (_endY - _startY) * value;
-
-            return Positioned(
-              left: currentX,
-              top: currentY,
-              child: Image.asset(
-            _coinImages[_currentCoinIndex],
-          ),
-            );
-          },
-         
-        ),
-      );
-    });
-
-    _currentCoinIndex++;
-  }
-
-  void _onBetButtonPressed() {
-    if (_currentCoinIndex < _coinImages.length) {
-      _controller.reset();
-      _controller.forward();
-      _startCoinAnimation();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flying Coins'),
-      ),
-      body: Stack(
-        children: [
-        
-          ..._coins,
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onBetButtonPressed,
-        child: Icon(Icons.play_arrow),
-      ),
-    );
-  }
+ void _throwChipFromRandomPosition() {
+   Timer.periodic(Duration(seconds: 1), (timer) {
+     if (currentChipIndex < chipColors.length) {
+       setState(() {
+         chipPositions[currentChipIndex] = Offset(
+           Random().nextDouble(), // Random horizontal position
+           Random().nextDouble(), // Random vertical position
+  );
+         currentChipIndex++;
+       });
+     } else {
+       timer.cancel();
+     }
+   });
+ }
 }
 
+
+class ChipWidget extends StatelessWidget {
+ final Image chipColor;
+
+
+ ChipWidget({required this.chipColor});
+
+
+ @override
+ Widget build(BuildContext context) {
+   return Container(
+     width: 20, // Adjust chip size as needed
+     height: 20,
+     decoration: BoxDecoration(
+     image: DecorationImage(image: AssetImage("$chipColor")),
+       shape: BoxShape.circle,
+     ),
+   );
+ }
+}
 

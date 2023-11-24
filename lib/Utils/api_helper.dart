@@ -27,8 +27,6 @@ class GlobalFunction {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     String result = "";
-    String token = "";
-    token = preferences.getString("token").toString();
     // print("Token--->" + token);
     http.Response response =
         await http.post(Uri.parse(url), body: jsonEncode(data), headers: {
@@ -38,7 +36,7 @@ class GlobalFunction {
     if (response.statusCode == 200) {
       result = response.body;
     } else {
-      log("-->" + response.body);
+      log("-->${response.body}");
     }
     return result;
   }
@@ -53,8 +51,6 @@ class GlobalFunction {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     String result = "";
-    String token = "";
-    token = preferences.getString("token").toString();
     // print("Token--->" + token);
     http.Response response =
         await http.post(Uri.parse(url), body: jsonEncode(data), headers: {
@@ -68,7 +64,7 @@ class GlobalFunction {
    
 
       DialogUtils.showOneBtn(
-          context, jsonDecode(response.body)['message']);
+          context, jsonDecode(response.body)['message'], true);
     }
     return result;
   }
@@ -83,8 +79,6 @@ class GlobalFunction {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     String result = "";
-    String token = "";
-    token = preferences.getString("token").toString();
     // print("Token--->" + token);
     http.Response response =
         await http.post(Uri.parse(url), body: jsonEncode(data), headers: {
@@ -98,7 +92,7 @@ class GlobalFunction {
    
 
       DialogUtils.showOneBtnPortrait(
-          context, jsonDecode(response.body)['message']);
+          context, jsonDecode(response.body)['message'],true);
     }
     return result;
   }
@@ -111,8 +105,6 @@ class GlobalFunction {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     String result = "";
-    String token = "";
-    token = preferences.getString("token").toString();
     // print("Token--->" + token);
     http.Response response =
         await http.post(Uri.parse(url), body: jsonEncode(data), headers: {
@@ -122,7 +114,7 @@ class GlobalFunction {
     if (response.statusCode == 200) {
       result = response.body;
     } else {
-      DialogUtils.showOneBtn(context, jsonDecode(response.body)['message']);
+      DialogUtils.showOneBtn(context, jsonDecode(response.body)['message'],true);
     }
     return result;
   }
@@ -144,9 +136,7 @@ class GlobalFunction {
   ///spired token api
   static Future<String> apiGetRequestaeToken(String url) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String token = "";
     String result = "";
-    token = preferences.getString("token").toString();
     http.Response response = await http.get(Uri.parse(url), headers: {
       'content-type': 'application/json',
       "Authorization": "Bearer ${preferences.getString("token")}",
@@ -182,14 +172,10 @@ class GlobalFunction {
         return '';
       }
     } on SocketException {
-      print('SOCKET EXCEPTION OCCURRED');
       return '';
     } on FormatException {
-      print('JSON FORMAT EXCEPTION OCCURRED');
       return '';
     } catch (e) {
-      print('UNEXPECTED ERROR');
-      print(e.toString());
       return '';
     }
   }

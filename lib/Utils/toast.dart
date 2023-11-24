@@ -149,7 +149,6 @@ class DialogUtils {
           return OrientationBuilder(
               builder: (BuildContext context, Orientation orientation) {
             return AlertDialog(
-              backgroundColor: Colors.transparent,
               alignment: Alignment.center,
               content: Stack(
                 alignment: Alignment.center,
@@ -375,7 +374,7 @@ class DialogUtils {
         });
   }
 
-  static void showOneBtn(BuildContext context, String titleText) {
+  static void showOneBtn(BuildContext context, String titleText, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -429,7 +428,7 @@ class DialogUtils {
                           ),
                           InkWell(
                             onTap: () {
-                              Vibration.vibrate();
+                                                playSound == false ? '' : Vibration.vibrate();
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -453,7 +452,7 @@ class DialogUtils {
                   child: InkWell(
                     onTap: () {
                       Navigator.pop(context);
-                      Vibration.vibrate();
+                                      playSound == false ? '' : Vibration.vibrate();
                     },
                     child: Image.asset(
                       "assets/User-interface/close-button.png",
@@ -467,7 +466,7 @@ class DialogUtils {
         });
   }
 
-  static void showOneBtnPortrait(BuildContext context, String titleText) {
+  static void showOneBtnPortrait(BuildContext context, String titleText, bool playSound) {
     showDialog(
         context: context,
         builder: (_) {
@@ -522,7 +521,7 @@ class DialogUtils {
                               ),
                               InkWell(
                                   onTap: () {
-                                    Vibration.vibrate();
+                                                      playSound == false ? '' : Vibration.vibrate();
                                     Navigator.pop(context);
                                   },
                                   child: Container(
@@ -545,7 +544,7 @@ class DialogUtils {
                       child: InkWell(
                         onTap: () {
                           Navigator.pop(context);
-                          Vibration.vibrate();
+                                            playSound == false ? '' : Vibration.vibrate();
                         },
                         child: Image.asset(
                           "assets/User-interface/close-button.png",
@@ -1848,259 +1847,26 @@ class DialogUtils {
         });
   }
 
-  static void showResultDTL(
-      BuildContext context,
-      String titleText,
-      cardImage1,
-      cardImage2,
-      cardImage3,
-      winner,
-      roundId,
-      detail2,
-      detail3,
-      bool playSound) {
-                var height = MediaQuery.of(context).size.height;
-          var width = MediaQuery.of(context).size.width;
-    showDialog(
+  // static void showResultDTL(
+  //     BuildContext context,
+  //     String titleText,
+  //     cardImage1,
+  //     cardImage2,
+  //     cardImage3,
+  //     winner,
+  //     roundId,
+  //     detail2,
+  //     detail3,
+  //     bool playSound) {
+  //               var height = MediaQuery.of(context).size.height;
+  //         var width = MediaQuery.of(context).size.width;
+  //   showDialog(
 
-        context: context,
-        builder: (_) {
-         
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-                   alignment: Alignment.center,
-            content: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    height: height * 0.58,
-                width: width*0.46,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                          image: AssetImage(
-                              "assets/dragonTigerLion/tableImges/result-backgroud.png"),
-                          fit: BoxFit.fitWidth)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                   
-                      Text(
-                        "RESULT",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: height*0.02,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                            height: 50,
-                          ),
-                          SizedBox(
-                            width:width*0.05,
-                          ),
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                            height: 50,
-                          ),
-                          SizedBox(
-                                   width:width*0.05,
-                          ),
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
-                            height: 50,
-                          ),
-                       
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        "RoundId : $roundId",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                        ),
-                        height:height*0.15,
-                        width: width*0.5,
-                 
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Color(0xaa45B8E8),
-                            )),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                              SizedBox(
-                              width: width * 0.05,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "WINNER",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "$winner",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "|",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: width * 0.1,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "DRAGON",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    titleText.replaceAll('||', ','),
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "|",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: width * 0.1,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "TIGER",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "${detail2.replaceAll('||', ',')}",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "|",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: width * 0.1,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "LION",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "${detail3.replaceAll('||', ',')}  ",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    
-                    ],
-                  ),
-                ),
-                Positioned(
-                  right:width * 0.005,
-                  top: 0,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      playSound == false ? '' : Vibration.vibrate();
-                    },
-                    child: Image.asset(
-                      "assets/User-interface/close-button.png",
-                      scale: 4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-  }
+  //       context: context,
+  //       builder: (_) {
+
+  //         return   });
+  // }
 
   static void showResultDTLPortrait(
       BuildContext context,
@@ -2112,212 +1878,512 @@ class DialogUtils {
       roundId,
       detail2,
       detail3,
-      bool playSound) {
-            var height = MediaQuery.of(context).size.height;
-          var width = MediaQuery.of(context).size.width;
+      bool playSound,
+      containerHeight,
+      containterWidth,
+      minDataContHeight,
+      minDataContWidth,
+      winnerWidth,
+      dragonWidth,
+      tigerWidth,
+      lionWidth) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     showDialog(
         context: context,
         builder: (_) {
-      
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.center,
-            content: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  height:height * 0.3,
-                  width:width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                          image: AssetImage(
-                              "assets/dragonTigerLion/tableImges/result-backgroud.png"),
-                          fit: BoxFit.fitHeight)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                    
-                      Text(
-                        "RESULT",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: height*0.01
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
-                            height: 50,
+          return OrientationBuilder(
+              builder: (BuildContext context, Orientation orientation) {
+            return orientation == Orientation.portrait
+                ? Dialog(
+                    backgroundColor: Colors.transparent,
+                    insetPadding: EdgeInsets.all(20),
+                    alignment: Alignment.center,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          height: containerHeight,
+                          width: containterWidth,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.transparent,
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      "assets/dragonTigerLion/tableImges/result-backgroud.png"),
+                                  fit: BoxFit.fill)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "RESULT",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: height * 0.01),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                    height: 50,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                    height: 50,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
+                                    height: 50,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Text(
+                                "RoundId : $roundId",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 2),
+                                // height: minDataContHeight,
+                                // width: minDataContWidth,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Color(0xaa45B8E8),
+                                    )),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      // width: width * 0.15,
+                                      width: winnerWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Winner",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "$winner",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      // width: width * 0.15,
+                                      width: dragonWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "DRAGON",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Center(
+                                            child: Text(
+                                              titleText.replaceAll('||', ','),
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 7,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      // width: width * 0.15,
+                                      width: tigerWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "TIGER",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "${detail2.replaceAll('||', ',')}",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      // width: width * 0.15,
+                                      width: lionWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "LION",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "${detail3.replaceAll('||', ',')}  ",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
-                            height: 50,
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Image.network(
-                            "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
-                            height: 50,
-                          ),
-                     
-                        ],
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(
-                        "winner : $winner",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 10,
                         ),
-                        height: 60,
-                        width:width,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Color(0xaa45B8E8),
-                            )),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: width * 0.2,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "   DRAGON  ",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "   ${titleText.replaceAll('||', ',')}",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                        Positioned(
+                          right: width * 0.01,
+                          top: 2,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              playSound == false ? '' : Vibration.vibrate();
+                            },
+                            child: Image.asset(
+                              "assets/User-interface/close-button.png",
+                              scale: 4,
                             ),
-                            Text(
-                              "|",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: width * 0.2,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "TIGER",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "${detail2.replaceAll('||', ',')}",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "|",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: width * 0.2,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "LION",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "${detail3.replaceAll('||', ',')}  ",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 7,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                     
-                    ],
-                  ),
-                ),
-                Positioned(
-                  right:width * 0.005,
-                  top: 2,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      playSound == false ? '' : Vibration.vibrate();
-                    },
-                    child: Image.asset(
-                      "assets/User-interface/close-button.png",
-                      scale: 4,
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-          );
+                  )
+                : Dialog(
+                    alignment: Alignment.center,
+                    backgroundColor: Colors.transparent,
+                    // insetPadding: EdgeInsets.all(10),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          height: containerHeight,
+                          width: containterWidth,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                                             color: Colors.transparent,
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      "assets/dragonTigerLion/tableImges/result-backgroud.png"),
+                                  fit: BoxFit.fitWidth)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "RESULT",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: height * 0.02,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage1.png",
+                                    height: 50,
+                                  ),
+                                  SizedBox(
+                                    width: width * 0.05,
+                                  ),
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage2.png",
+                                    height: 50,
+                                  ),
+                                  SizedBox(
+                                    width: width * 0.05,
+                                  ),
+                                  Image.network(
+                                    "http://admin.kalyanexch.com/images/cards/$cardImage3.png",
+                                    height: 50,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "RoundId : $roundId",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Color(0xaa45B8E8),
+                                    )),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: winnerWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "WINNER",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "$winner",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      width: dragonWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "DRAGON",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            titleText.replaceAll('||', ','),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      //  width: width * 0.1,
+                                      width: tigerWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "TIGER",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "${detail2.replaceAll('||', ',')}",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "|",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      //  width: width * 0.1,
+                                      width: lionWidth,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "LION",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "${detail3.replaceAll('||', ',')}  ",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 7,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          right: width * 0.01,
+                          top: 0.00,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              playSound == false ? '' : Vibration.vibrate();
+                            },
+                            child: Image.asset(
+                              "assets/User-interface/close-button.png",
+                              scale: 4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+          });
         });
   }
 

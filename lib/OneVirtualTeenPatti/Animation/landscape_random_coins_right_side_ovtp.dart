@@ -10,7 +10,7 @@ import '../../Utils/apis.dart';
 
 // ignore: must_be_immutable
 class RandomCoinThroughRightSideOTP extends StatefulWidget {
-  RandomCoinThroughRightSideOTP({
+  const RandomCoinThroughRightSideOTP({
     super.key,
   });
 
@@ -27,10 +27,10 @@ class _RandomCoinThroughRightSideOTPState
   late AnimationController _controller;
   final List<Widget> _coins = [];
   final Random _random = Random();
-  double _minX = 140;
-  double _maxX = 550;
-  double _minY = 140;
-  double _maxY = 260;
+  final double _minX = 140;
+  final double _maxX = 550;
+  final double _minY = 140;
+  final double _maxY = 260;
 
   final List _coinImages = [
     'assets/lucky7/images/coins/hundred.png',
@@ -73,12 +73,11 @@ class _RandomCoinThroughRightSideOTPState
     }
 
     double radius = 100; // Radius of the circular path
-    double angle = _currentCoinIndex * (pi / _totalCoins);
 
-    double _startX = _minX;
-    double _startY = _minX;
-    double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
+    double startX = _minX;
+    double startY = _minX;
+    double endX = _random.nextDouble() * (_maxX - _minX) + _minX;
+    double endY = _random.nextDouble() * (_maxY - _minY) + _minY;
 
     setState(() {
       cardNameImage6 == ""
@@ -86,8 +85,8 @@ class _RandomCoinThroughRightSideOTPState
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 600),
               builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
+                double currentX = startX + (endX - startX) * value;
+                double currentY = startY + (endY - startY) * value;
 
                 return Positioned(
                     right: currentX.clamp(_minX, _maxX),

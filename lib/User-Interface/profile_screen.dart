@@ -405,7 +405,7 @@ bool playBackgroundMusic=false;
         loading = false;
       });
     } else {
-      DialogUtils.showOneBtn(context, result['message'],);
+      DialogUtils.showOneBtn(context, result['message'],playBackgroundMusic);
       setState(() {
         loading = false;
       });

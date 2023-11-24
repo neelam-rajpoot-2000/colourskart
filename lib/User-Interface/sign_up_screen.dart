@@ -190,13 +190,13 @@ class _SignupScreenState extends State<SignupScreen> {
                               :  Vibration.vibrate();
                                   if (userNameController.text.isEmpty) {
                                     DialogUtils.showOneBtn(
-                                        context, "Please enter User name !");
+                                        context, "Please enter User name !",widget.playBackgroundMusic!);
                                   } else if (passwordController.text.isEmpty) {
                                     DialogUtils.showOneBtn(context,
-                                        "Password should not be empty !");
+                                        "Password should not be empty !",true);
                                   } else if (mobileController.text.isEmpty) {
                                     DialogUtils.showOneBtn(context,
-                                        "Mobile no should not be empty !");
+                                        "Mobile no should not be empty !",true);
                                   } else {
                                     getsignUpDetails();
                                   }
@@ -396,13 +396,13 @@ class _SignupScreenState extends State<SignupScreen> {
                               :  Vibration.vibrate();
                             if (userNameController.text.isEmpty) {
                               DialogUtils.showOneBtn(
-                                  context, "Please enter User name !");
+                                  context, "Please enter User name !",  widget.playBackgroundMusic!);
                             } else if (passwordController.text.isEmpty) {
                               DialogUtils.showOneBtn(
-                                  context, "Password should not be empty !");
+                                  context, "Password should not be empty !",  widget.playBackgroundMusic!);
                             } else if (mobileController.text.isEmpty) {
                               DialogUtils.showOneBtn(
-                                  context, "Mobile no should not be empty !");
+                                  context, "Mobile no should not be empty !",  widget.playBackgroundMusic!);
                             } else {
                               getsignUpDetails();
                             }
@@ -494,12 +494,12 @@ class _SignupScreenState extends State<SignupScreen> {
     var response = await GlobalFunction.apiPostRequest(url, body);
     var result = jsonDecode(response);
     if (result['status'] == false) {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],  widget.playBackgroundMusic!);
       setState(() {
         loading = false;
       });
     } else {
-      DialogUtils.showOneBtn(context, result['message']);
+      DialogUtils.showOneBtn(context, result['message'],  widget.playBackgroundMusic!);
       userNameController.clear();
       mobileController.clear();
       passwordController.clear();

@@ -56,7 +56,6 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   List<WinnerResult> cardResultList = [];
   late AnimationController _controller;
   late AnimationController _controller1;
-  late Animation<double> _animation;
   final _player = AudioPlayer();
   final _cardPlayer = AudioPlayer();
   final stopBettingmusic = AudioPlayer();
@@ -85,10 +84,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   final double _maxX = 630;
   final double _minY = 170;
   final double _maxY = 320;
-  final double _minXLeftPort = 50;
-  final double _maxXLeftPort = 200;
-  final double _minYLeftPort = 50;
-  final double _maxYLeftPort = 200;
+
   final double _minXRytPort = 100;
   final double _maxXRytPort = 200;
   final double _minYRytPort = 40;
@@ -160,9 +156,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
 
   final int _totalCoins = 7000;
   int _currentCoinIndex = 0;
-  int _currentCoinIndexRyt = 0;
-  int _currentCoinIndexPort = 0;
-  int _currentCoinIndexRytPort = 0;
+  var _currentCoinIndexRytPort = 0;
 
   late Timer _clockTimer;
   late Timer _musicTimer;
@@ -225,7 +219,6 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
       duration: Duration(milliseconds: 2000), // Adjust the duration as needed
     );
 
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.repeat(reverse: true);
   }
 
@@ -234,11 +227,11 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
       return;
     }
 
-    double _startX = _minYRytPort;
-    double _startY = _minXRytPort;
-    double _endX =
+    double startX = _minYRytPort;
+    double startY = _minXRytPort;
+    double endX =
         _random.nextDouble() * (_maxXRytPort - _minXRytPort) + _minXRytPort;
-    double _endY =
+    double endY =
         _random.nextDouble() * (_maxYRytPort - _minYRytPort) + _minYRytPort;
 
     setState(() {
@@ -247,8 +240,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 600),
               builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
+                double currentX = startX + (endX - startX) * value;
+                double currentY = startY + (endY - startY) * value;
 
                 return Positioned(
                     right: currentX.clamp(_minXRytPort, _maxXRytPort),
@@ -315,102 +308,16 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
         : null;
   }
 
-  void _startCoinAnimationLeftPort() {
-    if (_currentCoinIndexPort >= _totalCoins) {
-      return;
-    }
-
-    double _startX = _minYLeftPort;
-    double _startY = _minYLeftPort;
-    double _endX =
-        _random.nextDouble() * (_maxXLeftPort - _minXLeftPort) + _minXLeftPort;
-    double _endY =
-        _random.nextDouble() * (_maxYLeftPort - _minYLeftPort) + _minYLeftPort;
-
-    setState(() {
-      startTimes > 1
-          ? _coinsPort.add(TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: 1),
-              duration: const Duration(milliseconds: 600),
-              builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
-
-                return Positioned(
-                    left: currentX.clamp(_minXLeftPort, _maxXLeftPort),
-                    top: currentY.clamp(_minYLeftPort, _maxYLeftPort),
-                    child: startTimes > 1
-                        ? redCoinAnimation == true
-                            ? Image.asset(
-                                _redcoinImages[_currentCoinIndexPort %
-                                    _redcoinImages.length],
-                                height: 20,
-                                width: 20,
-                              )
-                            : lightGreenCoinAnimation == true
-                                ? Image.asset(
-                                    _lightGreencoinImages[
-                                        _currentCoinIndexPort %
-                                            _lightGreencoinImages.length],
-                                    height: 20,
-                                    width: 20,
-                                  )
-                                : blueCoinAnimation == true
-                                    ? Image.asset(
-                                        _bluecoinImages[_currentCoinIndexPort %
-                                            _bluecoinImages.length],
-                                        height: 20,
-                                        width: 20,
-                                      )
-                                    : greenCoinAnimation == true
-                                        ? Image.asset(
-                                            _greencoinImages[
-                                                _currentCoinIndexPort %
-                                                    _greencoinImages.length],
-                                            height: 20,
-                                            width: 20,
-                                          )
-                                        : lightBlueCoinAnimation == true
-                                            ? Image.asset(
-                                                _skybluecoinImages[
-                                                    _currentCoinIndexPort %
-                                                        _skybluecoinImages
-                                                            .length],
-                                                height: 20,
-                                                width: 20,
-                                              )
-                                            : brownCoinAnimation == true
-                                                ? Image.asset(
-                                                    _browncoinImages[
-                                                        _currentCoinIndexPort %
-                                                            _browncoinImages
-                                                                .length],
-                                                    height: 20,
-                                                    width: 20,
-                                                  )
-                                                : SizedBox()
-                        : SizedBox());
-              },
-            ))
-          : _coinsPort.reversed;
-    });
-
-    autoTime != "0" && playBackgroundMusic == false
-        ? onPressedMusicForBet()
-        : null;
-    autoTime == "0" ? _coinsPort.reversed : null;
-    autoTime == "0" ? _coinsPort.clear() : null;
-  }
 
   void _startCoinAnimation() {
     if (_currentCoinIndex >= _totalCoins) {
       return;
     }
 
-    double _startX = _minX;
-    double _startY = _minX;
-    double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
+    double startX = _minX;
+    double startY = _minX;
+    double endX = _random.nextDouble() * (_maxX - _minX) + _minX;
+    double endY = _random.nextDouble() * (_maxY - _minY) + _minY;
 
     setState(() {
       startTimes > 1
@@ -418,8 +325,8 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(milliseconds: 600),
               builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
+                double currentX = startX + (endX - startX) * value;
+                double currentY = startY + (endY - startY) * value;
 
                 return Positioned(
                     left: currentX.clamp(_minX, _maxX),
@@ -483,90 +390,6 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
         : null;
   }
 
-  void _startCoinAnimationRyt() {
-    if (_currentCoinIndexRyt >= _totalCoins) {
-      return;
-    }
-
-    double radius = 200; // Radius of the circular path
-    double angle = _currentCoinIndexRyt * (pi / _totalCoins);
-
-    double _startX = _minX;
-    double _startY = _minX;
-    double _endX = _random.nextDouble() * (_maxX - _minX) + _minX;
-    double _endY = _random.nextDouble() * (_maxY - _minY) + _minY;
-
-    setState(() {
-      startTimes > 1
-          ? _coinsRyt.add(TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: 1),
-              duration: const Duration(milliseconds: 600),
-              builder: (BuildContext context, double value, Widget? child) {
-                double currentX = _startX + (_endX - _startX) * value;
-                double currentY = _startY + (_endY - _startY) * value;
-
-                return Positioned(
-                    right: currentX.clamp(_minX, _maxX),
-                    top: currentY.clamp(_minY, _maxY),
-                    child: startTimes > 1
-                        ? redCoinAnimation == true
-                            ? Image.asset(
-                                _redcoinImages[_currentCoinIndexRyt %
-                                    _redcoinImages.length],
-                                height: 20,
-                                width: 20,
-                              )
-                            : lightGreenCoinAnimation == true
-                                ? Image.asset(
-                                    _lightGreencoinImages[_currentCoinIndexRyt %
-                                        _lightGreencoinImages.length],
-                                    height: 20,
-                                    width: 20,
-                                  )
-                                : blueCoinAnimation == true
-                                    ? Image.asset(
-                                        _bluecoinImages[_currentCoinIndexRyt %
-                                            _bluecoinImages.length],
-                                        height: 20,
-                                        width: 20,
-                                      )
-                                    : greenCoinAnimation == true
-                                        ? Image.asset(
-                                            _greencoinImages[
-                                                _currentCoinIndexRyt %
-                                                    _greencoinImages.length],
-                                            height: 20,
-                                            width: 20,
-                                          )
-                                        : lightBlueCoinAnimation == true
-                                            ? Image.asset(
-                                                _skybluecoinImages[
-                                                    _currentCoinIndexRyt %
-                                                        _skybluecoinImages
-                                                            .length],
-                                                height: 20,
-                                                width: 20,
-                                              )
-                                            : brownCoinAnimation == true
-                                                ? Image.asset(
-                                                    _browncoinImages[
-                                                        _currentCoinIndexRyt %
-                                                            _browncoinImages
-                                                                .length],
-                                                    height: 20,
-                                                    width: 20,
-                                                  )
-                                                : SizedBox()
-                        : SizedBox());
-              },
-            ))
-          : _coinsRyt.clear();
-    });
-
-    autoTime != "0" && playBackgroundMusic == false
-        ? onPressedMusicForBet()
-        : null;
-  }
 
   @override
   void dispose() {
@@ -596,14 +419,13 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> cardPlay() async {
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await _cardPlayer.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/flipcard.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
+      print('');
     }
     _player.play();
   }
@@ -611,14 +433,12 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> stopBettingMusic() async {
     stopBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await stopBettingmusic.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/stopbetting.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     autoTime == "1" && playBackgroundMusic == false
         ? stopBettingmusic.play()
@@ -629,14 +449,12 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> startBettingMusic() async {
     startBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await startBettingmusic.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/startbetting.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     autoTime == "45" && playBackgroundMusic == false
         ? startBettingmusic.play()
@@ -647,14 +465,12 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> winnerMusic() async {
     winnerBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await winnerBettingmusic.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/winsong.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     cardNameImage1 != ""
         ? winnerBettingmusic.play()
@@ -665,14 +481,12 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> onPressedMusic() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await onPressedmusic.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/flipcard.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     onPressedmusic.play();
   }
@@ -680,14 +494,12 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   Future<void> onPressedMusicForBet() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await onPressedmusic.setAudioSource(AudioSource.asset(
         "assets/lucky7/audio/coinsound.wav",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     onPressedmusic.play();
   }
@@ -4793,7 +4605,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
   }
 
  Widget buildImageLand(String cardImage) {
-    return cardImage == "" || cardImage == "null" || cardImage == null
+    return cardImage == "" || cardImage == "null"
         ? Image.asset(
             'assets/lucky7/images/cardBg.png',
             height: height * 0.19,
@@ -4822,7 +4634,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
 
   ///upload card image
   Widget buildImage(String cardImage) {
-    return cardImage == "" || cardImage == "null" || cardImage == null
+    return cardImage == "" || cardImage == "null"
         ? Image.asset(
             'assets/lucky7/images/cardBg.png',
             height: height * 0.09,
@@ -5006,15 +4818,14 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
 
   void getDeviceIp() async {
     final ipv4 = await Ipify.ipv4();
-    print(ipv4); // 98.207.254.136
+    // 98.207.254.136
 
     final ipv6 = await Ipify.ipv64();
     iPAddress = ipv6.toString();
-    print(iPAddress); // 98.207.254.136 or 2a00:1450:400f:80d::200e
+    // 98.207.254.136 or 2a00:1450:400f:80d::200e
 
     final ipv4json = await Ipify.ipv64(format: Format.JSON);
-    print(
-        ipv4json); //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
+    //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
 
     // The response type can be text, json or jsonp
   }
@@ -5196,12 +5007,10 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
      
        
     var result = jsonDecode(response);
-    print("betBody--->$body");
     if (result['status'] == true) {
-      print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         akbarAButton = false;
@@ -5228,7 +5037,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     } else {
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       selectCard = false;
       manualAmount = false;
@@ -5408,12 +5217,10 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     selectCard = false;
     manualAmount = false;
     var result = jsonDecode(response);
-    print("betBody--->$body");
     if (result['status'] == true) {
-      print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         akbarAButton = false;
@@ -5439,7 +5246,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     } else {
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       selectCard = false;
     }
@@ -5662,7 +5469,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -5941,7 +5748,7 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
@@ -6240,7 +6047,6 @@ class _AmarPlayRoomState extends State<AmarPlayRoom>
     var response =
         await GlobalFunction.apiPostRequestTokenForUsers(url, body, context);
     var result = jsonDecode(response);
-    print("res--->$response");
 
     if (result['status'] == true) {
       setState(() {

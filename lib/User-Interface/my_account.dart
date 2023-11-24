@@ -298,7 +298,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       getStatementDetails();
                     } else {
                       DialogUtils.showOneBtn(
-                          context, "Please select From & to Date",);
+                          context, "Please select From & to Date",playBackgroundMusic);
                     }
                   },
                   child: Container(
@@ -921,7 +921,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 getStatementDetails();
               } else {
                 DialogUtils.showOneBtnPortrait(
-                    context, "Please select proper date !!",);
+                    context, "Please select proper date !!",playBackgroundMusic);
               }
             },
             child: Container(

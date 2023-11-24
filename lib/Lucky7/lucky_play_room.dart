@@ -270,7 +270,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     if (connectivityResult == ConnectivityResult.none) {
       // No internet connection
       // Handle this situation as needed
-      print('No internet connection');
     } else {
       _startCoinAnimationLeftRandom();
       _startCoinAnimationRightRandom();
@@ -641,14 +640,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> cardPlay() async {
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await _cardPlayer.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/flipcard.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     _player.play();
   }
@@ -656,14 +653,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> stopBettingMusic() async {
     stopBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await stopBettingmusic.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/stopbetting.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     autoTime == '3' &&
             autoTime != '2' &&
@@ -678,14 +673,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> startBettingMusic() async {
     startBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await startBettingmusic.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/startbetting.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     autoTime == "45" && playBackgroundMusic == false
         ? startBettingmusic.play()
@@ -696,14 +689,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> winnerMusic() async {
     winnerBettingmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await winnerBettingmusic.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/winsong.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     cardNameImage1 != ""
         ? winnerBettingmusic.play()
@@ -714,14 +705,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> onPressedMusic() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await onPressedmusic.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/flipcard.mp3",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     setState(() {
       playBackgroundMusic == false ? null : onPressedmusic.play();
@@ -731,14 +720,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
   Future<void> onPressedMusicForBet() async {
     onPressedmusic.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
     });
     try {
       await onPressedmusic.setAudioSource(AudioSource.asset(
         "assets/Teen-patti/audio/coinsound.wav",
       ));
     } catch (e) {
-      print("Error loading audio source: $e");
     }
     startTimes > 3 || playBackgroundMusic == false
         ? onPressedmusic.play()
@@ -806,7 +793,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         return Future.value(true);
       },
       child: OrientationBuilder(builder: (context, orientation) {
-        print(orientation);
 
         if (orientation == Orientation.landscape) {
           return landscapeWidget();
@@ -2865,7 +2851,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
@@ -3116,7 +3102,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -4201,9 +4187,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
         startTimeSmall = startTimes * 100;
       }
       startTimes = int.parse(autoTime.toString());
-      print("====>$startTimes");
 
-      print("marketId====>$marketId");
       lowCard = result['data']['t2'][0]['nat'].toString();
       highCard = result['data']['t2'][1]['nat'].toString();
       evenCard = result['data']['t2'][2]['nat'].toString();
@@ -4270,17 +4254,12 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     if (result['status'] == true) {
       setState(() {
         stack1 = result['data']['stack1'];
-        print("stack 1------->$stack1");
         stack2 = result['data']['stack2'];
-        print("stack 2------->$stack2");
 
         stack3 = result['data']['stack3'];
-        print("stack 3------->$stack3");
         stack4 = result['data']['stack4'];
-        print("stack 4------->$stack4");
 
         stack6 = result['data']['stack6'];
-        print("stack 6------->$stack6");
       });
     }
   }
@@ -4296,26 +4275,23 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     var result = jsonDecode(response);
     if (result['status'] == true) {
       userBalance = result['data']['balance'];
-      print("mainBalance=====>$userBalance");
 
       liablity = result['data']['libality'];
       mainBalance = double.parse(userBalance) - double.parse(liablity);
       mainBalanceList = mainBalance.toString().split('.');
-      print("mainBalance=====>$mainBalance");
     }
   }
 
   void getDeviceIp() async {
     final ipv4 = await Ipify.ipv4();
-    print(ipv4); // 98.207.254.136
+    // 98.207.254.136
 
     final ipv6 = await Ipify.ipv64();
     iPAddress = ipv6.toString();
-    print(iPAddress); // 98.207.254.136 or 2a00:1450:400f:80d::200e
+    // 98.207.254.136 or 2a00:1450:400f:80d::200e
 
     final ipv4json = await Ipify.ipv64(format: Format.JSON);
-    print(
-        ipv4json); //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
+    //{"ip":"98.207.254.136"} or {"ip":"2a00:1450:400f:80d::200e"}
 
     // The response type can be text, json or jsonp
   }
@@ -4328,7 +4304,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     var response =
         await GlobalFunction.apiPostRequestTokenForUsers(url, body, context);
     var result = jsonDecode(response);
-    print("res--->$response");
 
     if (result['status'] == true) {
       setState(() {
@@ -4426,12 +4401,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       manualAmount = false;
     });
     var result = jsonDecode(response);
-    print("betBody--->$body");
     if (result['status'] == true) {
-      print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         manualAmount = false;
@@ -4448,7 +4421,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       stakeController.clear();
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
     stakeController.clear();
@@ -4526,12 +4499,10 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
       manualAmount = false;
     });
     var result = jsonDecode(response);
-    print("betBody--->$body");
     if (result['status'] == true) {
-      print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         manualAmount = false;
@@ -4548,7 +4519,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
 
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 
@@ -4562,7 +4533,6 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     var body = {"matchId": "12"};
     var response = await GlobalFunction.apiPostRequestToken(url, body);
     var result = jsonDecode(response);
-    print("----------result match id ---------$result");
     if (result['status'] == true) {
       var list = result['data']['VLucky7A'] as List;
       matchIdList.clear();
@@ -4579,9 +4549,7 @@ class _PlayRoomLucky7ScreenState extends State<PlayRoomLucky7Screen>
     });
 
     if (response.statusCode == 200) {
-      print("==================>${response.body}");
     } else {
-      print("------>${response.body}");
 
       Navigator.pushAndRemoveUntil(
           context,

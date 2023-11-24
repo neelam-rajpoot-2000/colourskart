@@ -2648,7 +2648,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                                 ? onPressedMusic()
                                                 : Vibration.vibrate();
                                             print("=========>show dialog");
-                                            pastResultLand(
+                                          pastResultPortrait(
                                                 context,
                                                 cardList![0],
                                                 cardList[1],
@@ -3586,7 +3586,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                         });
                                         DialogUtils.showOneBtn(
                                           context,
-                                          "Please Select Existing amount",
+                                          "Please Select Existing amount",playBackgroundMusic
                                         );
                                       },
                                       child: Container(
@@ -3851,7 +3851,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -5083,7 +5083,8 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
         builder: (_) {
           return OrientationBuilder(
               builder: (BuildContext context, Orientation orientation) {
-            return orientation==Orientation.portrait? AlertDialog(
+            return  orientation==Orientation.portrait? 
+            AlertDialog(
                 backgroundColor: Colors.transparent,
                 content: Stack(
                   children: [
@@ -5665,7 +5666,804 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
                       ),
                     ),
                   ],
-                )):SizedBox.shrink();
+                )): AlertDialog(
+                backgroundColor: Colors.transparent,
+                content: Stack(children: [
+                  Container(
+                    height: height * 0.9,
+                    width: width * 0.7,
+                    padding: EdgeInsets.all(10),
+                    alignment: Alignment.topCenter,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: AssetImage(
+                                'assets/vertual_teen_patti/vector.png')),
+                        // color: Color(0xFFFF001A11),
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            colors: const [
+                              Color(0xffff01452b),
+                              Color(0xffff002114)
+                            ])),
+                    child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                          Text(
+                            'RESULT',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: height * 0.04,
+                                color: Colors.white),
+                          ),
+                          SizedBox(height: height * 0.03),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.075,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[0] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 1',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[1] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 2',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[2] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 3',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * 0.03,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[3] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 4',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
+                                                        fit: BoxFit.cover),
+                                                  ))
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[4] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 5',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[5] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 6',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * 0.03,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              // SizedBox(width: 5),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[6] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 7',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1707.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.003,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                            SizedBox(height: height * 0.05),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.073,
+                                                  vertical: height * 0.0065),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: winnerArray[7] == 'L'
+                                                      ? Color(0xffFF0000)
+                                                      : Color(0xff008000)),
+                                              child: Text(
+                                                'PLAYER 8',
+                                                style: TextStyle(
+                                                    // fontFamily: 'Inter',
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: height * 0.3,
+                                        width: width * 0.2,
+                                        padding: EdgeInsets.all(10),
+                                        alignment: Alignment.topCenter,
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage(
+                                                  'assets/vertual_teen_patti/Group 1708.png')),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: height * 0.04,
+                                        left: width * 0.02,
+                                        child: Column(
+                                          children: [
+                                            Row(children: [
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                              SizedBox(width: width * 0.01),
+                                              SizedBox(
+                                                  height: height * 0.15,
+                                                  width: width * 0.05,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2.5),
+                                                    child: Image.network(
+                                                        'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
+                                                        fit: BoxFit.cover),
+                                                  )),
+                                            ]),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        ])),
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        playBackgroundMusic == false
+                            ? onPressedMusic()
+                            : Vibration.vibrate();
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 24,
+                        width: 24,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Icon(
+                          Icons.close,
+                        ),
+                      ),
+                    ),
+                  ),
+                ]));
+       ;
           });
         });
   }
@@ -6962,851 +7760,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
     );
   }
 
-  ///showing current result in portrait mode
-  pastResultLand(
-      BuildContext context,
-      cardImag,
-      cardImage1,
-      cardImage2,
-      cardImage3,
-      cardImage4,
-      cardImage5,
-      cardImage6,
-      cardImage7,
-      cardImage8,
-      cardImage9,
-      cardImage10,
-      cardImage11,
-      cardImage12,
-      cardImage13,
-      cardImage14,
-      cardImage15,
-      cardImage16,
-      cardImage17,
-      cardImage18,
-      cardImage19,
-      cardImage20,
-      cardImage21,
-      cardImage22,
-      cardImage23,
-      cardImage24,
-      cardImage25,
-      cardImage26,
-      winner0,
-      winner1,
-      winner2,
-      winner3,
-      winner4,
-      winner5,
-      winner6,
-      winner7) {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return OrientationBuilder(
-              builder: (BuildContext context, Orientation orientation) {
-            return orientation==Orientation.landscape? 
-            AlertDialog(
-                backgroundColor: Colors.transparent,
-                content: Stack(children: [
-                  Container(
-                    height: height * 0.9,
-                    width: width * 0.7,
-                    padding: EdgeInsets.all(10),
-                    alignment: Alignment.topCenter,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: AssetImage(
-                                'assets/vertual_teen_patti/vector.png')),
-                        // color: Color(0xFFFF001A11),
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            colors: const [
-                              Color(0xffff01452b),
-                              Color(0xffff002114)
-                            ])),
-                    child: SingleChildScrollView(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                          Text(
-                            'RESULT',
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: height * 0.04,
-                                color: Colors.white),
-                          ),
-                          SizedBox(height: height * 0.03),
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              // SizedBox(width: 5),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImag}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage9}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage18}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.075,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[0] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 1',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage1}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage10}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage19}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[1] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 2',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage2}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage11}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage20}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[2] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 3',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: height * 0.03,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              // SizedBox(width: 5),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage3}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage12}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage21}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[3] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 4',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage4}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage13}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage22}.png',
-                                                        fit: BoxFit.cover),
-                                                  ))
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[4] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 5',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage5}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage14}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage23}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[5] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 6',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: height * 0.03,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              // SizedBox(width: 5),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage6}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage15}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage24}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[6] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 7',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1707.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.003,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage7}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage16}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage25}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                            SizedBox(height: height * 0.05),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: width * 0.073,
-                                                  vertical: height * 0.0065),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(2),
-                                                  color: winnerArray[7] == 'L'
-                                                      ? Color(0xffFF0000)
-                                                      : Color(0xff008000)),
-                                              child: Text(
-                                                'PLAYER 8',
-                                                style: TextStyle(
-                                                    // fontFamily: 'Inter',
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.3,
-                                        width: width * 0.2,
-                                        padding: EdgeInsets.all(10),
-                                        alignment: Alignment.topCenter,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(
-                                                  'assets/vertual_teen_patti/Group 1708.png')),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: height * 0.04,
-                                        left: width * 0.02,
-                                        child: Column(
-                                          children: [
-                                            Row(children: [
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage8}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage17}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                              SizedBox(width: width * 0.01),
-                                              SizedBox(
-                                                  height: height * 0.15,
-                                                  width: width * 0.05,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2.5),
-                                                    child: Image.network(
-                                                        'http://admin.kalyanexch.com/images/cards/${cardImage26}.png',
-                                                        fit: BoxFit.cover),
-                                                  )),
-                                            ]),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        ])),
-                  ),
-                  Positioned(
-                    right: 0,
-                    child: InkWell(
-                      onTap: () {
-                        playBackgroundMusic == false
-                            ? onPressedMusic()
-                            : Vibration.vibrate();
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        height: 24,
-                        width: 24,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Icon(
-                          Icons.close,
-                        ),
-                      ),
-                    ),
-                  ),
-                ])):Container();
-          });
-        });
-  }
-
+ 
   ///design reult button
   _bettButton(String text, Color color) {
     return Container(
@@ -8205,7 +8159,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
 
       setState(() {
@@ -8232,7 +8186,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       stakeController.clear();
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 
@@ -8665,7 +8619,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
 
       setState(() {
@@ -8692,7 +8646,7 @@ class _OpenVertualTeenPAttiState extends State<OpenVertualTeenPAtti>
       stakeController.clear();
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 

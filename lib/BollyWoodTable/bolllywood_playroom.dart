@@ -343,14 +343,14 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     });
   }
 
-       int startTimeSmall=0;
+  int startTimeSmall = 0;
 
   @override
   void initState() {
-      startTimeSmall=startTimes*100;
-       Timer.periodic(const Duration(milliseconds: 10), (timer) {
-        startTimeSmall =startTimeSmall-1;
-       });
+    startTimeSmall = startTimes * 100;
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      startTimeSmall = startTimeSmall - 1;
+    });
     getStakeDetails();
     checkInternet();
 
@@ -748,10 +748,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
   @override
   Widget build(BuildContext context) {
-       getCardData();
+    getCardData();
     getResult();
     getuserBalance();
- 
+
     getMatchIdDetails();
     getUserDetails();
 
@@ -803,7 +803,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     );
   }
 
-   Widget drawerWidget() {
+  Widget drawerWidget() {
     return Container(
       height: height,
       width: width * 0.4,
@@ -964,8 +964,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     );
   }
 
-  
- Future getVcLiablity() async {
+  Future getVcLiablity() async {
     var url = Apis.vcLiablityApi;
     var body = {
       "roundId": marketId.toString(),
@@ -1112,9 +1111,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       drawerEnableOpenDragGesture: false,
       backgroundColor: Colors.transparent,
       key: _globalKey,
-      drawer: SizedBox(
-                width: width * 0.3,
-        child: Drawer(child: drawerWidget())),
+      drawer:
+          SizedBox(width: width * 0.3, child: Drawer(child: drawerWidget())),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -1285,14 +1283,13 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                         SizedBox(
                                           height: 5,
                                           width: width * 0.15,
-                                          child:  LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
-                                  backgroundColor: Colors.grey,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
-                                ),
+                                          child: LinearProgressIndicator(
+                                            value: startTimeSmall /
+                                                4500, // Calculate the progress
+                                            backgroundColor: Colors.grey,
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Color(0xaa9919D2)),
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 4,
@@ -1364,7 +1361,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         ],
                       ),
                     ),
-                      AnimatedSwitcher(
+                    AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
                       child: Stack(
                         children: _coins,
@@ -1401,7 +1398,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                         height: height * 0.10,
                       ),
                     ),
-                  
 
                     //------------------- RESULT IMAGE----------------//
                     startTimes <= 3 && autoTime != '0'
@@ -1418,8 +1414,6 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                     // right: width ,
                                     child: showCurrentCardLand())
                                 : SizedBox(),
-
-                                
 
                     Positioned(
                       bottom: height * 0.0,
@@ -1766,9 +1760,8 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
     return Scaffold(
       key: _globalKey,
       backgroundColor: Colors.transparent,
-      drawer: SizedBox(
-                width: width * 0.55,
-        child:Drawer(child: drawerWidget())),
+      drawer:
+          SizedBox(width: width * 0.55, child: Drawer(child: drawerWidget())),
       body: Container(
           height: height,
           width: width,
@@ -2131,12 +2124,11 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                 height: 5,
                                 width: width * 0.25,
                                 child: LinearProgressIndicator(
-                                  value:
-                                     startTimeSmall/4500, // Calculate the progress
+                                  value: startTimeSmall /
+                                      4500, // Calculate the progress
                                   backgroundColor: Colors.grey,
                                   valueColor:
                                       AlwaysStoppedAnimation(Color(0xaa9919D2)),
-                                  
                                 ),
                               ),
                             ],
@@ -5692,10 +5684,10 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       var list = result['data']['t2'] as List;
       setState(() {
         autoTime = result['data']['t1'][0]['autotime'].toString();
-         autoTime = result['data']['t1'][0]['autotime'].toString();
-            if (startTimes != int.parse(autoTime.toString())) {
-        startTimeSmall = startTimes * 100;
-      }
+        autoTime = result['data']['t1'][0]['autotime'].toString();
+        if (startTimes != int.parse(autoTime.toString())) {
+          startTimeSmall = startTimes * 100;
+        }
         marketId = result['data']['t1'][0]['mid'].toString();
         cardNameImage1 = result['data']['t1'][0]['C1'].toString();
 
@@ -5975,7 +5967,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -6197,7 +6189,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
@@ -6372,7 +6364,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         manualAmount = false;
@@ -6389,7 +6381,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 
@@ -6523,7 +6515,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         _currentCoinIndexRytPort++;
@@ -6539,7 +6531,7 @@ class _BollyWoodTablePlayRoomState extends State<BollyWoodTablePlayRoom>
 
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 

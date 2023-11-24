@@ -170,10 +170,10 @@ class _SignInScreenState extends State<SignInScreen> {
                               :  Vibration.vibrate();
                                   if (userNameController.text.isEmpty) {
                                     DialogUtils.showOneBtn(
-                                        context, "Please enter User name !",);
+                                        context, "Please enter User name !", false);
                                   } else if (passwordController.text.isEmpty) {
                                     DialogUtils.showOneBtn(context,
-                                        "Password should not be empty !",);
+                                        "Password should not be empty !", false);
                                   } else {
                                     getLoginDetails();
                                   }
@@ -354,10 +354,10 @@ class _SignInScreenState extends State<SignInScreen> {
                               :  Vibration.vibrate();
                                 if (userNameController.text.isEmpty) {
                                   DialogUtils.showOneBtn(
-                                      context, "Please enter User name !",);
+                                      context, "Please enter User name !",  widget.playBackgroundMusic!);
                                 } else if (passwordController.text.isEmpty) {
                                   DialogUtils.showOneBtn(context,
-                                      "Password should not be empty !",);
+                                      "Password should not be empty !",  widget.playBackgroundMusic!);
                                 } else {
                                   getLoginDetails();
                                 }
@@ -453,7 +453,7 @@ class _SignInScreenState extends State<SignInScreen> {
     var response = await GlobalFunction.apiPostRequest(url, body);
     var result = jsonDecode(response);
     if (result['status'] == false) {
-      DialogUtils.showOneBtn(context, result['message'],);
+      DialogUtils.showOneBtn(context, result['message'],  widget.playBackgroundMusic!);
       setState(() {
         loading = false;
       });
@@ -471,8 +471,8 @@ class _SignInScreenState extends State<SignInScreen> {
         loading = false;
       });
     }
-    setState(() {
-      loading = false;
-    });
+    // setState(() {
+    //   loading = false;
+    // });
   }
 }

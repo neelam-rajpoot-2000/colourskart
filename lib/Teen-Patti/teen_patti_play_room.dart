@@ -2728,7 +2728,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         selectPlayerA = false;
@@ -2742,7 +2742,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
 
       DialogUtils.showOneBtn(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
     stakeController.clear();
@@ -2807,7 +2807,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
       print("response--->$result");
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
       setState(() {
         selectPlayerA = false;
@@ -2822,7 +2822,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
 
       DialogUtils.showOneBtnPortrait(
         context,
-        result['message'],
+        result['message'],playBackgroundMusic
       );
     }
 
@@ -3040,7 +3040,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                           });
                                           DialogUtils.showOneBtn(
                                             context,
-                                            "Please Select Existing amount",
+                                            "Please Select Existing amount",playBackgroundMusic
                                           );
                                         },
                                         child: Container(
@@ -3289,7 +3289,7 @@ class _TeenPattiPlayRoomState extends State<TeenPattiPlayRoom>
                                             });
                                             DialogUtils.showOneBtn(
                                               context,
-                                              "Please Select Existing amount",
+                                              "Please Select Existing amount",playBackgroundMusic
                                             );
                                           },
                                           child: Container(
